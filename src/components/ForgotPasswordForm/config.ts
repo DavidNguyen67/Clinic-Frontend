@@ -7,6 +7,8 @@ export const emailSchema = yup.object({
 export type EmailFormValues = yup.InferType<typeof emailSchema>;
 
 export const otpSchema = yup.object({
+  email: yup.string().required("Email is required").email("Invalid email address"),
+
   otp: yup
     .string()
     .required("OTP is required")
@@ -16,6 +18,7 @@ export const otpSchema = yup.object({
 export type OtpFormValues = yup.InferType<typeof otpSchema>;
 
 export const resetSchema = yup.object({
+  resetToken: yup.string().required("Reset token is required"),
   newPassword: yup
     .string()
     .required("Password is required")

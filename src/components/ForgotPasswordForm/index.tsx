@@ -18,6 +18,7 @@ import {
   ResetFormValues,
   resetSchema,
 } from "./config";
+import { useAuth } from "@/hooks/useAuth";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -114,9 +115,40 @@ function useCountdown(initialSeconds: number) {
 export function ForgotPasswordForm({ className, ...props }: React.ComponentProps<"div">) {
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
+  const { forgotPassword, verifyOtp, resetPassword } = useAuth();
   const [apiError, setApiError] = useState("");
-
   const { seconds, formatted, start: startCountdown } = useCountdown(OTP_COUNTDOWN_SECONDS);
+
+  const resetFormik = useFormik<ResetFormValues>({
+    initialValues: { resetToken: "", newPassword: "", confirmPassword: "" },
+    validationSchema: resetSchema,
+    onSubmit: async (values) => {
+      setApiError("");
+      try {
+        await resetPassword(values);
+        setStep("done");
+      } catch (err) {
+        setApiError((err as Error).message);
+      }
+    },
+  });
+
+  const otpFormik = useFormik<OtpFormValues>({
+    initialValues: { email, otp: "" },
+    validationSchema: otpSchema,
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      setApiError("");
+      try {
+        const response = await verifyOtp(values);
+        void values;
+        resetFormik.setFieldValue("resetToken", response?.body?.resetToken, false);
+        setStep("reset");
+      } catch (err) {
+        setApiError((err as Error).message);
+      }
+    },
+  });
 
   const emailFormik = useFormik<EmailFormValues>({
     initialValues: { email: "" },
@@ -124,12 +156,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
     onSubmit: async (values) => {
       setApiError("");
       try {
-        const res = await fetch("/auth/forgot-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: values.email }),
-        });
-        if (!res.ok) throw new Error((await res.json())?.message ?? "Failed to send OTP");
+        await forgotPassword(values);
         setEmail(values.email);
         setStep("otp");
         startCountdown();
@@ -139,62 +166,21 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
     },
   });
 
-  // ── Step 2: OTP ────────────────────────────────────────────────────────────
-
-  const otpFormik = useFormik<OtpFormValues>({
-    initialValues: { otp: "" },
-    validationSchema: otpSchema,
-    onSubmit: async (values) => {
-      setApiError("");
-      // OTP sẽ được verify kết hợp ở bước reset (gửi kèm newPassword)
-      // Bước này chỉ validate format + cho phép sang bước tiếp
-      // Nếu backend có endpoint verify-otp riêng thì gọi ở đây
-      void values;
-      setStep("reset");
-    },
-  });
-
   const handleResend = async () => {
     if (seconds > 0) return;
     setApiError("");
     try {
-      const res = await fetch("/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (!res.ok) throw new Error((await res.json())?.message ?? "Failed to resend OTP");
+      const formValues: EmailFormValues = {
+        email,
+      };
+
+      await forgotPassword(formValues);
       otpFormik.resetForm();
       startCountdown();
     } catch (err) {
       setApiError((err as Error).message);
     }
   };
-
-  // ── Step 3: Reset password ─────────────────────────────────────────────────
-
-  const resetFormik = useFormik<ResetFormValues>({
-    initialValues: { newPassword: "", confirmPassword: "" },
-    validationSchema: resetSchema,
-    onSubmit: async (values) => {
-      setApiError("");
-      try {
-        const res = await fetch("/auth/reset-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            otp: otpFormik.values.otp,
-            newPassword: values.newPassword,
-          }),
-        });
-        if (!res.ok) throw new Error((await res.json())?.message ?? "Failed to reset password");
-        setStep("done");
-      } catch (err) {
-        setApiError((err as Error).message);
-      }
-    },
-  });
 
   const stepMeta: Record<Exclude<Step, "done">, { title: string; description: string }> = {
     email: {

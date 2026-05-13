@@ -324,9 +324,9 @@ const RegisterForm = () => {
                   "Create Account"
                 )}
               </Button>
-              <Button variant="outline" type="button" className="w-full">
+              {/* <Button variant="outline" type="button" className="w-full">
                 Sign up with Google
-              </Button>
+              </Button> */}
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <Link href="/login" className="underline underline-offset-4">

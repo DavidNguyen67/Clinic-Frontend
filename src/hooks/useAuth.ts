@@ -7,6 +7,11 @@ import { METHOD } from "./global";
 import { AuthState, clearAuthState, setAuthState } from "./useSession";
 import _ from "lodash";
 import { formatDateToApi } from "@/lib/utils";
+import {
+  EmailFormValues,
+  OtpFormValues,
+  ResetFormValues,
+} from "@/components/ForgotPasswordForm/config";
 
 export const ROLE_DEFAULT_PATHS: Record<ROLE_NAME, string> = {
   [ROLE_NAME.PATIENT]: "/patient",
@@ -33,9 +38,36 @@ export function useAuth() {
     method: METHOD.POST,
   });
 
+  const forgotPasswordMutation = useMutation("/api/v1/auth/forgot-password", {
+    url: "/api/v1/auth/forgot-password",
+    method: METHOD.POST,
+    notification: {
+      title: "Authentication",
+      message: "If the email exists, a reset link has been sent",
+    },
+  });
+
   const logoutMutation = useMutation("/api/v1/auth/logout", {
     url: "/api/v1/auth/logout",
     method: METHOD.POST,
+  });
+
+  const verifyOtpMutation = useMutation<{ resetToken: string }>("/api/v1/auth/verify-otp", {
+    url: "/api/v1/auth/verify-otp",
+    method: METHOD.POST,
+    notification: {
+      title: "Authentication",
+      message: "OTP verified successfully",
+    },
+  });
+
+  const resetMutation = useMutation("/api/v1/auth/reset-password", {
+    url: "/api/v1/auth/reset-password",
+    method: METHOD.POST,
+    notification: {
+      title: "Authentication",
+      message: "Password reset successfully",
+    },
   });
 
   const login = async (formValues: LoginFormValues) => {
@@ -45,7 +77,6 @@ export function useAuth() {
   };
 
   const register = async (formValues: RegisterFormValues) => {
-    // copy
     const payload = _.cloneDeep(formValues);
     payload.dateOfBirth = formatDateToApi(payload.dateOfBirth) as any;
     const response = await registerMutation.trigger(payload);
@@ -67,6 +98,18 @@ export function useAuth() {
       clearAuthState();
       localStorage.removeItem("refreshToken");
     }
+  };
+
+  const forgotPassword = async (formValues: EmailFormValues) => {
+    await forgotPasswordMutation.trigger(formValues);
+  };
+
+  const verifyOtp = async (formValues: OtpFormValues) => {
+    return await verifyOtpMutation.trigger(formValues);
+  };
+
+  const resetPassword = async (formValues: ResetFormValues) => {
+    await resetMutation.trigger(formValues);
   };
 
   const logout = async () => {
@@ -94,10 +137,10 @@ export function useAuth() {
     register,
     refresh,
     logout,
+    verifyOtp,
+    forgotPassword,
+    resetPassword,
     saveRedirectPath,
     getRedirectPath,
-    isLoggingIn: loginMutation.isMutating,
-    isRegistering: registerMutation.isMutating,
-    isLoggingOut: logoutMutation.isMutating,
   };
 }

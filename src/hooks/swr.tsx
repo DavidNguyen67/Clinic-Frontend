@@ -6,6 +6,7 @@ import useSWRMutation from "swr/mutation";
 
 import type { SWRMutationConfiguration } from "swr/mutation";
 import { ApiResponse, METHOD } from "./global";
+import { useAuth } from "./useAuth";
 
 interface WrapperConfig<T> extends Partial<PublicConfiguration<T, any, (arg: string) => any>> {
   url?: string | (() => string);
@@ -46,7 +47,7 @@ export function useSWRWrapper<T = Record<string, unknown>>(
   return useSWR<ApiResponse<T>>(
     enable ? (key ?? "") : null,
     () => {
-      const token = localStorage.getItem("accessToken");
+      const { accessToken } = useAuth();
 
       const extraHeader = (body as Record<string, unknown>)?.extraHeader as Record<string, string>;
 
@@ -56,8 +57,8 @@ export function useSWRWrapper<T = Record<string, unknown>>(
 
       const header = {
         ...(auth &&
-          token && {
-            Authorization: `Bearer ${token}`,
+          accessToken && {
+            Authorization: `Bearer ${accessToken}`,
           }),
         ...extraHeader,
         ...config?.extraHeader,
@@ -166,7 +167,7 @@ export const useMutation = <T = Record<string, unknown>,>(
 
         const urlKey = typeof url === "function" ? url() : (url ?? key);
 
-        const token = localStorage.getItem("accessToken");
+        const { accessToken } = useAuth();
 
         fetcher<ApiResponse<T>>(
           urlKey ?? swrKey,
@@ -175,8 +176,8 @@ export const useMutation = <T = Record<string, unknown>,>(
           config.noAuth
             ? undefined
             : {
-                ...(token && {
-                  Authorization: `Bearer ${token}`,
+                ...(accessToken && {
+                  Authorization: `Bearer ${accessToken}`,
                 }),
                 ...extraHeader,
                 ...config?.extraHeader,

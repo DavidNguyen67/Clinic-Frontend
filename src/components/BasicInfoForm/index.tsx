@@ -22,6 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { useUpdateUser } from "@/hooks/auth/useUpdateUser";
+import _ from "lodash";
 
 type VerifiedBadgeProps = {
   verified: boolean;
@@ -105,12 +106,14 @@ function BasicInfoSkeleton() {
 
 export function BasicInfoForm() {
   const currentProfile = useCurrentProfile();
+
   const [isEditing, setIsEditing] = useState(false);
+
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
-  const updateUser = useUpdateUser();
+  const { updateProfile } = useUpdateUser();
 
   const isLoading = currentProfile?.isLoading ?? true;
 
@@ -128,7 +131,7 @@ export function BasicInfoForm() {
     helpers: FormikHelpers<BasicInfoFormValues>
   ) => {
     try {
-      await updateUser.trigger(values);
+      await updateProfile(values);
       setIsEditing(false);
       currentProfile.mutate();
     } catch (error) {

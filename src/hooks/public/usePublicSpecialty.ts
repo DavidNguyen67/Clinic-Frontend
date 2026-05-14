@@ -15,6 +15,7 @@ export const usePublicSpecialtyStatistics = () => {
 export const usePublicSpecialtyList = (
   filter?: BaseFilter & {
     isActive?: boolean;
+    keyword?: string;
   }
 ) => {
   const query = buildQueryParams(filter);

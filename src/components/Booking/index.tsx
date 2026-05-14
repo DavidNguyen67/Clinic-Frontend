@@ -15,9 +15,9 @@ import { SPECIALTY_ICONS, useBookingStore } from "@/components/Booking/useBookin
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function BookingPage() {
-  const [step, setStep] = useState(0);
+  const { store, nextStep, submitBooking, prevStep } = useBookingStore();
 
-  const { store, setBookingState } = useBookingStore();
+  const step = store?.step ?? 0;
 
   const canNext = [
     !!store?.specialty,
@@ -28,13 +28,9 @@ export default function BookingPage() {
   ][step];
 
   const handleNext = () => {
-    if (step < 4) setStep((s) => s + 1);
-    else {
-      setBookingState({ isSubmitted: true });
-    }
+    if (step < 4) nextStep();
+    else submitBooking();
   };
-
-  const handleBack = () => setStep((s) => s - 1);
 
   const Icon = SPECIALTY_ICONS[store?.specialty?.specialtyType!] ?? undefined;
 
@@ -74,7 +70,7 @@ export default function BookingPage() {
             <div className="flex items-center justify-between mt-5 gap-3">
               <Button
                 variant="outline"
-                onClick={handleBack}
+                onClick={prevStep}
                 disabled={step === 0}
                 className="rounded-xl gap-2 min-w-24"
               >

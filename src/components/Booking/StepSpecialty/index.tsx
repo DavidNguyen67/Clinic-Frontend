@@ -28,31 +28,13 @@ import { cn } from "@/lib/utils";
 import { SpecialtyResponse } from "@/interface/response";
 import { usePublicSpecialtyList } from "@/hooks/public/usePublicSpecialty";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useBookingStore } from "@/components/Booking/useBookingStore";
+import {
+  SPECIALTY_COLORS,
+  SPECIALTY_ICONS,
+  useBookingStore,
+} from "@/components/Booking/useBookingStore";
 
 const PAGE_SIZE = 8;
-
-const SPECIALTY_ICONS: Record<string, React.ReactNode> = {
-  s1: <Stethoscope className="w-6 h-6" />,
-  s2: <Heart className="w-6 h-6" />,
-  s3: <Activity className="w-6 h-6" />,
-  s4: <Baby className="w-6 h-6" />,
-  s5: <Brain className="w-6 h-6" />,
-  s6: <Bone className="w-6 h-6" />,
-  s7: <Eye className="w-6 h-6" />,
-  s8: <Smile className="w-6 h-6" />,
-};
-
-const SPECIALTY_COLORS: Record<string, string> = {
-  s1: "bg-blue-50 text-blue-600 border-blue-100 group-hover:bg-blue-100 group-hover:border-blue-300",
-  s2: "bg-red-50 text-red-500 border-red-100 group-hover:bg-red-100 group-hover:border-red-300",
-  s3: "bg-orange-50 text-orange-500 border-orange-100 group-hover:bg-orange-100 group-hover:border-orange-300",
-  s4: "bg-green-50 text-green-600 border-green-100 group-hover:bg-green-100 group-hover:border-green-300",
-  s5: "bg-violet-50 text-violet-600 border-violet-100 group-hover:bg-violet-100 group-hover:border-violet-300",
-  s6: "bg-amber-50 text-amber-600 border-amber-100 group-hover:bg-amber-100 group-hover:border-amber-300",
-  s7: "bg-cyan-50 text-cyan-600 border-cyan-100 group-hover:bg-cyan-100 group-hover:border-cyan-300",
-  s8: "bg-pink-50 text-pink-500 border-pink-100 group-hover:bg-pink-100 group-hover:border-pink-300",
-};
 
 export function StepSpecialty() {
   const [page, setPage] = useState(1);
@@ -63,12 +45,14 @@ export function StepSpecialty() {
 
   const publicSpecialtyList = usePublicSpecialtyList({
     isActive: true,
-    page,
+    page: page - 1,
     size: PAGE_SIZE,
     keyword: debouncedKeyword,
   });
 
-  const totalPages = publicSpecialtyList?.data?.body?.totalPages ?? 0;
+  const totalPages = publicSpecialtyList?.data?.body?.totalPages
+    ? publicSpecialtyList?.data?.body?.totalPages - 1
+    : 0;
   const specialties = publicSpecialtyList?.data?.body?.data ?? [];
   const isLoading = publicSpecialtyList.isLoading;
 
@@ -101,10 +85,25 @@ export function StepSpecialty() {
             <Skeleton key={i} className="h-28 rounded-2xl" />
           ))}
         </div>
+      ) : specialties.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-14 px-6 rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-center">
+          <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+            <Stethoscope className="w-7 h-7 text-blue-500" />
+          </div>
+
+          <h3 className="text-sm font-semibold text-gray-900">No specialties found</h3>
+
+          <p className="text-sm text-gray-400 mt-1 max-w-sm">
+            {keyword
+              ? `No specialties match "${keyword}". Try another keyword.`
+              : "There are currently no specialties available."}
+          </p>
+        </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {specialties.map((sp) => {
             const isSelected = store?.specialty?.id === sp.id;
+            const Icon = SPECIALTY_ICONS[sp?.specialtyType!] ?? undefined;
             return (
               <button
                 key={sp.id}
@@ -126,10 +125,10 @@ export function StepSpecialty() {
                     "w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all duration-200",
                     isSelected
                       ? "bg-blue-100 text-blue-600 border-blue-200"
-                      : SPECIALTY_COLORS[sp.id]
+                      : SPECIALTY_COLORS[sp.specialtyType!]
                   )}
                 >
-                  {SPECIALTY_ICONS[sp.id]}
+                  {Icon && <Icon className="w-6 h-6" />}
                 </div>
                 <div>
                   <p

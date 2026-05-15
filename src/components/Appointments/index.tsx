@@ -14,7 +14,7 @@ const MyAppointmentsPage = () => {
   const stats = usePatientAppointmentStats();
 
   return (
-    <div className="container mx-auto h-full flex-1 flex-col">
+    <div className="container mx-auto h-full flex-1 flex-col flex overflow-hidden">
       <div className="grid grid-cols-12 gap-4 h-full overflow-hidden flex-1">
         <div className="col-span-4 flex-1 h-full overflow-hidden flex-col">
           <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
@@ -61,7 +61,7 @@ const MyAppointmentsPage = () => {
           <NextAppointmentBanner />
         </div>
 
-        <div className="col-span-8">
+        <div className="col-span-8 flex-1 h-full overflow-x-hidden flex-col overflow-y-auto">
           {/* <Tabs defaultValue="upcoming">
             <TabsList className="mb-4 h-9">
               {Object.values(APPOINTMENT_TAB).map((tab) => (

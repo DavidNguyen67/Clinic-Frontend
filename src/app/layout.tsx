@@ -38,7 +38,7 @@ export default function RootLayout({
         inter.variable
       )}
     >
-      <body className="min-h-full flex flex-col no-scrollbar">
+      <body className="min-h-svh flex flex-col no-scrollbar">
         <ClientProvider>{children}</ClientProvider>
       </body>
     </html>

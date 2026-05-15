@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { LoginFormValues, loginSchema } from "./config";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const initialValues: LoginFormValues = {
   email: "",
@@ -16,7 +17,9 @@ const initialValues: LoginFormValues = {
 };
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const { login } = useAuth();
+  const { login, getRedirectPath } = useAuth();
+
+  const router = useRouter();
 
   const formik = useFormik<LoginFormValues>({
     initialValues,
@@ -24,6 +27,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     onSubmit: async (values, formikHelpers) => {
       try {
         await login(values);
+        const path = getRedirectPath();
+        router.push(path || "/");
       } catch (error) {}
       formikHelpers.setSubmitting(false);
     },

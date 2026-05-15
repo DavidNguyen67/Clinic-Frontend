@@ -66,6 +66,16 @@ export function useAuth() {
     },
   });
 
+  const saveRedirectPath = (path: string) => {
+    sessionStorage.setItem("auth-redirect", path);
+  };
+
+  const getRedirectPath = (): string | null => {
+    const stored = sessionStorage.getItem("auth-redirect");
+    sessionStorage.removeItem("auth-redirect");
+    return stored;
+  };
+
   const login = async (formValues: LoginFormValues) => {
     const response = await loginMutation.trigger(formValues);
     setAuthState(response?.body);
@@ -84,6 +94,7 @@ export function useAuth() {
     if (currentAccessToken) return;
 
     const refreshToken = localStorage.getItem("refreshToken");
+    console.log("Check refreshToken", refreshToken);
     if (!refreshToken) return;
 
     try {
@@ -116,16 +127,6 @@ export function useAuth() {
     } catch {}
     localStorage.removeItem("refreshToken");
     sessionStorage.removeItem("auth-redirect");
-  };
-
-  const saveRedirectPath = (path: string) => {
-    sessionStorage.setItem("auth-redirect", path);
-  };
-
-  const getRedirectPath = (): string | null => {
-    const stored = sessionStorage.getItem("auth-redirect");
-    sessionStorage.removeItem("auth-redirect");
-    return stored;
   };
 
   return {

@@ -1,6 +1,7 @@
 "use client";
 
 import { EXCEPTION_TYPE } from "@/common";
+import CalendarLegend from "@/components/Booking/StepSchedule/CalendarLegend";
 import DayButton, { DayStatus } from "@/components/Booking/StepSchedule/DayButton";
 import { useBookingStore } from "@/components/Booking/useBookingStore";
 import { Calendar } from "@/components/ui/calendar";
@@ -71,6 +72,9 @@ function StepSchedule() {
             DayButton: (props) => <DayButton {...props} dayStatus={getDayStatus(props.day.date)} />,
           }}
         />
+        <div className="border-t border-border">
+          <CalendarLegend />
+        </div>
       </CardContent>
     </Card>
   );

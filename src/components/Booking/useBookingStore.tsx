@@ -19,8 +19,8 @@ import useSWR from "swr";
 export type BookingState = {
   specialty?: SpecialtyResponse;
   doctor?: DoctorProfileResponse;
-  date?: string;
-  time?: string;
+  date?: Date;
+  time?: Date;
   bookingType?: BOOKING_TYPE;
   reason?: string;
   symptoms?: string;

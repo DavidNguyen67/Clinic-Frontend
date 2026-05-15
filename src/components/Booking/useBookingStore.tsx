@@ -1,6 +1,12 @@
-import { BOOKING_TYPE, SPECIALTY_TYPE } from "@/common";
+import { BOOKING_TYPE, ITEM_TYPE, SPECIALTY_TYPE } from "@/common";
 import { BOOKING_STORE_KEY } from "@/hooks";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { usePatientCreateInvoice } from "@/hooks/patient/usePatientInvoice";
+import { usePublicAppointmentCreate } from "@/hooks/public/usePublicAppointment";
+import { usePublicServiceList } from "@/hooks/public/usePublicService";
 import { DoctorProfileResponse, SpecialtyResponse } from "@/interface/response";
+import { formatDate, formatDateToApi } from "@/lib/utils";
+import { set } from "date-fns";
 import {
   HeartPulse,
   Stethoscope,
@@ -35,10 +41,10 @@ const initialBookingState: BookingState = {
   doctor: undefined,
   date: undefined,
   time: undefined,
-  bookingType: undefined,
-  reason: undefined,
-  symptoms: undefined,
-  notes: undefined,
+  bookingType: BOOKING_TYPE.ONLINE,
+  reason: "",
+  symptoms: "",
+  notes: "",
 
   step: 0,
   isSubmitted: false,
@@ -89,9 +95,26 @@ export const SPECIALTY_COLORS: Record<SPECIALTY_TYPE, string> = {
 };
 
 export const useBookingStore = () => {
+  const currentProfile = useCurrentProfile();
+  const patientCreateInvoice = usePatientCreateInvoice();
+
+  const appointmentMutation = usePublicAppointmentCreate();
   const bookingStore = useSWR<BookingState>(BOOKING_STORE_KEY, null, {
     fallbackData: initialBookingState,
   });
+  const publicServiceList = usePublicServiceList({
+    specialtyId: bookingStore?.data?.specialty?.id,
+  });
+
+  const dateTime =
+    bookingStore.data?.date && bookingStore.data?.time
+      ? set(bookingStore.data.date, {
+          hours: bookingStore.data.time.getHours(),
+          minutes: bookingStore.data.time.getMinutes(),
+          seconds: bookingStore.data.time.getSeconds(),
+          milliseconds: bookingStore.data.time.getMilliseconds(),
+        })
+      : null;
 
   const setBookingState = (newState: Partial<BookingState>) => {
     bookingStore.mutate(
@@ -112,14 +135,38 @@ export const useBookingStore = () => {
     if (currentStep > 0) setBookingState({ step: currentStep - 1 });
   };
 
-  const submitBooking = () => {
-    bookingStore.mutate(
-      (prev) => ({
-        ...prev!,
-        isSubmitted: true,
-      }),
-      false
-    );
+  const submitBooking = async () => {
+    console.log("Run");
+    try {
+      const payload = {
+        patientProfileId: currentProfile?.data?.body?.patient?.id,
+        doctorProfileId: bookingStore.data?.doctor?.id,
+        appointmentDate: formatDateToApi(dateTime, "HH:mm dd/MM/yyyy"),
+        bookingType: bookingStore.data?.bookingType,
+        reason: bookingStore.data?.reason,
+        symptoms: bookingStore.data?.symptoms,
+        notes: bookingStore.data?.notes,
+      };
+      const appointmentResponse = await appointmentMutation.trigger(payload);
+      await patientCreateInvoice.trigger({
+        items: publicServiceList?.data?.body?.data?.map((service) => ({
+          itemType: ITEM_TYPE.SERVICE,
+          itemName: service.name,
+          quantity: 1,
+          unitPrice: service.price,
+        })),
+        appointmentId: appointmentResponse?.body?.id,
+      });
+      bookingStore.mutate(
+        (prev) => ({
+          ...prev!,
+          isSubmitted: true,
+        }),
+        false
+      );
+    } catch (error) {
+      console.error("Failed to submit booking:", error);
+    }
   };
 
   const resetBookingState = () => {
@@ -128,6 +175,7 @@ export const useBookingStore = () => {
 
   return {
     store: bookingStore.data,
+    dateTime,
 
     setBookingState,
 

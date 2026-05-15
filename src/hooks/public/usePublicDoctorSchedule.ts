@@ -1,5 +1,5 @@
 import { buildQueryParams } from "@/lib/utils";
-import { BaseFilter, DoctorScheduleException } from "@/interface/response";
+import { BaseFilter, DoctorScheduleExceptionResponse } from "@/interface/response";
 import { ApiPagedResponse, METHOD } from "@/hooks/global";
 import { useSWRWrapper } from "@/hooks/swr";
 
@@ -12,7 +12,7 @@ export const usePublicDoctorScheduleExceptions = (
 ) => {
   const query = buildQueryParams(filter);
 
-  return useSWRWrapper<ApiPagedResponse<DoctorScheduleException>>(
+  return useSWRWrapper<ApiPagedResponse<DoctorScheduleExceptionResponse>>(
     `/api/v1/public/doctor-schedule-exception?${query}`,
     {
       url: `/api/v1/public/doctor-schedule-exception?${query}`,

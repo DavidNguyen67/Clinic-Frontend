@@ -73,7 +73,7 @@ export function StepDetails() {
         <Input
           id="reason"
           placeholder="e.g. Annual check-up, chest pain, follow-up..."
-          value={store?.reason}
+          value={store?.reason ?? ""}
           onChange={(e) => setBookingState({ reason: e.target.value })}
           className="rounded-xl border-gray-200 focus-visible:ring-blue-500"
         />
@@ -86,7 +86,7 @@ export function StepDetails() {
         <Textarea
           id="symptoms"
           placeholder="Describe any symptoms you're experiencing..."
-          value={store?.symptoms}
+          value={store?.symptoms ?? ""}
           onChange={(e) => setBookingState({ symptoms: e.target.value })}
           rows={3}
           className="rounded-xl border-gray-200 focus-visible:ring-blue-500 resize-none"
@@ -100,7 +100,7 @@ export function StepDetails() {
         <Textarea
           id="notes"
           placeholder="Allergies, current medications, or anything else the doctor should know..."
-          value={store?.notes}
+          value={store?.notes ?? ""}
           onChange={(e) => setBookingState({ notes: e.target.value })}
           rows={2}
           className="rounded-xl border-gray-200 focus-visible:ring-blue-500 resize-none"

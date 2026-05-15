@@ -1,9 +1,12 @@
 import { useBookingStore } from "@/components/Booking/useBookingStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatDateTime } from "@/lib/utils";
+import { set } from "date-fns";
 import { CalendarCheck } from "lucide-react";
+import Link from "next/link";
 
-const ReviewRow = ({ label, value }: { label: string; value: string }) => (
+export const ReviewRow = ({ label, value }: { label: string; value: string }) => (
   <div className="flex items-start justify-between gap-4 py-2.5">
     <span className="text-sm text-gray-400 shrink-0">{label}</span>
     <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
@@ -11,7 +14,8 @@ const ReviewRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 const StepSuccess = () => {
-  const { store, resetBookingState } = useBookingStore();
+  const { store, resetBookingState, dateTime } = useBookingStore();
+
   return (
     <div className="flex flex-col items-center text-center gap-6 py-8">
       <div className="w-20 h-20 rounded-full bg-green-50 border-4 border-green-100 flex items-center justify-center">
@@ -27,7 +31,7 @@ const StepSuccess = () => {
       <Card className="w-full border border-gray-100 rounded-2xl shadow-sm text-left">
         <CardContent className="p-4 divide-y divide-gray-50">
           <ReviewRow label="Doctor" value={store?.doctor?.user.fullName ?? "-"} />
-          <ReviewRow label="Date & Time" value={`${store?.date} at ${store?.time}`} />
+          <ReviewRow label="Date & Time" value={formatDateTime(dateTime)} />
           <ReviewRow label="Type" value={store?.bookingType?.toString()!} />
         </CardContent>
       </Card>
@@ -36,7 +40,7 @@ const StepSuccess = () => {
           Book Another
         </Button>
         <Button className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700" asChild>
-          <a href="/appointments">View Appointments</a>
+          <Link href="/patient/appointments">View Appointments</Link>
         </Button>
       </div>
     </div>

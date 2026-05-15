@@ -68,3 +68,10 @@ export enum EXCEPTION_TYPE {
   LEAVE = "LEAVE", // nghỉ phép (T2-T6)
   EXTRA = "EXTRA", // làm thêm (T7, CN)
 }
+
+export enum ITEM_TYPE {
+  SERVICE = "SERVICE",
+  MEDICATION = "MEDICATION",
+  LAB_TEST = "LAB_TEST",
+  OTHER = "OTHER",
+}

@@ -11,8 +11,6 @@ import { StepDetails } from "@/components/Booking/StepDetails";
 import StepSuccess from "@/components/Booking/StepSuccess";
 import { SPECIALTY_ICONS, useBookingStore } from "@/components/Booking/useBookingStore";
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
-
 export default function BookingPage() {
   const { store, nextStep, submitBooking, prevStep } = useBookingStore();
 
@@ -50,7 +48,7 @@ export default function BookingPage() {
         </div>
       </div>
 
-      <div className="w-2xl mx-auto px-4 py-8">
+      <div className="w-3xl mx-auto px-4 py-8">
         {store?.isSubmitted ? (
           <StepSuccess />
         ) : (
@@ -58,12 +56,11 @@ export default function BookingPage() {
             <StepBar current={step} />
 
             <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-              {/* {step === 0 && <StepSpecialty />} */}
-              <StepSchedule />
-              {/* {step === 1 && <StepDoctor />} */}
-              {/* {step === 2 && <StepSchedule />} */}
-              {/* {step === 3 && <StepDetails />} */}
-              {/* {step === 4 && <StepReview />} */}
+              {step === 0 && <StepSpecialty />}
+              {step === 1 && <StepDoctor />}
+              {step === 2 && <StepSchedule />}
+              {step === 3 && <StepDetails />}
+              {step === 4 && <StepReview />}
             </div>
 
             {/* Nav buttons */}

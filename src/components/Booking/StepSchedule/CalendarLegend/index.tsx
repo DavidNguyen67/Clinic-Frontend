@@ -2,16 +2,15 @@ import { DayStatus } from "@/components/Booking/StepSchedule/DayButton";
 
 const LEGEND_ITEMS: { status: DayStatus; label: string }[][] = [
   [
-    { status: "available", label: "Còn trống" },
-    { status: "overtime", label: "Giờ mở rộng" },
-    { status: "full", label: "Đã đầy" },
+    { status: "available", label: "Available" },
+    { status: "overtime", label: "Extended Hours" },
+    { status: "full", label: "Fully Booked" },
   ],
   [
-    { status: "leave", label: "Ngày nghỉ" },
-    { status: "disabled", label: "Không khả dụng" },
+    { status: "leave", label: "Day Off" },
+    { status: "disabled", label: "Unavailable" },
   ],
 ];
-
 const legendSampleClass: Record<DayStatus, string> = {
   available: "border border-border rounded-sm bg-background",
   full: "border-2 border-red-400 rounded-sm",

@@ -102,9 +102,21 @@ export type ReviewResponse = BaseEntityResponse & {
   status: REVIEW_STATUS;
 };
 
-export type DoctorScheduleException = BaseEntityResponse & {
+export type DoctorScheduleExceptionResponse = BaseEntityResponse & {
   doctorProfile: DoctorProfileResponse;
   exceptionDate: string;
   type: EXCEPTION_TYPE;
   reason: string;
+};
+
+export type ServiceResponse = BaseEntityResponse & {
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  promotionalPrice: number;
+  duration: number;
+  image: string;
+  isFeatured: boolean;
+  isActive: boolean;
 };

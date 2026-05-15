@@ -5,14 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { BOOKING_TYPE } from "@/common";
 import { useBookingStore } from "@/components/Booking/useBookingStore";
-import { getInitials } from "@/lib/utils";
-
-const ReviewRow = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-start justify-between gap-4 py-2.5">
-    <span className="text-sm text-gray-400 shrink-0">{label}</span>
-    <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
-  </div>
-);
+import { formatDate, formatTime, getInitials } from "@/lib/utils";
+import { ReviewRow } from "@/components/Booking/StepSuccess";
 
 export function StepReview() {
   const { store } = useBookingStore();
@@ -56,8 +50,8 @@ export function StepReview() {
       <Card className="border border-gray-100 rounded-2xl shadow-sm">
         <CardContent className="p-4 divide-y divide-gray-50">
           <ReviewRow label="Specialty" value={store?.specialty?.name ?? "-"} />
-          <ReviewRow label="Date" value={store?.date || "-"} />
-          <ReviewRow label="Time" value={store?.time || "-"} />
+          <ReviewRow label="Date" value={formatDate(store?.date) || "-"} />
+          <ReviewRow label="Time" value={formatTime(store?.time) || "-"} />
           <ReviewRow
             label="Type"
             value={

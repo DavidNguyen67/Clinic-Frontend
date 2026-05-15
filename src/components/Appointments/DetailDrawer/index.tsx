@@ -4,6 +4,7 @@ import BookingTypeBadge from "@/components/Appointments/BookingTypeBadge";
 import { CancelAppointmentDialog } from "@/components/Appointments/CancelAppointmentDialog";
 import { statusConfig } from "@/components/Appointments/DetailDrawer/config";
 import StatusBadge from "@/components/Appointments/StatusBadge";
+import DetailDrawerSkeleton from "@/components/DetailDrawerSkeleton";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,7 @@ import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { usePatientAppointmentDetail } from "@/hooks/patient/usePatientAppointment";
 import usePopup from "@/hooks/useDialog";
 import { formatCurrency, formatDate, formatTime, getInitials, parseDate } from "@/lib/utils";
-import { Calendar, CalendarClock, Clock, ListOrdered, XCircle } from "lucide-react";
+import { Calendar, CalendarClock, CalendarX, Clock, ListOrdered, XCircle } from "lucide-react";
 import Image from "next/image";
 
 interface DetailDrawerProps {
@@ -21,6 +22,7 @@ interface DetailDrawerProps {
   onClose: () => void;
   dialogCancel?: ReturnType<typeof usePopup<{ appointmentId: string }>>;
   sheetReschedule?: ReturnType<typeof usePopup<{ appointmentId: string }>>;
+  dialogReactivate?: ReturnType<typeof usePopup<{ appointmentId: string }>>;
 }
 
 function DetailDrawer({
@@ -28,24 +30,50 @@ function DetailDrawer({
   onClose,
   dialogCancel,
   sheetReschedule,
+  dialogReactivate,
 }: DetailDrawerProps) {
   const patientAppointment = usePatientAppointmentDetail(appointmentId);
   const apt = patientAppointment.data?.body;
 
-  if (!apt) return null;
-  const parsedDate = parseDate(apt.appointmentDate, "HH:mm:ss dd/MM/yyyy");
+  const parsedDate = parseDate(apt?.appointmentDate, "HH:mm:ss dd/MM/yyyy");
 
   const canCancel = [
     APPOINTMENT_STATUS.PENDING,
     APPOINTMENT_STATUS.CONFIRMED,
     APPOINTMENT_STATUS.CHECKED_IN,
     APPOINTMENT_STATUS.IN_PROGRESS,
-  ].includes(apt.status);
+  ].includes(apt?.status!);
 
   const canReschedule = [APPOINTMENT_STATUS.PENDING, APPOINTMENT_STATUS.CONFIRMED].includes(
-    apt.status
+    apt?.status!
   );
-  const canReactivate = apt.status === APPOINTMENT_STATUS.CANCELLED;
+  const canReactivate = apt?.status === APPOINTMENT_STATUS.CANCELLED;
+
+  if (patientAppointment.isLoading) {
+    return (
+      <SheetContent className="w-full sm:max-w-md flex flex-col p-0 gap-0">
+        <SheetHeader className="px-5 py-4 border-b">
+          <SheetTitle className="text-base font-medium">Appointment details</SheetTitle>
+        </SheetHeader>
+        <DetailDrawerSkeleton />
+      </SheetContent>
+    );
+  }
+
+  if (!apt) {
+    return (
+      <SheetContent className="w-full sm:max-w-md flex flex-col p-0 gap-0">
+        <SheetHeader className="px-5 py-4 border-b">
+          <SheetTitle className="text-base font-medium">Appointment details</SheetTitle>
+        </SheetHeader>
+        <div className="flex-1 flex flex-col items-center justify-center gap-2 text-center px-5">
+          <CalendarX className="h-8 w-8 text-muted-foreground/50" />
+          <p className="text-sm font-medium text-muted-foreground">No appointment data</p>
+          <p className="text-xs text-muted-foreground/70">The appointment could not be found.</p>
+        </div>
+      </SheetContent>
+    );
+  }
 
   return (
     <SheetContent className="w-full sm:max-w-md flex flex-col p-0 gap-0">
@@ -310,7 +338,14 @@ function DetailDrawer({
             </Button>
           )}
           {canReactivate && (
-            <Button variant="outline" className="flex-1 gap-1.5" onClick={onClose}>
+            <Button
+              variant="outline"
+              className="flex-1 gap-1.5"
+              onClick={() => {
+                onClose();
+                dialogReactivate?.openPopup({ appointmentId: apt.id });
+              }}
+            >
               <CalendarClock className="h-4 w-4" /> Reactivate
             </Button>
           )}

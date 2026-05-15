@@ -3,6 +3,7 @@ import { APPOINTMENT_STATUS } from "@/common";
 import BookingTypeBadge from "@/components/Appointments/BookingTypeBadge";
 import { CancelAppointmentDialog } from "@/components/Appointments/CancelAppointmentDialog";
 import DetailDrawer from "@/components/Appointments/DetailDrawer";
+import { ReactivateAppointmentDialog } from "@/components/Appointments/ReActiveDialog";
 import { RescheduleSheet } from "@/components/Appointments/RescheduleSheet";
 import StatusBadge from "@/components/Appointments/StatusBadge";
 import { AlertDialog } from "@/components/ui/alert-dialog";
@@ -48,6 +49,8 @@ function AppointmentCard({ apt }: AppointmentCardProps) {
   const sheetReschedule = usePopup<{ appointmentId: string }>();
 
   const dialogCancel = usePopup<{ appointmentId: string }>();
+
+  const dialogReactivate = usePopup<{ appointmentId: string }>();
 
   return (
     <Card className="transition-colors hover:border-border/80">
@@ -124,7 +127,12 @@ function AppointmentCard({ apt }: AppointmentCardProps) {
                     </Button>
                   )}
                   {canReactivate && (
-                    <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1"
+                      onClick={() => dialogReactivate.openPopup({ appointmentId: apt.id })}
+                    >
                       <CalendarClock className="h-4 w-4" /> Reactivate
                     </Button>
                   )}
@@ -146,6 +154,7 @@ function AppointmentCard({ apt }: AppointmentCardProps) {
           onClose={sheetDetail.closePopup}
           dialogCancel={dialogCancel}
           sheetReschedule={sheetReschedule}
+          dialogReactivate={dialogReactivate}
         />
       </Sheet>
 
@@ -162,6 +171,17 @@ function AppointmentCard({ apt }: AppointmentCardProps) {
           onClose={sheetReschedule.closePopup}
         />
       </Sheet>
+
+      <AlertDialog open={dialogReactivate?.open} onOpenChange={dialogReactivate?.onOpenChange}>
+        <ReactivateAppointmentDialog
+          appointmentId={dialogReactivate?.data?.appointmentId!}
+          onClose={dialogReactivate?.closePopup}
+          onReschedule={() => {
+            dialogReactivate?.closePopup();
+            sheetReschedule.openPopup({ appointmentId: dialogReactivate?.data?.appointmentId! });
+          }}
+        />
+      </AlertDialog>
     </Card>
   );
 }

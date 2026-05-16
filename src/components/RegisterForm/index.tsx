@@ -17,7 +17,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState, useEffect, useRef } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { buildQueryParams, formatDate } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";

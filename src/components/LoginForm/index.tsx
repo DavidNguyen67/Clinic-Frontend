@@ -8,7 +8,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { LoginFormValues, loginSchema } from "./config";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useRouter } from "next/navigation";
 
 const initialValues: LoginFormValues = {

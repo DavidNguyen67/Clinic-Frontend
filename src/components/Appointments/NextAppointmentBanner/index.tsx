@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { usePatientNextAppointment } from "@/hooks/patient/usePatientAppointment";
 import { formatDateTime, parseDate } from "@/lib/utils";
 import { Calendar, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 const NextAppointmentBanner = () => {
   const patientNextAppointment = usePatientNextAppointment();

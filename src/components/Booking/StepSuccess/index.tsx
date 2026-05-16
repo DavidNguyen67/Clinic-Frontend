@@ -2,9 +2,9 @@ import { useBookingStore } from "@/components/Booking/useBookingStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDateTime } from "@/lib/utils";
-import { set } from "date-fns";
 import { CalendarCheck } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+
 
 export const ReviewRow = ({ label, value }: { label: string; value: string }) => (
   <div className="flex items-start justify-between gap-4 py-2.5">

@@ -1,5 +1,5 @@
-import { Stethoscope, Bell, User, LogOut, ChevronDown } from "lucide-react";
-import Link from "next/link";
+"use client";
+import { Bell, ChevronDown, LogOut, Stethoscope, User } from "lucide-react";
 import { NAV_LINKS } from "./config";
 import { useSession } from "@/hooks/useSession";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,8 +15,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/hooks/useAuth";
 import { getImageUrl, getInitials } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
 
 const Header = () => {
   const { user } = useSession();

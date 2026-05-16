@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { CalendarCheck, UserSearch, Bell, ClipboardList, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 

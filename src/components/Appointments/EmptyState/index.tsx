@@ -2,7 +2,7 @@ import { APPOINTMENT_TAB } from "@/components/Appointments/config";
 import { EMPTY_CONFIG } from "@/components/Appointments/EmptyState/config";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 function EmptyState({ tab }: { tab: APPOINTMENT_TAB }) {
   const cfg = EMPTY_CONFIG[tab] ?? EMPTY_CONFIG.upcoming;

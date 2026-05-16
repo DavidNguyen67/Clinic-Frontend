@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Calendar, Plus } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 const EmptyBanner = () => (
   <div className="rounded-xl border border-dashed bg-muted/40 p-5 flex items-center gap-4 mb-6">

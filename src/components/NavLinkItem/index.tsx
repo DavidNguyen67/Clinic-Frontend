@@ -1,8 +1,8 @@
-import Link from "next/link";
-
+"use client";
 import { cn } from "@/lib/utils";
 import { NavLink } from "../Header/config";
 import { ICON_MAP } from "./config";
+import Link from "next/link";
 
 interface NavLinkItemProps {
   link: NavLink;

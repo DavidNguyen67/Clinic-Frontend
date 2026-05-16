@@ -3,7 +3,7 @@ import { Calendar, ChevronRight, Star, Users, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import NumberFlow from "@number-flow/react";
 import { usePublicUserStatistics } from "@/hooks/public/usePublicUser";
 import { usePublicSpecialtyStatistics } from "@/hooks/public/usePublicSpecialty";

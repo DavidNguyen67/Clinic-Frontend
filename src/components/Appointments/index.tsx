@@ -51,6 +51,13 @@ const MyAppointmentsPage = () => {
               variant="danger"
             />
             <StatCard
+              label="Pending"
+              value={stats?.data?.body?.pendingCount ?? 0}
+              icon={<Clock className="h-4 w-4" />}
+              variant="warning"
+            />
+            <StatCard
+              className="col-span-2! flex"
               label="Total visits"
               value={stats?.data?.body?.todayCount ?? 0}
               icon={<Calendar className="h-4 w-4" />}

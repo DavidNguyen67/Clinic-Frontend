@@ -22,3 +22,5 @@ export type ApiPagedResponse<T> = {
 };
 
 export const FILTER_ALL_VALUE = "__all__";
+
+export type VALUE_OF_FILTER_ALL_VALUE = typeof FILTER_ALL_VALUE;

@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function AppointmentSkeleton() {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 px-1 py-2">
       {[1, 2, 3].map((i) => (
         <Card key={i}>
           <CardContent className="p-4">

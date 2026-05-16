@@ -17,7 +17,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getImageUrl, getInitials } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 const Header = () => {
   const { user } = useSession();
@@ -141,13 +141,13 @@ const Header = () => {
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link href="/auth/login">Đăng nhập</Link>
+                  <Link href="/auth/login">Login</Link>
                 </Button>
                 <Button
                   asChild
                   className="bg-linear-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white shadow-sm"
                 >
-                  <Link href="/auth/register">Đăng ký</Link>
+                  <Link href="/auth/register">Register</Link>
                 </Button>
               </>
             )}

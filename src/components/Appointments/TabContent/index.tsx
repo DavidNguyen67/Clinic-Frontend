@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -14,13 +14,15 @@ import AppointmentCard from "@/components/Appointments/AppointmentCard";
 import AppointmentSkeleton from "@/components/Appointments/AppointmentSkeleton";
 import EmptyState from "@/components/Appointments/EmptyState";
 import { BaseFilter } from "@/interface/response";
-import { BOOKING_TYPE } from "@/common";
+import { APPOINTMENT_STATUS, BOOKING_TYPE } from "@/common";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePatientAppointment } from "@/hooks/patient/usePatientAppointment";
 import { APPOINTMENT_TAB } from "@/components/Appointments/config";
-import { FILTER_ALL_VALUE } from "@/hooks/global";
+import { FILTER_ALL_VALUE, VALUE_OF_FILTER_ALL_VALUE } from "@/hooks/global";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useForceRefreshAppointment } from "@/components/Appointments/TabContent/hook";
+import { formatDateToApi } from "@/lib/utils";
+import { set } from "date-fns";
 
 const CARD_ESTIMATED_HEIGHT = 120;
 
@@ -30,32 +32,66 @@ interface TabContentProps {
 
 export interface AppointmentFilterFormValues extends BaseFilter {
   keyword?: string;
-  bookingType?: BOOKING_TYPE;
-  typeTime?: APPOINTMENT_TAB;
+  bookingType?: BOOKING_TYPE | VALUE_OF_FILTER_ALL_VALUE;
+  fromDate?: string; //HH:mm dd/MM/yyyy
+  toDate?: string; //HH:mm dd/MM/yyyy
+  status?: APPOINTMENT_STATUS[];
 }
 
 function TabContent({ tab }: TabContentProps) {
   const { swr } = useForceRefreshAppointment();
 
-  const initialValues = useRef<AppointmentFilterFormValues>({
+  const initialValues = useRef<AppointmentFilterFormValues & { typeTime: APPOINTMENT_TAB }>({
     keyword: "",
     typeTime: tab,
+    bookingType: FILTER_ALL_VALUE,
   });
 
-  const formik = useFormik<AppointmentFilterFormValues>({
+  const formik = useFormik<AppointmentFilterFormValues & { typeTime: APPOINTMENT_TAB }>({
     initialValues: initialValues.current,
     onSubmit: () => {},
   });
 
   const debouncedKeyword = useDebounce(formik.values.keyword, 600);
 
-  const filter: AppointmentFilterFormValues = {
-    keyword: debouncedKeyword,
-    bookingType: formik.values.bookingType,
-    typeTime: formik.values.typeTime,
-  };
+  const buildFilter = useCallback((): AppointmentFilterFormValues => {
+    const { typeTime, bookingType } = formik.values;
+    const now = new Date();
 
-  const patientAppointment = usePatientAppointment(filter);
+    const base = { keyword: debouncedKeyword, bookingType };
+
+    const ACTIVE_STATUSES = [
+      APPOINTMENT_STATUS.PENDING,
+      APPOINTMENT_STATUS.CONFIRMED,
+      APPOINTMENT_STATUS.IN_PROGRESS,
+    ];
+
+    const CONFIG: Partial<Record<APPOINTMENT_TAB, Partial<AppointmentFilterFormValues>>> = {
+      [APPOINTMENT_TAB.TODAY]: {
+        fromDate: formatDateToApi(now, "HH:mm dd/MM/yyyy"),
+        toDate: formatDateToApi(now, "HH:mm dd/MM/yyyy"),
+        status: ACTIVE_STATUSES,
+      },
+      [APPOINTMENT_TAB.UPCOMING]: {
+        fromDate: formatDateToApi(now, "HH:mm dd/MM/yyyy"),
+        toDate: formatDateToApi(
+          set(now, { date: now.getDate() + 7, hours: 23, minutes: 59, seconds: 59 }),
+          "HH:mm dd/MM/yyyy"
+        ),
+        status: ACTIVE_STATUSES,
+      },
+      [APPOINTMENT_TAB.COMPLETED]: { status: [APPOINTMENT_STATUS.COMPLETED] },
+      [APPOINTMENT_TAB.CANCELLED]: { status: [APPOINTMENT_STATUS.CANCELLED] },
+      [APPOINTMENT_TAB.PENDING]: {
+        status: [APPOINTMENT_STATUS.PENDING],
+        fromDate: formatDateToApi(now, "HH:mm dd/MM/yyyy"),
+      },
+    };
+
+    return { ...base, ...CONFIG[typeTime] };
+  }, [debouncedKeyword, formik.values.typeTime, formik.values.bookingType]);
+
+  const patientAppointment = usePatientAppointment(buildFilter());
 
   const isFirstRender = useRef(true);
 
@@ -121,7 +157,7 @@ function TabContent({ tab }: TabContentProps) {
       ) : !patientAppointment?.data?.body?.data?.length ? (
         <EmptyState tab={tab} />
       ) : (
-        <div ref={parentRef} className="h-full flex-1 overflow-y-auto" style={{}}>
+        <div ref={parentRef} className="h-full flex-1 overflow-y-auto">
           <div
             style={{
               height: virtualizer.getTotalSize(),

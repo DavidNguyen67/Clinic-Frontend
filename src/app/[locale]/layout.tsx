@@ -1,9 +1,8 @@
-// src/app/[locale]/layout.tsx
-
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import ClientProvider from "@/providers/ClientProvider";
 
 type Props = {
   children: React.ReactNode;
@@ -21,7 +20,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      {children}
+      <ClientProvider>{children}</ClientProvider>
     </NextIntlClientProvider>
   );
 }

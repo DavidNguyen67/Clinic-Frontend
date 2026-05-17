@@ -36,7 +36,7 @@ const NAV_ITEMS: NavItem[] = [
     description: "Blood type, chronic conditions, allergies",
   },
 ];
-export default function ProfilePage() {
+export default function PatientProfile() {
   const [activeSection, setActiveSection] = useState<SectionId>("basic");
   const { data, isLoading } = useCurrentProfile();
 

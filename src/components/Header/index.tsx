@@ -1,7 +1,6 @@
 "use client";
 import { Bell, ChevronDown, LogOut, Stethoscope, User } from "lucide-react";
-import { NAV_LINKS } from "./config";
-import { useSession } from "@/hooks/useSession";
+import { NAV_LINKS, PROFILE_PATH } from "./config";
 import { usePathname, useRouter } from "next/navigation";
 import { NavLinkItem } from "../NavLinkItem";
 import { Button } from "@/components/ui/button";
@@ -18,9 +17,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getImageUrl, getInitials } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@/i18n/navigation";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { useLogoutDialog } from "@/hooks/useLogoutDialog";
 
 const Header = () => {
-  const { user } = useSession();
+  const { data } = useCurrentProfile();
+  const user = data?.body;
+
   const { logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -37,9 +40,10 @@ const Header = () => {
     return pathname === path || pathname.startsWith(path + "/");
   };
 
+  const { openDialog } = useLogoutDialog();
+
   const handleLogout = () => {
-    logout?.();
-    router.push("/");
+    openDialog();
   };
 
   const isInAuthPages = (path: string) => {
@@ -118,7 +122,7 @@ const Header = () => {
 
                     <DropdownMenuItem asChild>
                       <Link
-                        href="/patient/profile"
+                        href={PROFILE_PATH[user?.role]!}
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <User className="w-4 h-4" />

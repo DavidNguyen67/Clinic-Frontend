@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
+import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 
 const FullscreenLoader = () => (
   <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-background">
@@ -40,6 +41,7 @@ const ClientProvider = ({ children }: { children: React.ReactNode }) => {
             <Toaster position="bottom-right" />
             <Header />
             <AuthErrorDialog />
+            <LogoutConfirmDialog />
             {children}
           </>
         )}

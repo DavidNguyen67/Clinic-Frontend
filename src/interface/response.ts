@@ -39,6 +39,7 @@ export type UserResponse = BaseEntityResponse & {
   phoneVerified: boolean;
 
   patient?: PatientProfileResponse;
+  doctor?: DoctorProfileResponse;
 };
 
 export type SpecialtyResponse = {

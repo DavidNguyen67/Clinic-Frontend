@@ -1,22 +1,22 @@
-import { DayStatus } from "@/components/Booking/StepSchedule/DayButton";
+import { DAY_STATUS } from "@/common";
 
-const LEGEND_ITEMS: { status: DayStatus; label: string }[][] = [
+const LEGEND_ITEMS: { status: DAY_STATUS; label: string }[][] = [
   [
-    { status: "available", label: "Available" },
-    { status: "overtime", label: "Extended Hours" },
-    { status: "full", label: "Fully Booked" },
+    { status: DAY_STATUS.AVAILABLE, label: "Available" },
+    { status: DAY_STATUS.OVERTIME, label: "Extended Hours" },
+    { status: DAY_STATUS.FULL, label: "Fully Booked" },
   ],
   [
-    { status: "leave", label: "Day Off" },
-    { status: "disabled", label: "Unavailable" },
+    { status: DAY_STATUS.LEAVE, label: "Day Off" },
+    { status: DAY_STATUS.DISABLED, label: "Unavailable" },
   ],
 ];
-const legendSampleClass: Record<DayStatus, string> = {
-  available: "border border-border rounded-sm bg-background",
-  full: "border-2 border-red-400 rounded-sm",
-  overtime: "border-2 border-amber-400 rounded-sm",
-  leave: "border-2 border-dashed border-slate-400 rounded-sm",
-  disabled: "border border-border rounded-sm opacity-40",
+const legendSampleClass: Record<DAY_STATUS, string> = {
+  [DAY_STATUS.AVAILABLE]: "border border-border rounded-sm bg-background",
+  [DAY_STATUS.FULL]: "border-2 border-red-400 rounded-sm",
+  [DAY_STATUS.OVERTIME]: "border-2 border-amber-400 rounded-sm",
+  [DAY_STATUS.LEAVE]: "border-2 border-dashed border-slate-400 rounded-sm",
+  [DAY_STATUS.DISABLED]: "border border-border rounded-sm opacity-40",
 };
 
 function CalendarLegend() {

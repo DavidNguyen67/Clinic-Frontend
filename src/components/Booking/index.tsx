@@ -140,7 +140,6 @@ function AppointmentSummary() {
 
   return (
     <div className="sticky top-24 space-y-4">
-      {/* Doctor card — shows after step 1 */}
       {store?.doctor ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-3">

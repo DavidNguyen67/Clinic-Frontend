@@ -1,5 +1,5 @@
-import ProfilePage from "@/components/ProfilePage";
+import PatientProfile from "@/components/PatientProfile";
 
 export default function Page() {
-  return <ProfilePage />;
+  return <PatientProfile />;
 }

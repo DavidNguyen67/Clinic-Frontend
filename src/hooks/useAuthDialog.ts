@@ -1,8 +1,7 @@
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
+import { AUTH_ERROR_SWR_KEY } from "@/hooks/index";
 
 export type AuthErrorType = "unauthenticated" | "access-denied" | null;
-
-const SWR_KEY = "/ui/auth-error";
 
 export interface AuthDialogState {
   type: AuthErrorType;
@@ -15,22 +14,28 @@ const DEFAULT_STATE: AuthDialogState = {
 };
 
 export const showUnauthenticatedDialog = () =>
-  mutate(SWR_KEY, { type: "unauthenticated", open: true } satisfies AuthDialogState, false);
+  mutate(
+    AUTH_ERROR_SWR_KEY,
+    { type: "unauthenticated", open: true } satisfies AuthDialogState,
+    false
+  );
 
 export const showAccessDeniedDialog = () =>
-  mutate(SWR_KEY, { type: "access-denied", open: true } satisfies AuthDialogState, false);
+  mutate(
+    AUTH_ERROR_SWR_KEY,
+    { type: "access-denied", open: true } satisfies AuthDialogState,
+    false
+  );
 
 export const closeAuthDialog = () =>
   mutate(
-    SWR_KEY,
+    AUTH_ERROR_SWR_KEY,
     (prev: AuthDialogState | undefined) => ({ ...(prev ?? DEFAULT_STATE), open: false }),
     false
   );
 
-import useSWR from "swr";
-
 export function useAuthDialog() {
-  const { data: state = DEFAULT_STATE } = useSWR<AuthDialogState>(SWR_KEY, null, {
+  const { data: state = DEFAULT_STATE } = useSWR<AuthDialogState>(AUTH_ERROR_SWR_KEY, null, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateIfStale: false,

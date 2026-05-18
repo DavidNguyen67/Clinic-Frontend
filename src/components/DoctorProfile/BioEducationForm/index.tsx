@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
-import { BioFormValues, bioSchema } from "@/components/DoctorProrfile/BioEducationForm/config";
+import { BioFormValues, bioSchema } from "@/components/DoctorProfile/BioEducationForm/config";
 import { useDoctorProfile } from "@/hooks/doctor/useDoctorProfile";
 
 // ── Textarea (not in shadcn Input) ───────────────────────────────────────────

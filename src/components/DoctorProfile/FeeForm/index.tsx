@@ -10,7 +10,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
-import { FeeFormValues, feeSchema } from "@/components/DoctorProrfile/FeeForm/config";
+import { FeeFormValues, feeSchema } from "@/components/DoctorProfile/FeeForm/config";
 import { useDoctorProfile } from "@/hooks/doctor/useDoctorProfile";
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
-import { BioFormValues } from "@/components/DoctorProrfile/BioEducationForm/config";
-import { FeeFormValues } from "@/components/DoctorProrfile/FeeForm/config";
-import { ProfessionalInfoFormValues } from "@/components/DoctorProrfile/ProfessionalInfoForm/config";
+import { BioFormValues } from "@/components/DoctorProfile/BioEducationForm/config";
+import { FeeFormValues } from "@/components/DoctorProfile/FeeForm/config";
+import { ProfessionalInfoFormValues } from "@/components/DoctorProfile/ProfessionalInfoForm/config";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { METHOD } from "@/hooks/global";
 import { useMutation } from "@/hooks/swr";

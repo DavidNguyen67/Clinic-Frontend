@@ -2,13 +2,12 @@ import { MedicalInfoFormValues } from "@/components/MedicalInfoForm/config";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { METHOD } from "@/hooks/global";
 import { useMutation } from "@/hooks/swr";
-import { AuthState } from "@/hooks/useSession";
 import _ from "lodash";
 
 export const usePatientProfile = () => {
   const currentProfile = useCurrentProfile();
 
-  const updateProfileMutation = useMutation<AuthState>(
+  const updateProfileMutation = useMutation<unknown>(
     `/api/v1/patient/patient-profile/${currentProfile?.data?.body?.patient?.id}`,
     {
       url: `/api/v1/patient/patient-profile/${currentProfile?.data?.body?.patient?.id}`,
@@ -20,7 +19,7 @@ export const usePatientProfile = () => {
     }
   );
 
-  const createProfileMutation = useMutation<AuthState>(`/api/v1/patient/patient-profile`, {
+  const createProfileMutation = useMutation<unknown>(`/api/v1/patient/patient-profile`, {
     url: `/api/v1/patient/patient-profile`,
     method: METHOD.POST,
     notification: {
@@ -34,9 +33,8 @@ export const usePatientProfile = () => {
   };
 
   const createPatientProfile = async (formValues: MedicalInfoFormValues) => {
-    const payload = _.cloneDeep(formValues);
-    // @ts-ignore
-    payload.userId = user?.id;
+    const payload: any = _.cloneDeep(formValues);
+    payload.userId = currentProfile.data?.body?.id;
     await createProfileMutation.trigger(payload);
   };
 

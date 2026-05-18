@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FormikHelpers, useFormik } from "formik";
 import { BadgeDollarSign, Loader2, Pencil, Save, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { FeeFormValues, feeSchema } from "@/components/DoctorProrfile/FeeForm/config";
+import { useDoctorProfile } from "@/hooks/doctor/useDoctorProfile";
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function FeeSkeleton() {
@@ -34,15 +35,6 @@ function FeeSkeleton() {
   );
 }
 
-// ── VND formatter ─────────────────────────────────────────────────────────────
-function formatVND(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 // ── Preset fee chips ──────────────────────────────────────────────────────────
 const FEE_PRESETS = [100_000, 150_000, 200_000, 300_000, 500_000];
 
@@ -58,11 +50,13 @@ export function FeeForm() {
     consultationFee: 0,
   });
 
+  const isUpdateMode = !!currentProfile.data?.body?.doctor;
+
+  const { createDoctorProfile, updateDoctorProfile } = useDoctorProfile();
+
   const onSubmit = async (values: FeeFormValues, helpers: FormikHelpers<FeeFormValues>) => {
     try {
-      console.log("Submit FeeForm:", values);
-      // TODO: replace with real mutation
-      await new Promise((r) => setTimeout(r, 600));
+      isUpdateMode ? await updateDoctorProfile(values) : await createDoctorProfile(values);
       setIsEditing(false);
       currentProfile.mutate();
     } catch (error) {
@@ -71,7 +65,6 @@ export function FeeForm() {
       helpers.setSubmitting(false);
     }
   };
-
   const formik = useFormik<FeeFormValues>({
     initialValues: initialValues.current,
     validationSchema: feeSchema,
@@ -147,14 +140,14 @@ export function FeeForm() {
         <form onSubmit={formik.handleSubmit}>
           <FieldGroup className="flex flex-col gap-4">
             <Field>
-              <FieldLabel htmlFor="consultationFee">Consultation Fee (VND)</FieldLabel>
+              <FieldLabel htmlFor="consultationFee">Consultation Fee</FieldLabel>
 
               {/* Read-only: show formatted VND */}
               {!isEditing ? (
                 <div className="flex items-center gap-3 rounded-md border border-border bg-muted/40 px-4 h-12">
                   <BadgeDollarSign className="h-5 w-5 text-teal-500 shrink-0" />
                   <span className="text-lg font-semibold text-foreground tabular-nums">
-                    {formatVND(formik.values.consultationFee)}
+                    {formatCurrency(formik.values.consultationFee)}
                   </span>
                 </div>
               ) : (
@@ -189,7 +182,7 @@ export function FeeForm() {
                 <p className="text-xs text-muted-foreground mt-1">
                   Preview:{" "}
                   <span className="font-medium text-foreground">
-                    {formatVND(formik.values.consultationFee)}
+                    {formatCurrency(formik.values.consultationFee)}
                   </span>
                 </p>
               )}
@@ -212,7 +205,7 @@ export function FeeForm() {
                           : "border-border text-muted-foreground hover:border-teal-400 hover:text-teal-600"
                       )}
                     >
-                      {formatVND(preset)}
+                      {formatCurrency(preset)}
                     </button>
                   ))}
                 </div>
@@ -225,7 +218,7 @@ export function FeeForm() {
               <Button
                 type="submit"
                 disabled={formik.isSubmitting || !formik.dirty}
-                className="gap-2 min-w-[130px]"
+                className="gap-2 min-w-32.5"
               >
                 {formik.isSubmitting ? (
                   <>

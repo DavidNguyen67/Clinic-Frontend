@@ -1,11 +1,13 @@
 "use client";
 
-import { useSession } from "@/hooks/useSession";
 import { ROLE_NAME } from "@/common";
 import { AccessDenyDialog } from "@/components/AccessDenyDialog";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 
 export default function PatientLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useSession();
+  const { data } = useCurrentProfile();
+
+  const user = data?.body;
 
   const isDoctor = user?.role === ROLE_NAME.DOCTOR;
 

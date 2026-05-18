@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useSession } from "@/hooks/useSession";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 const SessionProvider = ({ children }: { children: React.ReactNode }) => {
   const { saveRedirectPath } = useAuth();

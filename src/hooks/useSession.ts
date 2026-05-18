@@ -29,7 +29,6 @@ export function useSession() {
   });
 
   return {
-    user: data.user,
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
     isAuthenticated: !!data.accessToken,

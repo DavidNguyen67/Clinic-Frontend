@@ -2,12 +2,13 @@
 
 import { useRef } from "react";
 import { formatDate } from "@/lib/utils";
-import { useSession } from "@/hooks/useSession";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 
 export function DashboardTopBar() {
   const today = useRef(new Date());
+  const { data } = useCurrentProfile();
 
-  const { user } = useSession();
+  const user = data?.body;
 
   return (
     <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-gray-100">

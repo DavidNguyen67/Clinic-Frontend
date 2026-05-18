@@ -10,6 +10,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { BioFormValues, bioSchema } from "@/components/DoctorProrfile/BioEducationForm/config";
+import { useDoctorProfile } from "@/hooks/doctor/useDoctorProfile";
 
 // ── Textarea (not in shadcn Input) ───────────────────────────────────────────
 function Textarea({
@@ -74,6 +75,8 @@ export function BioEducationForm() {
   const [isEditing, setIsEditing] = useState(false);
   const isLoading = currentProfile?.isLoading ?? true;
 
+  const isUpdateMode = !!currentProfile.data?.body?.doctor;
+
   const doctor = currentProfile?.data?.body?.doctor;
 
   const initialValues = useRef<BioFormValues>({
@@ -81,11 +84,11 @@ export function BioEducationForm() {
     education: "",
   });
 
+  const { createDoctorProfile, updateDoctorProfile } = useDoctorProfile();
+
   const onSubmit = async (values: BioFormValues, helpers: FormikHelpers<BioFormValues>) => {
     try {
-      console.log("Submit BioEducationForm:", values);
-      // TODO: replace with real mutation
-      await new Promise((r) => setTimeout(r, 600));
+      isUpdateMode ? await updateDoctorProfile(values) : await createDoctorProfile(values);
       setIsEditing(false);
       currentProfile.mutate();
     } catch (error) {
@@ -221,7 +224,7 @@ export function BioEducationForm() {
               <Button
                 type="submit"
                 disabled={formik.isSubmitting || !formik.dirty}
-                className="gap-2 min-w-[130px]"
+                className="gap-2 min-w-32.5"
               >
                 {formik.isSubmitting ? (
                   <>

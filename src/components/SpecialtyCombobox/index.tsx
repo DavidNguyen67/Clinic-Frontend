@@ -94,6 +94,12 @@ export function SpecialtyCombobox({
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [isKeyboardNavActive, setIsKeyboardNavActive] = useState(false);
 
+  const getWidth = () => {
+    const parsedWith = width?.slice(0, -2);
+    if (!parsedWith || isNaN(Number(parsedWith))) return 250;
+    return Number(parsedWith) < 100 ? 250 : Number(parsedWith);
+  };
+
   const parentRef = useRef<HTMLDivElement>(null);
 
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -189,14 +195,14 @@ export function SpecialtyCombobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn("justify-between font-normal", classNames?.popoverTrigger)}
-          style={{ width }}
+          style={{ width: getWidth() }}
         >
           <span className="truncate">{value ? selectedLabel : placeholder}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="p-0" style={{ width }}>
+      <PopoverContent className="p-0" style={{ width: getWidth() }}>
         <Command shouldFilter={false} onKeyDown={handleKeyDown}>
           <CommandInput
             placeholder="Search specialty..."
@@ -282,7 +288,7 @@ export function SpecialtyCombobox({
                         setOpen(false);
                       }}
                     >
-                      <div className="flex min-w-0 flex-1 flex-col">
+                      <div className="flex min-w-4 flex-1 flex-col">
                         <span className="truncate text-sm font-medium leading-tight">
                           {item.name}
                         </span>

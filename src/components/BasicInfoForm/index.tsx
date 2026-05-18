@@ -416,7 +416,7 @@ export function BasicInfoForm() {
                 <Button
                   type="submit"
                   disabled={formik.isSubmitting || !formik.dirty}
-                  className="gap-2 min-w-[130px]"
+                  className="gap-2 min-w-32.5"
                 >
                   {formik.isSubmitting ? (
                     <>

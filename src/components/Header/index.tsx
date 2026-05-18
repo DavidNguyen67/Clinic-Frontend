@@ -1,7 +1,6 @@
 "use client";
 import { Bell, ChevronDown, LogOut, Stethoscope, User } from "lucide-react";
 import { NAV_LINKS, PROFILE_PATH } from "./config";
-import { usePathname, useRouter } from "next/navigation";
 import { NavLinkItem } from "../NavLinkItem";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getImageUrl, getInitials } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { useLogoutDialog } from "@/hooks/useLogoutDialog";
 
@@ -24,9 +22,7 @@ const Header = () => {
   const { data } = useCurrentProfile();
   const user = data?.body;
 
-  const { logout } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
 
   const navLinks = NAV_LINKS[user?.role!] ?? [
     { label: "Home", path: "/", icon: "Home" },

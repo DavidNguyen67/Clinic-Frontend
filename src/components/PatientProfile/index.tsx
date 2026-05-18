@@ -52,7 +52,7 @@ export default function PatientProfile() {
         {/* ── Hero header ── */}
         <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm">
           {/* Accent band */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-blue-400 to-sky-400" />
+          <div className="h-1.5 w-full bg-linear-to-r from-blue-500 via-blue-400 to-sky-400" />
 
           <div className="px-6 py-5 flex items-center gap-5">
             {/* Avatar */}

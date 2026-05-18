@@ -23,20 +23,6 @@ import { BioEducationForm } from "@/components/DoctorProrfile/BioEducationForm";
 import { ReviewsStatsView } from "@/components/DoctorProrfile/ReviewsStatsView";
 import { FeeForm } from "@/components/DoctorProrfile/FeeForm";
 
-function PlaceholderForm({ label }: { label: string }) {
-  return (
-    <div className="rounded-2xl border border-border/60 bg-card shadow-sm p-8 flex flex-col items-center justify-center gap-3 min-h-[320px] text-center">
-      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-        <BriefcaseMedical className="h-5 w-5 text-muted-foreground" />
-      </div>
-      <p className="text-sm font-medium text-foreground">{label}</p>
-      <p className="text-xs text-muted-foreground max-w-xs">
-        This form is under construction. Replace this component with the real form.
-      </p>
-    </div>
-  );
-}
-
 type SectionId = "basic" | "professional" | "bio" | "fee" | "reviews";
 
 interface NavItem {
@@ -108,7 +94,7 @@ export default function DoctorProfile() {
         {/* ── Hero header ── */}
         <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm">
           {/* Accent band — teal/cyan to distinguish from patient (blue) */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-teal-500 via-teal-400 to-cyan-400" />
+          <div className="h-1.5 w-full bg-linear-to-r from-teal-500 via-teal-400 to-cyan-400" />
 
           <div className="px-6 py-5 flex items-center gap-5">
             {/* Avatar */}

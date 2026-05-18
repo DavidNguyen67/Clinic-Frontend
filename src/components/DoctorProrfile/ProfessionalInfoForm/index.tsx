@@ -19,11 +19,16 @@ import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { DEGREE_OPTIONS, ProfessionalInfoFormValues, professionalInfoSchema } from "./config";
 import ProfessionalInfoSkeleton from "@/components/DoctorProrfile/ProfessionalInfoSkeleton";
 import SpecialtyCombobox from "@/components/SpecialtyCombobox";
+import { useDoctorProfile } from "@/hooks/doctor/useDoctorProfile";
 
 export function ProfessionalInfoForm() {
   const currentProfile = useCurrentProfile();
+
   const [isEditing, setIsEditing] = useState(false);
-  const isLoading = currentProfile?.isLoading ?? true;
+
+  const isUpdateMode = !!currentProfile.data?.body?.doctor;
+
+  const { createDoctorProfile, updateDoctorProfile } = useDoctorProfile();
 
   const doctor = currentProfile?.data?.body?.doctor;
 
@@ -43,11 +48,9 @@ export function ProfessionalInfoForm() {
     helpers: FormikHelpers<ProfessionalInfoFormValues>
   ) => {
     try {
-      console.log("Submit ProfessionalInfoForm:", values);
-      // TODO: replace with real mutation
-      await new Promise((r) => setTimeout(r, 600));
+      isUpdateMode ? await updateDoctorProfile(values) : await createDoctorProfile(values);
       setIsEditing(false);
-      await currentProfile.mutate();
+      currentProfile.mutate();
     } catch (error) {
       console.error(error);
     } finally {
@@ -72,6 +75,8 @@ export function ProfessionalInfoForm() {
       formik.setValues(initialValues.current);
     }
   }, [currentProfile?.data]);
+
+  const isLoading = currentProfile?.isLoading ?? true;
 
   const handleToggleEdit = () => {
     if (isEditing) formik.resetForm();

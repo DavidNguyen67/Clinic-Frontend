@@ -15,14 +15,14 @@ import { cn, getImageUrl, getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
-import ProfessionalCard from "@/components/DoctorProrfile/ProfessionalCard";
-import DoctorStats from "@/components/DoctorProrfile/DoctorStats";
 import { BasicInfoForm } from "@/components/BasicInfoForm";
-import { ProfessionalInfoForm } from "@/components/DoctorProrfile/ProfessionalInfoForm";
-import { BioEducationForm } from "@/components/DoctorProrfile/BioEducationForm";
-import { ReviewsStatsView } from "@/components/DoctorProrfile/ReviewsStatsView";
-import { FeeForm } from "@/components/DoctorProrfile/FeeForm";
 import NumberFlow from "@number-flow/react";
+import { ProfessionalInfoForm } from "@/components/DoctorProfile/ProfessionalInfoForm";
+import { BioEducationForm } from "@/components/DoctorProfile/BioEducationForm";
+import { FeeForm } from "@/components/DoctorProfile/FeeForm";
+import { ReviewsStatsView } from "@/components/DoctorProfile/ReviewsStatsView";
+import DoctorStats from "@/components/DoctorProfile/DoctorStats";
+import ProfessionalCard from "@/components/DoctorProfile/ProfessionalCard";
 
 type SectionId = "basic" | "professional" | "bio" | "fee" | "reviews";
 

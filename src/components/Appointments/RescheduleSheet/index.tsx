@@ -213,7 +213,7 @@ export function RescheduleSheet({ appointmentId, onClose }: RescheduleSheetProps
               Choose new schedule
             </p>
 
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+            <div className="flex flex-col gap-4 lg:items-start lg:gap-6">
               {/* Calendar */}
               <Card className="mx-auto w-fit p-0 shrink-0">
                 <CardContent className="p-0 flex flex-col">

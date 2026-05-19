@@ -1,10 +1,8 @@
 import useSWR from "swr";
 import {
-  APPOINTMENT_SWR_KEY,
   DOCTOR_APPOINTMENTS_SWR_KEY,
-  DOCTOR_FORCE_APPOINTMENT_SWR_KEY,
+  FORCE_APPOINTMENT_SWR_KEY,
   STAFF_APPOINTMENTS_SWR_KEY,
-  STAFF_FORCE_APPOINTMENT_SWR_KEY,
 } from "@/hooks";
 import { APPOINTMENT_STATUS, ROLE_NAME } from "@/common";
 import { FILTER_ALL_VALUE, VALUE_OF_FILTER_ALL_VALUE } from "@/hooks/global";
@@ -64,22 +62,15 @@ export const useFilterAppointmentsData = () => {
 export const useForceRefreshAppointments = () => {
   const { data: currentProfileData } = useCurrentProfile();
 
-  const role = currentProfileData?.body?.role;
-
-  const getKey = () => {
-    if (role === ROLE_NAME.DOCTOR) {
-      return DOCTOR_FORCE_APPOINTMENT_SWR_KEY;
-    }
-    if (role === ROLE_NAME.STAFF) {
-      return STAFF_FORCE_APPOINTMENT_SWR_KEY;
-    }
-  };
-
-  const swr = useSWR<number>(getKey());
+  const swr = useSWR<boolean>(FORCE_APPOINTMENT_SWR_KEY);
 
   const forceMutate = () => {
-    swr.mutate((prev) => (prev ?? 0) + 1);
+    swr.mutate(true);
   };
 
-  return { swr, forceMutate };
+  const clearForce = () => {
+    swr.mutate(false);
+  };
+
+  return { swr, forceMutate, clearForce };
 };

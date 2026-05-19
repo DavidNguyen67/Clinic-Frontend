@@ -28,6 +28,7 @@ function FooterActionButton({ action, appointmentId, onSuccess }: FooterActionBu
   const { data: currentProfileData } = useCurrentProfile();
 
   const invoice = useInvoiceDetailByAppointmentId(appointmentId!);
+  const { forceMutate } = useForceRefreshAppointments();
 
   const role = currentProfileData?.body?.role;
   const updateAppointment =
@@ -62,6 +63,7 @@ function FooterActionButton({ action, appointmentId, onSuccess }: FooterActionBu
                 invoiceId: invoice?.data?.body?.id,
               });
               onSuccess?.();
+              forceMutate();
             }}
           >
             {updateAppointment.isMutating ? "Đang xử lý..." : "Xác nhận"}

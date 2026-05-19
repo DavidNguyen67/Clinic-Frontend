@@ -22,7 +22,7 @@ import { useStaffAppointment } from "@/hooks/staff/useDoctorAppointment";
 const CARD_ESTIMATED_HEIGHT = 120;
 
 export function AppointmentList() {
-  const { swr } = useForceRefreshAppointments();
+  const { swr, clearForce } = useForceRefreshAppointments();
 
   const { data } = useFilterAppointmentsData();
 
@@ -65,7 +65,10 @@ export function AppointmentList() {
       isFirstRender.current = false;
       return;
     }
-    doctorAppointment.mutate();
+    if (swr?.data) {
+      doctorAppointment.mutate();
+      clearForce();
+    }
   }, [swr?.data]);
 
   return (

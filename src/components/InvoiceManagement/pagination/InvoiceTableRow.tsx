@@ -43,7 +43,7 @@ export function InvoiceTableRow({ invoice }: InvoiceTableRowProps) {
 
   const popup = usePopup<{ invoice: InvoiceResponse }>();
 
-  const totalAmount = invoice.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+  const totalAmount = invoice.totalAmount;
 
   return (
     <>
@@ -92,9 +92,7 @@ export function InvoiceTableRow({ invoice }: InvoiceTableRowProps) {
             invoice.balance <= 0 ? "text-emerald-600" : "text-red-500"
           }`}
         >
-          {formatCurrency(
-            totalAmount - invoice.patientPaid - invoice.insuranceCovered - invoice.discountAmount
-          )}
+          {formatCurrency(invoice.balance)}
         </TableCell>
 
         {/* Status */}

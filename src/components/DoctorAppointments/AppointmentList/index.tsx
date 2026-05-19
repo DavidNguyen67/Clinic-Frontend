@@ -1,7 +1,5 @@
 "use client";
 
-import { CalendarDays } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import AppointmentRow from "@/components/DoctorAppointments/AppointmentList/AppointmentRow";
 import {
   useDoctorAppointmentsData,
@@ -14,8 +12,7 @@ import { AppointmentFilterFormValues } from "@/components/Appointments/TabConten
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useDoctorAppointment } from "@/hooks/doctor/useDoctorAppointment";
 import AppointmentSkeleton from "@/components/Appointments/AppointmentSkeleton";
-import EmptyState from "@/components/Appointments/EmptyState";
-import AppointmentCard from "@/components/Appointments/AppointmentCard";
+import EmptyStateList from "@/components/DoctorAppointments/AppointmentList/EmptyStateList";
 
 // ─── SkeletonRow ───────────────────────────────────────────────────────────────
 
@@ -66,7 +63,7 @@ export function AppointmentList() {
       {doctorAppointment?.isLoading ? (
         <AppointmentSkeleton />
       ) : !doctorAppointment?.data?.body?.data?.length ? (
-        <EmptyState tab={data?.status as any} />
+        <EmptyStateList status={data?.status?.[0]!} />
       ) : (
         <div ref={parentRef} className="h-full flex-1 overflow-y-auto">
           <div

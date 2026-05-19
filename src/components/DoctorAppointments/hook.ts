@@ -12,7 +12,7 @@ import { set } from "date-fns";
 export interface DoctorAppointmentsData {
   keyword?: string;
   date?: DateRange;
-  status?: (APPOINTMENT_STATUS | VALUE_OF_FILTER_ALL_VALUE)[];
+  status?: [APPOINTMENT_STATUS | VALUE_OF_FILTER_ALL_VALUE];
 }
 
 const initialValues: DoctorAppointmentsData = {

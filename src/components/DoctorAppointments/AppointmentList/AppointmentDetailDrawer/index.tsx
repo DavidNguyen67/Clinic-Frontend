@@ -36,6 +36,7 @@ import FooterActionButton from "@/components/DoctorAppointments/AppointmentList/
 import { useForceRefreshAppointments } from "@/components/DoctorAppointments/hook";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { useStaffAppointmentDetail } from "@/hooks/staff/useDoctorAppointment";
+import { useInvoiceDetailByAppointmentId } from "@/hooks/staff/useStaffInvoice";
 
 interface AppointmentDetailDrawerProps {
   appointmentId: string | null;

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
+import { useRouter } from "@/i18n/navigation";
 
 const FullscreenLoader = () => (
   <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-background">
@@ -17,13 +18,16 @@ const FullscreenLoader = () => (
 );
 
 const ClientProvider = ({ children }: { children: React.ReactNode }) => {
-  const { refresh } = useAuth();
+  const { refresh, getRedirectPath } = useAuth();
+  const router = useRouter();
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     const init = async () => {
       try {
         await refresh();
+        const path = getRedirectPath();
+        router.push(path || "/");
       } finally {
         setInitializing(false);
       }

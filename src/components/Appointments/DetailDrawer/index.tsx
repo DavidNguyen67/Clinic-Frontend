@@ -127,8 +127,6 @@ function DetailDrawer({
                 {apt.invoices.map((invoice) => {
                   const config = statusConfig[invoice?.status];
 
-                  console.log("Check invoice", invoice);
-
                   if (invoice?.status === INVOICE_STATUS.DRAFT)
                     return (
                       <div
@@ -136,7 +134,7 @@ function DetailDrawer({
                         className="rounded-lg border border-dashed border-border bg-muted/20 p-3 text-xs text-muted-foreground text-center italic"
                       >
                         Please wait for the invoice {invoice.invoiceCode} to be generated after the
-                        appointment is confirmed.
+                        appointment is checked-in.
                       </div>
                     );
                   return (

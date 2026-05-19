@@ -1,3 +1,4 @@
+import { ROLE_NAME } from "@/common";
 import { Action } from "@/components/DoctorAppointments/AppointmentList/config";
 import { useForceRefreshAppointments } from "@/components/DoctorAppointments/hook";
 import {
@@ -12,7 +13,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { useDoctorAppointmentUpdate } from "@/hooks/doctor/useDoctorAppointment";
+import { useStaffAppointmentUpdate } from "@/hooks/staff/useDoctorAppointment";
+import { useInvoiceDetailByAppointmentId } from "@/hooks/staff/useStaffInvoice";
 
 interface FooterActionButtonProps {
   action: Action;
@@ -21,7 +25,15 @@ interface FooterActionButtonProps {
 }
 
 function FooterActionButton({ action, appointmentId, onSuccess }: FooterActionButtonProps) {
-  const doctorAppointmentUpdate = useDoctorAppointmentUpdate(appointmentId);
+  const { data: currentProfileData } = useCurrentProfile();
+
+  const invoice = useInvoiceDetailByAppointmentId(appointmentId!);
+
+  const role = currentProfileData?.body?.role;
+  const updateAppointment =
+    role === ROLE_NAME.DOCTOR
+      ? useDoctorAppointmentUpdate(appointmentId)
+      : useStaffAppointmentUpdate(appointmentId);
 
   return (
     <AlertDialog>
@@ -29,7 +41,7 @@ function FooterActionButton({ action, appointmentId, onSuccess }: FooterActionBu
         <Button
           variant={action.variant}
           className="flex-1 gap-1.5"
-          disabled={doctorAppointmentUpdate.isMutating}
+          disabled={updateAppointment.isMutating}
         >
           {action.icon}
           {action.label}
@@ -43,13 +55,16 @@ function FooterActionButton({ action, appointmentId, onSuccess }: FooterActionBu
         <AlertDialogFooter>
           <AlertDialogCancel>Huỷ</AlertDialogCancel>
           <AlertDialogAction
-            disabled={doctorAppointmentUpdate.isMutating}
+            disabled={updateAppointment.isMutating}
             onClick={() => {
-              doctorAppointmentUpdate.trigger({ status: action.targetStatus });
+              updateAppointment.trigger({
+                status: action.targetStatus,
+                invoiceId: invoice?.data?.body?.id,
+              });
               onSuccess?.();
             }}
           >
-            {doctorAppointmentUpdate.isMutating ? "Đang xử lý..." : "Xác nhận"}
+            {updateAppointment.isMutating ? "Đang xử lý..." : "Xác nhận"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

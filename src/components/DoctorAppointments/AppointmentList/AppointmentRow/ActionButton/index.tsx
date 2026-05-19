@@ -16,9 +16,11 @@ import { Button } from "@/components/ui/button";
 import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { useDoctorAppointmentUpdate } from "@/hooks/doctor/useDoctorAppointment";
 import { useStaffAppointmentUpdate } from "@/hooks/staff/useDoctorAppointment";
+import { useInvoiceDetailByAppointmentId } from "@/hooks/staff/useStaffInvoice";
 
 function ActionButton({ action, appointmentId }: { action: Action; appointmentId: string }) {
   const { data: currentProfileData } = useCurrentProfile();
+  const invoice = useInvoiceDetailByAppointmentId(appointmentId!);
 
   const role = currentProfileData?.body?.role;
   const updateAppointment =
@@ -50,7 +52,10 @@ function ActionButton({ action, appointmentId }: { action: Action; appointmentId
           <AlertDialogAction
             disabled={updateAppointment.isMutating}
             onClick={() => {
-              updateAppointment.trigger({ status: action.targetStatus });
+              updateAppointment.trigger({
+                status: action.targetStatus,
+                invoiceId: invoice?.data?.body?.id,
+              });
               forceMutate();
             }}
           >

@@ -54,8 +54,7 @@ function ActionButton({ action, appointmentId }: { action: Action; appointmentId
             onClick={() => {
               updateAppointment.trigger({
                 status: action.targetStatus,
-                // invoiceId: invoice?.data?.body?.id,
-                invoiceId: "70bc2773-7224-4227-89ab-9d9211af025e",
+                invoiceId: invoice?.data?.body?.id,
               });
               forceMutate();
             }}

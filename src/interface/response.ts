@@ -40,6 +40,14 @@ export type UserResponse = BaseEntityResponse & {
 
   patient?: PatientProfileResponse;
   doctor?: DoctorProfileResponse;
+  staff?: StaffProfileResponse;
+};
+
+export type StaffProfileResponse = BaseEntityResponse & {
+  staffCode: string;
+  position: string;
+  department: string;
+  hireDate: string; // HH:mm:ss dd/MM/yyyy
 };
 
 export type SpecialtyResponse = {

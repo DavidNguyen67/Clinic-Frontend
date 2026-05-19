@@ -41,6 +41,7 @@ export const ROLE_DEFAULT_PATHS: Record<ROLE_NAME, string> = {
 export const PROFILE_PATH: Partial<Record<ROLE_NAME, string>> = {
   [ROLE_NAME.PATIENT]: "/patient/profile",
   [ROLE_NAME.DOCTOR]: "/doctor/profile",
+  [ROLE_NAME.STAFF]: "/staff/profile",
 };
 
 export const NAV_LINKS: Record<ROLE_NAME, NavLink[]> = {

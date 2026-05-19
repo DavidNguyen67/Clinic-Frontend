@@ -1,6 +1,6 @@
+import { ApiPagedResponse, METHOD } from "@/hooks/global";
+import { useSWRWrapper } from "@/hooks/swr";
 import { AppointmentResponse, BaseFilter } from "@/interface/response";
-import { ApiPagedResponse, METHOD } from "../global";
-import { useMutation, useSWRWrapper } from "../swr";
 import { buildQueryParams } from "@/lib/utils";
 
 export const usePublicAppointment = (

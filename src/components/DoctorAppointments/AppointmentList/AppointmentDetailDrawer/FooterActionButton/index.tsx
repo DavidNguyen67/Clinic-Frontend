@@ -1,5 +1,5 @@
-import { DoctorAction } from "@/components/DoctorAppointments/AppointmentList/config";
-import { useForceRefreshDoctorAppointment } from "@/components/DoctorAppointments/hook";
+import { Action } from "@/components/DoctorAppointments/AppointmentList/config";
+import { useForceRefreshAppointments } from "@/components/DoctorAppointments/hook";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useDoctorAppointmentUpdate } from "@/hooks/doctor/useDoctorAppointment";
 
 interface FooterActionButtonProps {
-  action: DoctorAction;
+  action: Action;
   appointmentId: string;
   onSuccess?: () => void;
 }

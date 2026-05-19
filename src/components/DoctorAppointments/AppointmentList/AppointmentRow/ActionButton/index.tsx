@@ -1,5 +1,6 @@
-import { DoctorAction } from "@/components/DoctorAppointments/AppointmentList/config";
-import { useForceRefreshDoctorAppointment } from "@/components/DoctorAppointments/hook";
+import { ROLE_NAME } from "@/common";
+import { Action } from "@/components/DoctorAppointments/AppointmentList/config";
+import { useForceRefreshAppointments } from "@/components/DoctorAppointments/hook";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,11 +13,19 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { useDoctorAppointmentUpdate } from "@/hooks/doctor/useDoctorAppointment";
+import { useStaffAppointmentUpdate } from "@/hooks/staff/useDoctorAppointment";
 
-function ActionButton({ action, appointmentId }: { action: DoctorAction; appointmentId: string }) {
-  const doctorAppointmentUpdate = useDoctorAppointmentUpdate(appointmentId);
-  const { forceMutate } = useForceRefreshDoctorAppointment();
+function ActionButton({ action, appointmentId }: { action: Action; appointmentId: string }) {
+  const { data: currentProfileData } = useCurrentProfile();
+
+  const role = currentProfileData?.body?.role;
+  const updateAppointment =
+    role === ROLE_NAME.DOCTOR
+      ? useDoctorAppointmentUpdate(appointmentId)
+      : useStaffAppointmentUpdate(appointmentId);
+  const { forceMutate } = useForceRefreshAppointments();
 
   return (
     <AlertDialog>
@@ -25,7 +34,7 @@ function ActionButton({ action, appointmentId }: { action: DoctorAction; appoint
           size="sm"
           variant={action.variant}
           className="h-7 text-xs gap-1"
-          disabled={doctorAppointmentUpdate.isMutating}
+          disabled={updateAppointment.isMutating}
         >
           {action.icon}
           {action.label}
@@ -39,13 +48,13 @@ function ActionButton({ action, appointmentId }: { action: DoctorAction; appoint
         <AlertDialogFooter>
           <AlertDialogCancel>Huỷ</AlertDialogCancel>
           <AlertDialogAction
-            disabled={doctorAppointmentUpdate.isMutating}
+            disabled={updateAppointment.isMutating}
             onClick={() => {
-              doctorAppointmentUpdate.trigger({ status: action.targetStatus });
+              updateAppointment.trigger({ status: action.targetStatus });
               forceMutate();
             }}
           >
-            {doctorAppointmentUpdate.isMutating ? "Đang xử lý..." : "Xác nhận"}
+            {updateAppointment.isMutating ? "Đang xử lý..." : "Xác nhận"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

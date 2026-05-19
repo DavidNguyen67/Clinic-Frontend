@@ -24,19 +24,29 @@ import { Calendar, Clock, Eye, ListOrdered, Stethoscope } from "lucide-react";
 import { useDoctorAppointmentUpdate } from "@/hooks/doctor/useDoctorAppointment";
 import {
   DOCTOR_ACTIONS,
-  DoctorAction,
+  Action,
+  STAFF_ACTIONS,
 } from "@/components/DoctorAppointments/AppointmentList/config";
 import AppointmentDetailDrawer from "@/components/DoctorAppointments/AppointmentList/AppointmentDetailDrawer";
 import ActionButton from "@/components/DoctorAppointments/AppointmentList/AppointmentRow/ActionButton";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { ROLE_NAME } from "@/common";
 
 interface AppointmentRowProps {
   apt: AppointmentResponse;
 }
 
 function AppointmentRow({ apt }: AppointmentRowProps) {
+  const { data: currentProfileData } = useCurrentProfile();
+
+  const role = currentProfileData?.body?.role;
   const parsedDate = parseDate(apt.appointmentDate, "HH:mm:ss dd/MM/yyyy");
   const firstService = apt.clinicServices?.[0];
-  const doctorActions = DOCTOR_ACTIONS[apt.status] ?? [];
+
+  const actions =
+    role === ROLE_NAME.DOCTOR
+      ? (DOCTOR_ACTIONS[apt.status] ?? [])
+      : (STAFF_ACTIONS[apt.status] ?? []);
 
   const sheetDetail = usePopup<{ appointmentId: string }>();
 
@@ -107,7 +117,7 @@ function AppointmentRow({ apt }: AppointmentRowProps) {
               </Button>
 
               {/* Doctor actions theo transition */}
-              {doctorActions.map((action) => (
+              {actions.map((action) => (
                 <ActionButton key={action.targetStatus} action={action} appointmentId={apt.id} />
               ))}
             </div>

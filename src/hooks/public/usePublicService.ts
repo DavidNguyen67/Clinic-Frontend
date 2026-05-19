@@ -1,7 +1,7 @@
-import { useSWRWrapper } from "../swr";
-import { ApiPagedResponse, METHOD } from "../global";
 import { buildQueryParams } from "@/lib/utils";
 import { BaseFilter, ServiceResponse } from "@/interface/response";
+import { useSWRWrapper } from "@/hooks/swr";
+import { ApiPagedResponse, METHOD } from "@/hooks/global";
 
 export const usePublicServiceList = (
   filter?: BaseFilter & {

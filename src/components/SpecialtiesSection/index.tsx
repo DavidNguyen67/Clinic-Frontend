@@ -7,11 +7,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { cn, getImageUrl } from "@/lib/utils";
 import { usePublicSpecialtyList } from "@/hooks/public/usePublicSpecialty";
-import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "../ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { Dialog } from "@/components/ui/dialog";
 import usePopup from "@/hooks/useDialog";
 import SpecialtyDialog from "@/components/SpecialtyDialog";
+import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 
 const SpecialtiesSection = () => {
   const publicSpecialtyList = usePublicSpecialtyList({ isActive: true });

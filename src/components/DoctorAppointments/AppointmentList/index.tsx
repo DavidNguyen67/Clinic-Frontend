@@ -2,8 +2,8 @@
 
 import AppointmentRow from "@/components/DoctorAppointments/AppointmentList/AppointmentRow";
 import {
-  useDoctorAppointmentsData,
-  useForceRefreshDoctorAppointment,
+  useFilterAppointmentsData,
+  useForceRefreshAppointments,
 } from "@/components/DoctorAppointments/hook";
 import { useCallback, useEffect, useRef } from "react";
 import { endOfDay, startOfDay } from "date-fns";
@@ -13,15 +13,22 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { useDoctorAppointment } from "@/hooks/doctor/useDoctorAppointment";
 import AppointmentSkeleton from "@/components/Appointments/AppointmentSkeleton";
 import EmptyStateList from "@/components/DoctorAppointments/AppointmentList/EmptyStateList";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { ROLE_NAME } from "@/common";
+import { useStaffAppointment } from "@/hooks/staff/useDoctorAppointment";
 
 // ─── SkeletonRow ───────────────────────────────────────────────────────────────
 
 const CARD_ESTIMATED_HEIGHT = 120;
 
 export function AppointmentList() {
-  const { swr } = useForceRefreshDoctorAppointment();
+  const { swr } = useForceRefreshAppointments();
 
-  const { data } = useDoctorAppointmentsData();
+  const { data } = useFilterAppointmentsData();
+
+  const { data: currentProfileData } = useCurrentProfile();
+
+  const role = currentProfileData?.body?.role;
 
   const isFirstRender = useRef(true);
 
@@ -41,7 +48,10 @@ export function AppointmentList() {
     };
   }, [data?.keyword, data?.date, data?.status]);
 
-  const doctorAppointment = useDoctorAppointment(buildFilter());
+  const doctorAppointment =
+    role === ROLE_NAME.DOCTOR
+      ? useDoctorAppointment(buildFilter())
+      : useStaffAppointment(buildFilter());
 
   const virtualizer = useVirtualizer({
     count: doctorAppointment?.data?.body?.data?.length ?? 0,

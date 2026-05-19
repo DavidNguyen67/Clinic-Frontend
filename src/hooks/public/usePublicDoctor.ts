@@ -1,7 +1,7 @@
 import { buildQueryParams } from "@/lib/utils";
-import { ApiPagedResponse, METHOD } from "../global";
-import { useSWRWrapper } from "../swr";
 import { BaseFilter, DoctorProfileResponse } from "@/interface/response";
+import { ApiPagedResponse, METHOD } from "@/hooks/global";
+import { useSWRWrapper } from "@/hooks/swr";
 
 export const usePublicDoctorList = (
   filter?: BaseFilter & {

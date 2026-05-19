@@ -1,5 +1,5 @@
-import { METHOD } from "../global";
-import { useMutation } from "../swr";
+import { METHOD } from "@/hooks/global";
+import { useMutation } from "@/hooks/swr";
 
 export const usePatientCreateInvoice = () => {
   return useMutation("/api/v1/patient/invoice", {

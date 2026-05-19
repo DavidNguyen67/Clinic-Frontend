@@ -1,5 +1,5 @@
-import { METHOD } from "../global";
-import { useMutation, useSWRWrapper } from "../swr";
+import { METHOD } from "@/hooks/global";
+import { useMutation, useSWRWrapper } from "@/hooks/swr";
 
 export const usePublicPatientCount = () => {
   return useSWRWrapper<number>("/api/v1/public/patient-profile/count", {

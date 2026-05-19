@@ -1,5 +1,5 @@
 "use client";
-import { APPOINTMENT_STATUS, INVOICE_STATUS } from "@/common";
+import { APPOINTMENT_STATUS, INVOICE_STATUS, ROLE_NAME } from "@/common";
 import BookingTypeBadge from "@/components/Appointments/BookingTypeBadge";
 import { statusConfig } from "@/components/Appointments/DetailDrawer/config";
 import StatusBadge from "@/components/Appointments/StatusBadge";
@@ -29,10 +29,13 @@ import { Calendar, CalendarX, Clock, ListOrdered } from "lucide-react";
 import Image from "next/image";
 import {
   DOCTOR_ACTIONS,
-  DoctorAction,
+  Action,
+  STAFF_ACTIONS,
 } from "@/components/DoctorAppointments/AppointmentList/config";
 import FooterActionButton from "@/components/DoctorAppointments/AppointmentList/AppointmentDetailDrawer/FooterActionButton";
-import { useForceRefreshDoctorAppointment } from "@/components/DoctorAppointments/hook";
+import { useForceRefreshAppointments } from "@/components/DoctorAppointments/hook";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { useStaffAppointmentDetail } from "@/hooks/staff/useDoctorAppointment";
 
 interface AppointmentDetailDrawerProps {
   appointmentId: string | null;
@@ -40,11 +43,23 @@ interface AppointmentDetailDrawerProps {
 }
 
 function AppointmentDetailDrawer({ appointmentId, onClose }: AppointmentDetailDrawerProps) {
-  const doctorAppointment = useDoctorAppointmentDetail(appointmentId);
+  const { data: currentProfileData } = useCurrentProfile();
+
+  const role = currentProfileData?.body?.role;
+
+  const doctorAppointment =
+    role === ROLE_NAME.DOCTOR
+      ? useDoctorAppointmentDetail(appointmentId)
+      : useStaffAppointmentDetail(appointmentId);
   const apt = doctorAppointment.data?.body;
   const parsedDate = parseDate(apt?.appointmentDate, "HH:mm:ss dd/MM/yyyy");
-  const doctorActions = DOCTOR_ACTIONS[apt?.status!] ?? [];
-  const { forceMutate } = useForceRefreshDoctorAppointment();
+
+  const actions =
+    role === ROLE_NAME.DOCTOR
+      ? (DOCTOR_ACTIONS[apt?.status!] ?? [])
+      : (STAFF_ACTIONS[apt?.status!] ?? []);
+
+  const { forceMutate } = useForceRefreshAppointments();
 
   if (doctorAppointment.isLoading) {
     return (
@@ -309,9 +324,9 @@ function AppointmentDetailDrawer({ appointmentId, onClose }: AppointmentDetailDr
       </div>
 
       {/* ── Footer actions (doctor only) ──────────────────────────────────────── */}
-      {doctorActions.length > 0 && (
+      {actions.length > 0 && (
         <div className="border-t px-5 py-4 flex gap-2">
-          {doctorActions.map((action) => (
+          {actions.map((action) => (
             <FooterActionButton
               key={action.targetStatus}
               action={action}

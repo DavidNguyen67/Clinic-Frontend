@@ -71,7 +71,7 @@ export const NAV_LINKS: Record<ROLE_NAME, NavLink[]> = {
   [ROLE_NAME.STAFF]: [
     { label: "Dashboard", path: "/staff", icon: "LayoutDashboard" },
     { label: "Appointments", path: "/staff/appointments", icon: "Calendar" },
-    { label: "Check-in", path: "/staff/checkin", icon: "UserCheck" },
+    // { label: "Check-in", path: "/staff/checkin", icon: "UserCheck" },
     { label: "Invoices", path: "/staff/invoices", icon: "Package" },
   ],
 };

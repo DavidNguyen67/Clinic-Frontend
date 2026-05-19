@@ -1,9 +1,8 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { useDoctorAppointmentsData } from "@/components/DoctorAppointments/hook";
+import { useFilterAppointmentsData } from "@/components/DoctorAppointments/hook";
 import { APPOINTMENT_STATUS } from "@/common";
 import { FILTER_ALL_VALUE, VALUE_OF_FILTER_ALL_VALUE } from "@/hooks/global";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -15,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 
 const filterOptions: { label: string; value: APPOINTMENT_STATUS | VALUE_OF_FILTER_ALL_VALUE }[] = [
   { label: "All", value: FILTER_ALL_VALUE },
@@ -27,7 +27,7 @@ const filterOptions: { label: string; value: APPOINTMENT_STATUS | VALUE_OF_FILTE
 ];
 
 export function AppointmentTopBar() {
-  const { data, mutateData } = useDoctorAppointmentsData();
+  const { data, mutateData } = useFilterAppointmentsData();
 
   const [innerKeyword, setInnerKeyword] = useState<string>(data?.keyword ?? "");
 

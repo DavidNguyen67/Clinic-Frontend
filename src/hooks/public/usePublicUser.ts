@@ -1,5 +1,5 @@
-import { METHOD } from "../global";
-import { useSWRWrapper } from "../swr";
+import { METHOD } from "@/hooks/global";
+import { useSWRWrapper } from "@/hooks/swr";
 
 export const usePublicUserStatistics = () => {
   return useSWRWrapper<{

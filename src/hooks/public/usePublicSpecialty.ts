@@ -1,5 +1,5 @@
-import { useSWRWrapper } from "../swr";
-import { ApiPagedResponse, METHOD } from "../global";
+import { ApiPagedResponse, METHOD } from "@/hooks/global";
+import { useSWRWrapper } from "@/hooks/swr";
 import { BaseFilter, DoctorProfileResponse, SpecialtyResponse } from "@/interface/response";
 import { buildQueryParams } from "@/lib/utils";
 

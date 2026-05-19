@@ -2,7 +2,7 @@
 
 import { Calendar } from "@/components/ui/calendar";
 import { formatDate, formatDateToApi } from "@/lib/utils";
-import { useDoctorAppointmentsData } from "@/components/DoctorAppointments/hook";
+import { useFilterAppointmentsData } from "@/components/DoctorAppointments/hook";
 import AppointmentSkeleton from "@/components/Appointments/AppointmentSkeleton";
 import EmptyState from "@/components/Appointments/EmptyState";
 import { APPOINTMENT_TAB } from "@/components/Appointments/config";
@@ -12,11 +12,18 @@ import { useDoctorAppointment } from "@/hooks/doctor/useDoctorAppointment";
 import { AppointmentFilterFormValues } from "@/components/Appointments/TabContent";
 import { endOfDay, startOfDay } from "date-fns";
 import { SidebarAppointmentCard } from "@/components/DoctorAppointments/AppointmentSidebar/SidebarAppointmentCard";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { ROLE_NAME } from "@/common";
+import { useStaffAppointment } from "@/hooks/staff/useDoctorAppointment";
 
 const CARD_ESTIMATED_HEIGHT = 120;
 
 export function AppointmentSidebar() {
-  const { data, mutateData } = useDoctorAppointmentsData();
+  const { data, mutateData } = useFilterAppointmentsData();
+
+  const { data: currentProfileData } = useCurrentProfile();
+
+  const role = currentProfileData?.body?.role;
 
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -31,10 +38,13 @@ export function AppointmentSidebar() {
     };
   }, [data?.keyword, data?.date, data?.status]);
 
-  const doctorAppointment = useDoctorAppointment(buildFilter());
+  const appointments =
+    role === ROLE_NAME.DOCTOR
+      ? useDoctorAppointment(buildFilter())
+      : useStaffAppointment(buildFilter());
 
   const virtualizer = useVirtualizer({
-    count: doctorAppointment?.data?.body?.data?.length ?? 0,
+    count: appointments?.data?.body?.data?.length ?? 0,
     getScrollElement: () => parentRef.current,
     estimateSize: () => CARD_ESTIMATED_HEIGHT,
     overscan: 3,
@@ -69,9 +79,9 @@ export function AppointmentSidebar() {
           Today's Appointments
         </p>
 
-        {doctorAppointment?.isLoading ? (
+        {appointments?.isLoading ? (
           <AppointmentSkeleton />
-        ) : !doctorAppointment?.data?.body?.data?.length ? (
+        ) : !appointments?.data?.body?.data?.length ? (
           <EmptyState tab={APPOINTMENT_TAB.TODAY} />
         ) : (
           <div ref={parentRef} className="h-full flex-1 overflow-y-auto">
@@ -82,7 +92,7 @@ export function AppointmentSidebar() {
               }}
             >
               {virtualizer.getVirtualItems().map((virtualRow) => {
-                const appt = doctorAppointment.data!.body!.data[virtualRow.index];
+                const appt = appointments.data!.body!.data[virtualRow.index];
 
                 return <SidebarAppointmentCard appt={appt} key={virtualRow.key} />;
               })}

@@ -23,7 +23,7 @@ export const usePatientAppointmentDetail = (aptId: string | null) => {
   return useSWRWrapper<AppointmentResponse>(
     `/api/v1/patient/appointment/${aptId}?accessToken=${accessToken}`,
     {
-      url: `/api/v1/patient/appointment/${aptId}?accessToken=${accessToken}`,
+      url: `/api/v1/patient/appointment/${aptId}`,
       method: METHOD.GET,
       enable: !!aptId,
     }

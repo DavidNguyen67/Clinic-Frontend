@@ -4,7 +4,7 @@ import NumberFlow from "@number-flow/react";
 import { differenceInSeconds } from "date-fns";
 import { useEffect, useState } from "react";
 
-function parseTimeAgo(date: Date) {
+export function parseTimeAgo(date: Date) {
   const totalSeconds = Math.max(0, differenceInSeconds(date, new Date()));
   const totalMinutes = Math.floor(totalSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);

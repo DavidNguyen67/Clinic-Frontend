@@ -97,3 +97,20 @@ export enum INVOICE_ITEM_TYPE {
   LAB_TEST = "LAB_TEST",
   OTHER = "OTHER",
 }
+
+export enum CONVERSATION_TYPE {
+  DIRECT = "DIRECT",
+  GROUP = "GROUP",
+}
+
+export enum MESSAGE_TYPE {
+  TEXT = "TEXT",
+  IMAGE = "IMAGE",
+  FILE = "FILE",
+}
+
+export enum MESSAGE_STATUS {
+  SENT = "SENT",
+  DELIVERED = "DELIVERED",
+  READ = "READ",
+}

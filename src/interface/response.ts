@@ -2,10 +2,13 @@ import {
   APPOINTMENT_STATUS,
   BLOOD_TYPE,
   BOOKING_TYPE,
+  CONVERSATION_TYPE,
   EXCEPTION_TYPE,
   GENDER,
   INVOICE_ITEM_TYPE,
   INVOICE_STATUS,
+  MESSAGE_STATUS,
+  MESSAGE_TYPE,
   REVIEW_STATUS,
   ROLE_NAME,
   SPECIALTY_TYPE,
@@ -239,4 +242,29 @@ export type AppointmentStatisticsResponse = {
   completedCount: number;
   cancelledCount: number;
   noShowCount: number;
+};
+
+export type ConversationResponse = BaseEntityResponse & {
+  participants: string[];
+  type: CONVERSATION_TYPE;
+  name: string;
+  avatar: string;
+  lastMessage?: LastMessageResponse;
+};
+
+export type LastMessageResponse = BaseEntityResponse & {
+  senderId: string;
+  content: string;
+  sentAt: Date;
+  type: MESSAGE_TYPE;
+};
+
+export type MessageResponse = BaseEntityResponse & {
+  conversationId: string;
+  senderId: string;
+  content: string;
+  type: MESSAGE_TYPE;
+  status: MESSAGE_STATUS;
+  readBy: string[];
+  replyTo?: string;
 };

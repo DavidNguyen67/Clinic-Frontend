@@ -242,9 +242,9 @@ pipeline {
     }
 }
 
-// Helper: gửi message text qua Telegram
+// Helper: gửi messages text qua Telegram
 // FIX: dùng --data-urlencode thay vì -d text="..." để tránh vỡ shell
-//      khi message chứa ký tự đặc biệt (&, =, newline, quote…)
+//      khi messages chứa ký tự đặc biệt (&, =, newline, quote…)
 def sendTelegram(String message) {
     withCredentials([
         string(credentialsId: "${TELEGRAM_CREDS}",   variable: 'BOT_TOKEN'),

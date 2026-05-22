@@ -11,7 +11,7 @@ import useDialog from "@/hooks/useDialog";
 import { useDataConversation } from "@/components/Chat/hook";
 import { Dialog } from "@/components/ui/dialog";
 import ConversationSkeleton from "@/components/Chat/ConversationList/ConversationSkeleton";
-import { ConversationResponse } from "@/interface/response";
+import { ConversationResponse, DoctorProfileResponse, PatientProfileResponse, } from "@/interface/response";
 import ConversationItem from "@/components/Chat/ConversationList/ConversationItem";
 import _ from "lodash";
 import { useUsersByProfileIds } from "@/hooks/useUsersByIds";
@@ -21,7 +21,7 @@ interface ConversationListProps {}
 function ConversationList({}: ConversationListProps) {
   const [items, setItems] = useState<ConversationResponse[]>([]);
 
-  const { activeConversation, setActiveConversation } = useDataConversation();
+  const { activeConversation, setActiveConversation, setUsersMap } = useDataConversation();
 
   const [keyword, setKeyword] = useState("");
 
@@ -35,7 +35,23 @@ function ConversationList({}: ConversationListProps) {
 
   const { data } = useUsersByProfileIds({ ids: userIds });
 
-  useEffect(() => {}, []);
+  const userMap = useMemo(() => {
+    const newMap: Record<string, DoctorProfileResponse | PatientProfileResponse> = {};
+
+    data?.body?.doctorProfiles?.forEach((doctor) => {
+      newMap[doctor.id] = doctor;
+    });
+
+    data?.body?.patientProfiles?.forEach((patient) => {
+      newMap[patient.id] = patient;
+    });
+
+    return newMap;
+  }, [data?.body]);
+
+  useEffect(() => {
+    setUsersMap(userMap);
+  }, [userMap]);
 
   const fetchList = usePatientConversation();
 

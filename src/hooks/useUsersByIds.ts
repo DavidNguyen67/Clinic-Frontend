@@ -19,5 +19,6 @@ export const useUsersByProfileIds = (
   }>(`/api/v1/public/profile?${query}&accessToken=${accessToken}`, {
     url: `/api/v1/public/profile?${query}`,
     method: METHOD.GET,
+    enable: !!filters?.ids?.length,
   });
 };

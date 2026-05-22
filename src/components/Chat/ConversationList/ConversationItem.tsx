@@ -1,11 +1,14 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn, getInitials } from "@/lib/utils";
+import { cn, getImageUrl, getInitials } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { ConversationResponse } from "@/interface/response";
 import { FileText, ImageIcon } from "lucide-react";
-import { MESSAGE_TYPE } from "@/common";
+import { CONVERSATION_TYPE, MESSAGE_TYPE } from "@/common";
+import { useDataConversation } from "@/components/Chat/hook";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { useMemo } from "react";
 
 interface ConversationItemProps {
   conversation: ConversationResponse;
@@ -45,7 +48,8 @@ function ConversationItem({
   unreadCount = 0,
   onClick,
 }: ConversationItemProps) {
-  const initials = getInitials(conversation.name ?? "?");
+  const { usersMap } = useDataConversation();
+  const { data } = useCurrentProfile();
   const hasUnread = unreadCount > 0;
 
   const timeAgo = conversation.lastMessage?.sentAt
@@ -61,6 +65,26 @@ function ConversationItem({
     : "";
 
   const preview = getLastMessagePreview(conversation.lastMessage);
+
+  const getAvatar = () => {
+    if (conversation.type === CONVERSATION_TYPE.DIRECT) {
+      const targetId = data?.body?.patient?.id ?? data?.body?.doctor?.id;
+      const participant = conversation.participants.find((p) => p !== targetId);
+      return usersMap?.[participant!]?.user?.pathAvatar;
+    }
+    return conversation?.avatar;
+  };
+
+  const conversationName = useMemo(() => {
+    if (conversation.type === CONVERSATION_TYPE.DIRECT) {
+      const targetId = data?.body?.patient?.id ?? data?.body?.doctor?.id;
+      const participant = conversation.participants.find((p) => p !== targetId);
+      return usersMap?.[participant!]?.user?.fullName;
+    }
+    return conversation.name;
+  }, [conversation, usersMap]);
+
+  const initials = getInitials(conversationName ?? "?");
 
   return (
     <button
@@ -80,8 +104,13 @@ function ConversationItem({
       {/* Avatar + online dot */}
       <div className="relative shrink-0">
         <Avatar className="h-10 w-10">
-          <AvatarImage src={conversation?.avatar ?? undefined} alt={conversation.name ?? ""} />
-          <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
+          <AvatarImage
+            src={getAvatar() ? getImageUrl(getAvatar()) : undefined}
+            alt={conversation.name ?? ""}
+          />
+          <AvatarFallback className="bg-blue-50 text-blue-600 font-semibold text-sm">
+            {initials}
+          </AvatarFallback>
         </Avatar>
         {isOnline && (
           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
@@ -97,7 +126,7 @@ function ConversationItem({
               hasUnread ? "font-semibold text-foreground" : "font-medium"
             )}
           >
-            {conversation.name}
+            {conversationName}
           </span>
           {timeAgo && (
             <span
@@ -126,7 +155,7 @@ function ConversationItem({
           )}
 
           {hasUnread && (
-            <span className="shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center">
+            <span className="shrink-0 min-w-4.5 h-4.5 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center">
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
           )}

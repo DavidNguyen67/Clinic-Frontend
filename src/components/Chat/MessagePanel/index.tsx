@@ -7,11 +7,34 @@ import EmptyConversation from "./EmptyConversation";
 import { useDataConversation } from "@/components/Chat/hook";
 import { getImageUrl, getInitials } from "@/lib/utils";
 import { CONVERSATION_TYPE } from "@/common";
+import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
+import { useMemo } from "react";
 
 function MessagePanel() {
-  const { activeConversation } = useDataConversation();
+  const { activeConversation, usersMap } = useDataConversation();
 
   const handleSend = async (content: string) => {};
+  const { data } = useCurrentProfile();
+
+  const getAvatar = () => {
+    if (activeConversation?.type === CONVERSATION_TYPE.DIRECT) {
+      const targetId = data?.body?.patient?.id ?? data?.body?.doctor?.id;
+      const participant = activeConversation?.participants.find((p) => p !== targetId);
+      return usersMap?.[participant!]?.user?.pathAvatar;
+    }
+    return activeConversation?.avatar;
+  };
+
+  const conversationName = useMemo(() => {
+    if (activeConversation?.type === CONVERSATION_TYPE.DIRECT) {
+      const targetId = data?.body?.patient?.id ?? data?.body?.doctor?.id;
+      const participant = activeConversation?.participants.find((p) => p !== targetId);
+      return usersMap?.[participant!]?.user?.fullName;
+    }
+    return activeConversation?.name;
+  }, [activeConversation, usersMap]);
+
+  const initials = getInitials(conversationName ?? "?");
 
   if (!activeConversation) {
     return <EmptyConversation />;
@@ -23,16 +46,16 @@ function MessagePanel() {
       <div className="flex items-center gap-3 px-4 py-3 border-b shrink-0">
         <Avatar className="h-9 w-9 shrink-0">
           <AvatarImage
-            alt={activeConversation.avatar}
-            src={activeConversation.avatar ? getImageUrl(activeConversation.avatar) : undefined}
+            src={getAvatar() ? getImageUrl(getAvatar()) : undefined}
+            alt={activeConversation.name ?? ""}
           />
           <AvatarFallback className="bg-blue-50 text-blue-600 font-semibold text-sm">
-            {getInitials(activeConversation?.name)}
+            {initials}
           </AvatarFallback>
         </Avatar>
 
         <div>
-          <p className="text-sm font-medium leading-tight">{activeConversation?.name}</p>
+          <p className="text-sm font-medium leading-tight">{conversationName}</p>
           {activeConversation.type === CONVERSATION_TYPE.GROUP && (
             <p className="text-xs text-muted-foreground">
               {activeConversation.participants?.length} members

@@ -16,8 +16,6 @@ import { useCurrentProfile } from "@/hooks/auth/useCurrentProfile";
 import { MessageResponse } from "@/interface/response";
 import { formatDate } from "date-fns";
 
-const TYPING_STOP_DELAY = 2000;
-
 interface MessageInputProps {
   disabled?: boolean;
 }
@@ -37,8 +35,6 @@ function MessageInput({ disabled }: MessageInputProps) {
       isTypingRef.current = true;
       sendTyping(conversationId, true);
     }
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = setTimeout(stopTyping, TYPING_STOP_DELAY);
   };
 
   const stopTyping = () => {

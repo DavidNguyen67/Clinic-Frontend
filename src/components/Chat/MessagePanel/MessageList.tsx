@@ -30,16 +30,18 @@ function MessageList({ isTyping }: MessageListProps) {
     const latest = data[data.length - 1];
 
     setItems((prev) => {
-      // Tin của mình → server confirm → replace optimistic item (clock → ✓)
-      if (latest.tempId) {
-        return prev.map((item) => {
-          if (item.tempId === latest.tempId) {
-            return { ...latest, status: MESSAGE_STATUS.DELIVERED, tempId: undefined };
-          }
-          return item;
-        });
+      const isMine = latest.senderId === currentProfileId;
+
+      // Chỉ replace optimistic nếu là tin của chính mình
+      if (isMine && latest.tempId) {
+        return prev.map((item) =>
+          item.tempId === latest.tempId
+            ? { ...latest, status: MESSAGE_STATUS.DELIVERED, tempId: undefined }
+            : item
+        );
       }
 
+      // Tin của người khác (hoặc tin mình nhưng không có tempId) → append
       const alreadyExists = prev.some((p) => p.id === latest.id);
       if (alreadyExists) return prev;
       return [...prev, latest];

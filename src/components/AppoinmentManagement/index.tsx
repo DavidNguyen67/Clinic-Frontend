@@ -5,8 +5,25 @@ import { CalendarDays, MessageSquare } from "lucide-react";
 import { APPOINTMENT_MANAGEMENT_TABS } from "@/components/AppoinmentManagement/config";
 import { AppointmentStatCards } from "@/components/AppoinmentManagement/AppointmentStatCards";
 import { AppointmentTable } from "@/components/AppoinmentManagement/AppointmentTable";
+import { AppointmentFilterBar } from "@/components/AppoinmentManagement/AppointmentFilterBar";
+import { useState } from "react";
+import { AppointmentFormFilter } from "@/components/AppoinmentManagement/AppointmentFilterBar/config";
+import { set } from "date-fns";
+import { FILTER_ALL_VALUE } from "@/hooks/global";
 
 export default function DoctorAppointmentsPage() {
+  const [filter, setFilter] = useState<AppointmentFormFilter>({
+    dateTo: set(new Date(), { hours: 0, minutes: 0, seconds: 0, date: new Date().getDate() - 7 }),
+    dateFrom: set(new Date(), {
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+      date: new Date().getDate() + 7,
+    }),
+    status: FILTER_ALL_VALUE,
+    patientName: "",
+  });
+
   return (
     <div className="flex flex-col h-full min-h-0 flex-1">
       {/* Page header */}
@@ -43,7 +60,8 @@ export default function DoctorAppointmentsPage() {
           className="flex-1 min-h-0 flex flex-col mt-0 px-6 py-5 gap-4"
         >
           <AppointmentStatCards />
-          <AppointmentTable />
+          <AppointmentFilterBar filter={filter} onChange={setFilter} />
+          <AppointmentTable filter={filter} />
         </TabsContent>
 
         {/*<TabsContent*/}

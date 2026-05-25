@@ -10,6 +10,8 @@ import { useState } from "react";
 import { AppointmentFormFilter } from "@/components/AppoinmentManagement/AppointmentFilterBar/config";
 import { set } from "date-fns";
 import { FILTER_ALL_VALUE } from "@/hooks/global";
+import AppointmentConversation from "@/components/AppoinmentManagement/AppointmentConversation";
+import MessagePanel from "@/components/Chat/MessagePanel";
 
 export default function DoctorAppointmentsPage() {
   const [filter, setFilter] = useState<AppointmentFormFilter>({
@@ -64,10 +66,20 @@ export default function DoctorAppointmentsPage() {
           <AppointmentTable filter={filter} />
         </TabsContent>
 
-        {/*<TabsContent*/}
-        {/*  value={APPOINTMENT_MANAGEMENT_TABS.CHAT}*/}
-        {/*  className="flex-1 min-h-0 mt-0 flex"*/}
-        {/*></TabsContent>*/}
+        <TabsContent
+          value={APPOINTMENT_MANAGEMENT_TABS.CHAT}
+          className="flex-1 min-h-0 mt-0 flex h-full flex-col overflow-hidden"
+        >
+          <div className="grid grid-cols-12 gap-0 h-full overflow-hidden flex-1 border rounded-lg">
+            <div className="col-span-4 border-r h-full overflow-hidden flex flex-col">
+              <AppointmentConversation />
+            </div>
+
+            <div className="col-span-8 h-full overflow-hidden flex flex-col">
+              <MessagePanel />
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );

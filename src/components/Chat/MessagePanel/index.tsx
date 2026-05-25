@@ -18,7 +18,7 @@ function MessagePanel() {
 
   const typingIndicatorData = useTypingIndicator(activeConversation?.id!);
 
-  const typingCount = typingIndicatorData?.data?.size ?? 0;
+  const typingCount = typingIndicatorData?.data?.length ?? 0;
 
   const getAvatar = () => {
     if (activeConversation?.type === CONVERSATION_TYPE.DIRECT) {

@@ -1,5 +1,5 @@
 import { buildQueryParams } from "@/lib/utils";
-import { BaseFilter, DoctorProfileResponse } from "@/interface/response";
+import { BaseFilter, DoctorProfileResponse, UserResponse } from "@/interface/response";
 import { ApiPagedResponse, METHOD } from "@/hooks/global";
 import { useMutation, useSWRWrapper } from "@/hooks/swr";
 
@@ -31,6 +31,13 @@ export const useFetchPublicDoctor = () => {
 export const usePublicDoctorById = (id: string) => {
   return useSWRWrapper<DoctorProfileResponse>(`/api/v1/public/doctor-profile/${id}`, {
     url: `/api/v1/public/doctor-profile/${id}`,
+    method: METHOD.GET,
+  });
+};
+
+export const usePublicUser = () => {
+  return useMutation<ApiPagedResponse<UserResponse>>("/api/v1/public/user", {
+    url: "/api/v1/public/user",
     method: METHOD.GET,
   });
 };

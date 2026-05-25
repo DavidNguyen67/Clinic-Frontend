@@ -13,7 +13,7 @@ import { parseDate } from "@/lib/utils";
 import MessageBubble from "@/components/Chat/MessagePanel/MessageBubble";
 import { useConversationMessages } from "@/hooks/useChatMessages";
 import { MESSAGE_STATUS } from "@/common";
-import { usePatientMessageList } from "@/hooks/patient/usePatientMessageList";
+import { useMessageList } from "@/hooks/patient/useMessageList";
 
 interface MessageListProps {
   isTyping?: boolean;
@@ -60,7 +60,7 @@ function MessageList({ isTyping }: MessageListProps) {
   const currentProfile = useCurrentProfile();
   const currentProfileId = useMemo(() => currentProfile?.data?.body?.id, [currentProfile?.data]);
   const [initialLoading, setInitialLoading] = useState(false);
-  const fetchList = usePatientMessageList();
+  const fetchList = useMessageList();
 
   const hasMore = useRef(true);
   const querying = useRef(false);

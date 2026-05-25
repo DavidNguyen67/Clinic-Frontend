@@ -49,21 +49,24 @@ export function useTypingIndicator(conversationId: string) {
 
   return useSWRSubscription(
     [`/topic/typing/conversation/${conversationId}`, accessToken],
-    ([destination]: [string, string], { next }: SWRSubscriptionOptions<Set<string>, Error>) => {
+    ([destination]: [string, string], { next }: SWRSubscriptionOptions<string[], Error>) => {
       const subscription = stompClient?.subscribe(destination, (msg: IMessage) => {
         const payload: TypingPayloadDto = JSON.parse(msg.body);
 
-        next(null, (cur = new Set()) => {
-          const updated = new Set(cur);
-          if (payload.userId === existId) return updated;
-          payload.typing ? updated.add(payload.userId) : updated.delete(payload.userId);
-          return updated;
-        });
+        if (!existId) return;
+        if (payload.userId === existId) return;
+
+        if (payload.typing) {
+          next(null, (cur = []) => {
+            if (cur.includes(payload.userId)) return cur;
+            return [...cur, payload.userId];
+          });
+        } else {
+          next(null, (cur = []) => cur.filter((id) => id !== payload.userId));
+        }
       });
 
-      return () => {
-        subscription?.unsubscribe();
-      };
+      return () => subscription?.unsubscribe();
     }
   );
 }

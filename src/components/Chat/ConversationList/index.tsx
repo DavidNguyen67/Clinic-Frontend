@@ -36,7 +36,7 @@ function ConversationList({}: ConversationListProps) {
   const { data } = useUsersByProfileIds({ ids: userIds });
 
   const userMap = useMemo(() => {
-    const newMap: Record<string, UserResponse & { isOnline: boolean }> = {};
+    const newMap: Record<string, UserResponse> = {};
 
     data?.body?.forEach((user) => {
       newMap[user.id] = user;

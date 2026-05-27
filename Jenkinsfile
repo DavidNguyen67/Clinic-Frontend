@@ -16,7 +16,7 @@ pipeline {
         ENV_FILE           = 'fe-clinic-env'
         JENKINS_API_CREDS  = 'jenkins-api-credentials'
 
-        VPS_HOST           = '159.223.41.100'
+        VPS_HOST           = '168.144.141.68'
         VPS_USER           = 'root'
     }
 
@@ -199,6 +199,7 @@ pipeline {
                 sendTelegram(
                     "✅ *BUILD THÀNH CÔNG*\n" +
                     "📦 *Project:* `${env.JOB_NAME}`\n" +
+                    "📝 *Commit:* `${env.GIT_COMMIT_SHORT}`\n" +
                     "🔖 *Image:* `${env.IMAGE_TAG}`\n" +
                     "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
                     "🌿 *Branch:* `${env.GIT_BRANCH}`\n" +
@@ -212,6 +213,7 @@ pipeline {
                 sendTelegram(
                     "❌ *BUILD THẤT BẠI*\n" +
                     "📦 *Project:* `${env.JOB_NAME}`\n" +
+                    "📝 *Commit:* `${env.GIT_COMMIT_SHORT}`\n" +
                     "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
                     "🌿 *Branch:* `${env.GIT_BRANCH}`\n" +
                     "⏱️ *Thời gian:* ${currentBuild.durationString}"
@@ -225,6 +227,7 @@ pipeline {
                 sendTelegram(
                     "⚠️ *BUILD BỊ HỦY*\n" +
                     "📦 *Project:* `${env.JOB_NAME}`\n" +
+                    "📝 *Commit:* `${env.GIT_COMMIT_SHORT}`\n" +
                     "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
                     "🌿 *Branch:* `${env.GIT_BRANCH}`\n" +
                     "⏱️ *Thời gian:* ${currentBuild.durationString}"

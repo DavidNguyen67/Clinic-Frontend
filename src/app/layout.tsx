@@ -37,7 +37,7 @@ export default function RootLayout({
         inter.variable
       )}
     >
-      <body className="min-h-svh flex flex-col no-scrollbar">{children}</body>
+      <body className="h-screen flex flex-col no-scrollbar">{children}</body>
     </html>
   );
 }

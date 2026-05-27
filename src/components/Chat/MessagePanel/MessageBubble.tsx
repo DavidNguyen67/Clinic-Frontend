@@ -13,21 +13,31 @@ interface MessageBubbleProps {
   showAvatar: boolean;
 }
 
-function StatusIcon({ status }: { status: MESSAGE_STATUS }) {
-  if (status === MESSAGE_STATUS.SENT) return <Clock className="h-3 w-3 text-muted-foreground" />;
-  if (status === MESSAGE_STATUS.DELIVERED)
-    return <Check className="h-3 w-3 text-muted-foreground" />;
-  return <CheckCheck className="h-3 w-3 text-blue-500" />;
+function StatusIcon({ status, isOptimistic }: { status: MESSAGE_STATUS; isOptimistic: boolean }) {
+  if (isOptimistic) {
+    return <Clock className="h-3 w-3 text-muted-foreground animate-pulse" />;
+  }
+
+  switch (status) {
+    case MESSAGE_STATUS.SENT:
+      return <Check className="h-3 w-3 text-muted-foreground" />;
+    case MESSAGE_STATUS.DELIVERED:
+      return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
+    case MESSAGE_STATUS.READ:
+      return <CheckCheck className="h-3 w-3 text-blue-500" />;
+    default:
+      return null;
+  }
 }
 
 function MessageBubble({ message, isMine, sender, showAvatar }: MessageBubbleProps) {
   const isOptimistic = message?.tempId?.startsWith("temp-");
+  const isRecalled = message.status === MESSAGE_STATUS.RECALLED;
   const parsedDate = parseDate(message.createdAt, "HH:mm:ss dd/MM/yyyy");
   const initials = getInitials(sender?.fullName ?? "?");
 
   return (
     <div className={cn("flex items-end gap-2", isMine ? "flex-row-reverse" : "flex-row")}>
-      {/* Avatar slot — always reserves space to prevent layout shift */}
       {!isMine && (
         <div className="w-7 shrink-0 self-end mb-4">
           {showAvatar && (
@@ -39,26 +49,38 @@ function MessageBubble({ message, isMine, sender, showAvatar }: MessageBubblePro
         </div>
       )}
 
-      {/* Bubble + meta */}
       <div
         className={cn(
-          "flex flex-col gap-0.5",
-          "max-w-[70%] sm:max-w-[60%]",
+          "flex flex-col gap-0.5 max-w-[70%] sm:max-w-[60%]",
           isMine ? "items-end" : "items-start"
         )}
       >
-        {message.type === MESSAGE_TYPE.TEXT && (
+        {/* Recalled bubble */}
+        {isRecalled ? (
           <div
             className={cn(
-              "rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
-              "wrap-break-word whitespace-pre-wrap",
-              isMine
-                ? "bg-primary text-primary-foreground rounded-br-sm"
-                : "bg-muted text-foreground rounded-bl-sm"
+              "rounded-2xl px-3.5 py-2 text-sm italic",
+              "border border-dashed border-muted-foreground/40",
+              "text-muted-foreground bg-muted/30",
+              isMine ? "rounded-br-sm" : "rounded-bl-sm"
             )}
           >
-            {message.content}
+            Tin nhắn đã bị thu hồi
           </div>
+        ) : (
+          message.type === MESSAGE_TYPE.TEXT && (
+            <div
+              className={cn(
+                "rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
+                "wrap-break-word whitespace-pre-wrap",
+                isMine
+                  ? "bg-primary text-primary-foreground rounded-br-sm"
+                  : "bg-muted text-foreground rounded-bl-sm"
+              )}
+            >
+              {message.content}
+            </div>
+          )
         )}
 
         {/* Timestamp + status */}
@@ -66,15 +88,8 @@ function MessageBubble({ message, isMine, sender, showAvatar }: MessageBubblePro
           <div
             className={cn("flex items-center gap-1 px-1", isMine ? "flex-row-reverse" : "flex-row")}
           >
-            {/* Status icon — shown only for mine; optimistic shows spinner */}
-            {isMine && (
-              <span className="flex items-center">
-                {isOptimistic ? (
-                  <Clock className="h-3 w-3 text-muted-foreground animate-pulse" />
-                ) : (
-                  <StatusIcon status={message.status} />
-                )}
-              </span>
+            {isMine && !isRecalled && (
+              <StatusIcon status={message.status} isOptimistic={!!isOptimistic} />
             )}
             <span className="text-[10px] text-muted-foreground tabular-nums">
               {parsedDate ? formatTime(parsedDate) : "—"}
@@ -85,5 +100,4 @@ function MessageBubble({ message, isMine, sender, showAvatar }: MessageBubblePro
     </div>
   );
 }
-
 export default MessageBubble;

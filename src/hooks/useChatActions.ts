@@ -1,4 +1,3 @@
-// hooks/useChatActions.ts
 "use client";
 
 import { useCallback } from "react";
@@ -16,7 +15,6 @@ export interface CreateMessageDto {
 
 export function useChatActions() {
   const { stompClient } = useSocket();
-
   const { data } = useCurrentProfile();
 
   const sendMessage = useCallback(
@@ -31,23 +29,22 @@ export function useChatActions() {
 
   const sendTyping = useCallback(
     (conversationId: string, typing: boolean) => {
-      const destination = `/app/typing/conversation/${conversationId}`;
-      const body: TypingPayloadDto = {
-        userId: data?.body?.id ?? "",
-        typing,
-      };
-
       stompClient?.publish({
-        destination,
-        body: JSON.stringify(body),
+        destination: `/app/typing/conversation/${conversationId}`,
+        body: JSON.stringify({
+          userId: data?.body?.id ?? "",
+          typing,
+        } as TypingPayloadDto),
       });
     },
-    [stompClient]
+    [stompClient, data]
   );
 
   const markAsRead = useCallback(
     (messageId: string) => {
-      stompClient?.publish({
+      if (!stompClient?.connected) return;
+
+      stompClient.publish({
         destination: `/app/read/${messageId}`,
         body: JSON.stringify({}),
       });
@@ -55,5 +52,17 @@ export function useChatActions() {
     [stompClient]
   );
 
-  return { sendMessage, sendTyping, markAsRead };
+  const recallMessage = useCallback(
+    (messageId: string) => {
+      if (!stompClient?.connected) return;
+
+      stompClient.publish({
+        destination: `/app/chat/message/${messageId}/recall`,
+        body: JSON.stringify({}),
+      });
+    },
+    [stompClient]
+  );
+
+  return { sendMessage, sendTyping, markAsRead, recallMessage };
 }

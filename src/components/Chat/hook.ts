@@ -15,7 +15,7 @@ export const useDataConversation = () => {
     data.mutate((prev) => ({ ...prev, activeConversation }));
   };
 
-  const setUsersMap = (map: Record<string, UserResponse>) => {
+  const setUsersMap = (map: Record<string, UserResponse & { isOnline: boolean }>) => {
     data.mutate((prev) => ({ ...prev, usersMap: map }));
   };
 

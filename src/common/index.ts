@@ -113,4 +113,5 @@ export enum MESSAGE_STATUS {
   SENT = "SENT",
   DELIVERED = "DELIVERED",
   READ = "READ",
+  RECALLED = "RECALLED",
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ShieldX } from "lucide-react";
+import { useRouter } from "@/i18n/navigation";
 
 interface AccessDenyDialogProps {
   open: boolean;

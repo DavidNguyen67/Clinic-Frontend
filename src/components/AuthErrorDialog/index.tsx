@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ShieldX, LogIn } from "lucide-react";
+import { LogIn, ShieldX } from "lucide-react";
 import { useAuthDialog } from "@/hooks/useAuthDialog";
 
 const CONFIG = {

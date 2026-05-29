@@ -4,7 +4,7 @@ import React from "react";
 
 import { CheckCircle } from "lucide-react";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 const Services = () => {
   // Services

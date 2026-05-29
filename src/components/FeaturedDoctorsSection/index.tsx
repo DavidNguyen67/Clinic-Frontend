@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { Star, Users, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link, useRouter } from "@/i18n/navigation";
+import { Briefcase, ChevronLeft, ChevronRight, Star, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
-  type CarouselApi,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { cn, formatCurrency, formatNumber, getImageUrl } from "@/lib/utils";
@@ -20,7 +20,7 @@ import { usePublicDoctorList } from "@/hooks/public/usePublicDoctor";
 import usePopup from "@/hooks/useDialog";
 import { Dialog } from "@/components/ui/dialog";
 import DoctorDialog from "@/components/DoctorDialog";
-import { useRouter } from "next/navigation";
+
 const FeaturedDoctorsSection = () => {
   const popup = usePopup<{ doctorId: string }>();
   const router = useRouter();

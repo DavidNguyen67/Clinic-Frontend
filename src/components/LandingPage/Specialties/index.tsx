@@ -1,8 +1,8 @@
 "use client";
 
-import { Eye, Baby, Bone, Brain, Activity, HeartPulse } from "lucide-react";
+import { Activity, Baby, Bone, Brain, Eye, HeartPulse } from "lucide-react";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 const Specialties = () => {
   const specialties = [

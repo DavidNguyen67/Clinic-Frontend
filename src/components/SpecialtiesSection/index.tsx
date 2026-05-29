@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { useState, useEffect } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { cn, getImageUrl } from "@/lib/utils";
@@ -12,7 +12,7 @@ import { Dialog } from "@/components/ui/dialog";
 import usePopup from "@/hooks/useDialog";
 import SpecialtyDialog from "@/components/SpecialtyDialog";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { useRouter } from "next/navigation";
+
 const SpecialtiesSection = () => {
   const publicSpecialtyList = usePublicSpecialtyList({ isActive: true });
   const popup = usePopup<{ specialtyId: string }>();

@@ -41,7 +41,7 @@ const FeaturedDoctorsSection = () => {
   }, [api]);
 
   const handleCardClick = (id: string) => {
-    router.push(`/en/doctors/${id}`);
+    router.push(`/doctors/${id}`);
   };
 
   return (

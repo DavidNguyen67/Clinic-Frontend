@@ -29,7 +29,7 @@ const SpecialtiesSection = () => {
 
   const handleCardClick = (id: string) => {
     console.log("check id", id);
-    router.push(`/en/specialties/${id}`);
+    router.push(`/specialties/${id}`);
   };
 
   return (

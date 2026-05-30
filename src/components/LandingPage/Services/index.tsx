@@ -46,7 +46,7 @@ const Services = () => {
             <div
               key={service.id}
               className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 hover:bg-white/20 transition cursor-pointer"
-              onClick={() => router.push(`/en/service/${service.id}`)}
+              onClick={() => router.push(`/service/${service.id}`)}
             >
               <h3 className="text-[2.4rem] font-bold mb-4 h-[6.4rem] leading-[3.2rem]">
                 {service.name}

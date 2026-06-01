@@ -1,8 +1,5 @@
 "use client";
 import { Calendar, ChevronRight } from "lucide-react";
-import { useGNews } from "@/hooks/useGNews";
-import { useParams } from "next/navigation";
-import { LanguageCode } from "@/i18n/config";
 import { cn, formatDate } from "@/lib/utils";
 import { useCarousel } from "@/hooks/useCarousel";
 import {
@@ -13,12 +10,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { ArticlesResponse } from "@/interface/response";
 
-const News = () => {
-  const { locale } = useParams<{ locale: LanguageCode }>();
-  const { data } = useGNews({ category: "health", lang: locale, max: 10 });
-  const articles = data?.articles || [];
+interface NewsProps {
+  articles: ArticlesResponse[];
+}
 
+const News = ({ articles }: NewsProps) => {
   const { setApi, current, count, api } = useCarousel();
 
   return (
@@ -38,7 +36,7 @@ const News = () => {
           <CarouselContent className="-ml-3">
             {articles.map((article) => (
               <CarouselItem key={article.id} className="pl-3 basis-1/2 md:basis-1/3">
-                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition group cursor-pointer h-full">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition group cursor-pointer h-full flex flex-col">
                   <div className="relative h-48 overflow-hidden">
                     <img
                       src={article.image}
@@ -46,7 +44,7 @@ const News = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex-1 flex flex-col">
                     <div className="text-sm text-gray-500 mb-2 flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       {formatDate(article.publishedAt)}
@@ -55,7 +53,7 @@ const News = () => {
                       {article.title}
                     </h3>
                     <button
-                      className="text-blue-600 font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+                      className="text-blue-600 mt-auto font-semibold flex items-center gap-1 hover:gap-2 transition-all"
                       onClick={() => window.open(article.url, "_blank")}
                     >
                       Đọc thêm <ChevronRight className="w-4 h-4" />

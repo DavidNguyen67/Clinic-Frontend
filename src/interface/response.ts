@@ -298,6 +298,22 @@ export type AppointmentDoctorStatisticsResponse = BaseEntityResponse & {
   };
 };
 
+export type ArticlesResponse = {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  url: string;
+  image: string;
+  publishedAt: string;
+  lang: string;
+  source: {
+    id: string;
+    name: string;
+    url: string;
+  };
+};
+
 export type NewsResponse = {
   information: {
     realTimeArticles: {
@@ -305,21 +321,7 @@ export type NewsResponse = {
     };
   };
   totalArticles: number;
-  articles: {
-    id: string;
-    title: string;
-    description: string;
-    content: string;
-    url: string;
-    image: string;
-    publishedAt: string;
-    lang: string;
-    source: {
-      id: string;
-      name: string;
-      url: string;
-    };
-  }[];
+  articles: ArticlesResponse[];
 };
 
 export type ClinicInformationResponse = {

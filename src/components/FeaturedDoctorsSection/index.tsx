@@ -1,44 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Link, useRouter } from "@/i18n/navigation";
-import { Briefcase, ChevronLeft, ChevronRight, Star, Users } from "lucide-react";
+import { Briefcase, Star, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Carousel,
-  type CarouselApi,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { cn, formatCurrency, formatNumber, getImageUrl } from "@/lib/utils";
 import { usePublicDoctorList } from "@/hooks/public/usePublicDoctor";
 import usePopup from "@/hooks/useDialog";
 import { Dialog } from "@/components/ui/dialog";
 import DoctorDialog from "@/components/DoctorDialog";
+import { useCarousel } from "@/hooks/useCarousel";
 
 const FeaturedDoctorsSection = () => {
   const popup = usePopup<{ doctorId: string }>();
   const router = useRouter();
 
-  const publicDoctorList = usePublicDoctorList({ isFeatured: true });
+  const publicDoctorList = usePublicDoctorList({ isFeatured: true, size: 10 });
 
-  const [api, setApi] = useState<CarouselApi>();
-
-  const [current, setCurrent] = useState(0);
-
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!api) return;
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => setCurrent(api.selectedScrollSnap()));
-  }, [api]);
+  const { setApi, current, count, api } = useCarousel();
 
   const handleCardClick = (id: string) => {
     router.push(`/doctors/${id}`);
@@ -55,25 +39,6 @@ const FeaturedDoctorsSection = () => {
             </Badge>
             <h2 className="text-3xl font-bold text-gray-900 mb-1">Featured Doctors</h2>
             <p className="text-gray-500 text-sm">Top-rated doctors at MedCare</p>
-          </div>
-
-          <div className="hidden md:flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-              onClick={() => api?.scrollPrev()}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-              onClick={() => api?.scrollNext()}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
           </div>
         </div>
 
@@ -99,7 +64,7 @@ const FeaturedDoctorsSection = () => {
             >
               <CarouselContent className="-ml-3">
                 {publicDoctorList.data?.body?.data?.map((doctor) => (
-                  <CarouselItem key={doctor.id} className="pl-3 basis-1/2 md:basis-1/4">
+                  <CarouselItem key={doctor.id} className="pl-3 basis-1/2 md:basis-1/3">
                     {/* button instead of Link — opens dialog */}
                     <button
                       type="button"

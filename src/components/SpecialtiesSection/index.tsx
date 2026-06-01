@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { cn, getImageUrl } from "@/lib/utils";
@@ -11,21 +10,14 @@ import Autoplay from "embla-carousel-autoplay";
 import { Dialog } from "@/components/ui/dialog";
 import usePopup from "@/hooks/useDialog";
 import SpecialtyDialog from "@/components/SpecialtyDialog";
-import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { useCarousel } from "@/hooks/useCarousel";
 
 const SpecialtiesSection = () => {
-  const publicSpecialtyList = usePublicSpecialtyList({ isActive: true });
+  const publicSpecialtyList = usePublicSpecialtyList({ isActive: true, size: 10 });
   const popup = usePopup<{ specialtyId: string }>();
   const router = useRouter();
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!api) return;
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => setCurrent(api.selectedScrollSnap()));
-  }, [api]);
+  const { setApi, current, count, api } = useCarousel();
 
   const handleCardClick = (id: string) => {
     console.log("check id", id);
@@ -66,7 +58,7 @@ const SpecialtiesSection = () => {
             >
               <CarouselContent className="-ml-3">
                 {publicSpecialtyList.data?.body?.data?.map((specialty) => (
-                  <CarouselItem key={specialty.id} className="pl-3 basis-1/2 md:basis-1/4">
+                  <CarouselItem key={specialty.id} className="pl-3 basis-1/2 md:basis-1/3">
                     {/* Changed from <Link> to <button> to trigger dialog */}
                     <button
                       type="button"

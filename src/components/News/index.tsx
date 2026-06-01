@@ -1,23 +1,26 @@
+"use client";
 import { Calendar, ChevronRight } from "lucide-react";
+import { useGNews } from "@/hooks/useGNews";
+import { useParams } from "next/navigation";
+import { LanguageCode } from "@/i18n/config";
+import { cn, formatDate } from "@/lib/utils";
+import { useCarousel } from "@/hooks/useCarousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 const News = () => {
-  const blogPosts = [
-    {
-      title: "10 dấu hiệu cảnh báo bệnh tim mạch",
-      date: "15/01/2024",
-      image: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=400&h=250&fit=crop",
-    },
-    {
-      title: "Chăm sóc sức khỏe trẻ em mùa đông",
-      date: "12/01/2024",
-      image: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400&h=250&fit=crop",
-    },
-    {
-      title: "Bí quyết giữ mắt khỏe mạnh",
-      date: "10/01/2024",
-      image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=250&fit=crop",
-    },
-  ];
+  const { locale } = useParams<{ locale: LanguageCode }>();
+  const { data } = useGNews({ category: "health", lang: locale, max: 10 });
+  const articles = data?.articles || [];
+
+  const { setApi, current, count, api } = useCarousel();
+
   return (
     <section id="news" className="py-20">
       <div className="max-w-[100rem] mx-auto px-4">
@@ -26,36 +29,63 @@ const News = () => {
           <p className="text-xl text-gray-600">Cập nhật kiến thức sức khỏe mới nhất</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {blogPosts.map((post, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition group cursor-pointer"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="text-sm text-gray-500 mb-2 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  {post.date}
+        <Carousel
+          setApi={setApi}
+          opts={{ align: "start", loop: true }}
+          plugins={[Autoplay({ delay: 4000, stopOnInteraction: true })]}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-3">
+            {articles.map((article) => (
+              <CarouselItem key={article.id} className="pl-3 basis-1/2 md:basis-1/3">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition group cursor-pointer h-full">
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="text-sm text-gray-500 mb-2 flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(article.publishedAt)}
+                    </div>
+                    <h3 className="font-bold text-lg text-gray-900 mb-4 group-hover:text-blue-600 transition">
+                      {article.title}
+                    </h3>
+                    <button
+                      className="text-blue-600 font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+                      onClick={() => window.open(article.url, "_blank")}
+                    >
+                      Đọc thêm <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <h3 className="font-bold text-lg text-gray-900 mb-4 group-hover:text-blue-600 transition">
-                  {post.title}
-                </h3>
-                <button className="text-blue-600 font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-                  Đọc thêm <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+
+        {/* Dot indicators */}
+        <div className="flex justify-center gap-1.5 mt-6">
+          {Array.from({ length: count }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => api?.scrollTo(i)}
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-300",
+                i === current ? "w-6 bg-blue-500" : "w-1.5 bg-gray-200 hover:bg-gray-300"
+              )}
+            />
           ))}
         </div>
       </div>
     </section>
   );
 };
+
 export default News;

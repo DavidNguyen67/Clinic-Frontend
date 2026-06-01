@@ -297,3 +297,44 @@ export type AppointmentDoctorStatisticsResponse = BaseEntityResponse & {
     deltaPercent: number;
   };
 };
+
+export type NewsResponse = {
+  information: {
+    realTimeArticles: {
+      message: string;
+    };
+  };
+  totalArticles: number;
+  articles: {
+    id: string;
+    title: string;
+    description: string;
+    content: string;
+    url: string;
+    image: string;
+    publishedAt: string;
+    lang: string;
+    source: {
+      id: string;
+      name: string;
+      url: string;
+    };
+  }[];
+};
+
+export type ClinicInformationResponse = {
+  clinic: {
+    name: string;
+    description: string;
+    about: string;
+  };
+  contact: {
+    address: string;
+    hotline: string;
+    email: string;
+    workingHours: {
+      mondayToSaturday: string;
+      sunday: string;
+    };
+  };
+};

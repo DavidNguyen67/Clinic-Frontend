@@ -41,13 +41,13 @@ const ClientProvider = ({ children }: { children: React.ReactNode }) => {
         {initializing ? (
           <FullscreenLoader />
         ) : (
-          <>
+          <main className="pr-4">
             <Toaster position="bottom-right" />
             <Header />
             <AuthErrorDialog />
             <LogoutConfirmDialog />
             {children}
-          </>
+          </main>
         )}
       </TooltipProvider>
     </SWRConfig>

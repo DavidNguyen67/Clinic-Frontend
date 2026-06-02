@@ -12,18 +12,25 @@ import DoctorBreadcrumb from "@/components/Doctor/Breadcrumb";
 import DoctorHeroSection from "@/components/Doctor/DoctorHeroSection";
 
 import RelatedDoctors from "./RelatedDoctors";
-import { doctorData, reviewsData, relatedDoctorsData } from "./config";
+import { reviewsData, relatedDoctorsData } from "./config";
+import { useParams } from "next/navigation";
+import { usePublicDoctorById } from "@/hooks/public/usePublicDoctor";
 
 const DetailDoctor = () => {
   const [activeTab, setActiveTab] = useState("about");
+  const { doctorProfileId } = useParams<{ doctorProfileId: string }>();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
-  console.log("chay vao detail");
+
+  const { data } = usePublicDoctorById(doctorProfileId);
+
+  const doctorData = data?.body;
+
   const breadcrumbItems = [
     { label: "Trang chủ", href: "/" },
     { label: "Bác sĩ", href: "/bac-si" },
     { label: "Tim mạch", href: "/bac-si?specialty=tim-mach" },
-    { label: doctorData.name },
+    { label: doctorData?.user?.fullName ?? "", href: "/user" },
   ];
 
   const handleBookAppointment = () => {
@@ -49,7 +56,7 @@ const DetailDoctor = () => {
 
       {/* Hero Section */}
       <DoctorHeroSection
-        doctor={doctorData}
+        doctor={doctorData!}
         isBookmarked={isBookmarked}
         onBookmarkToggle={() => setIsBookmarked(!isBookmarked)}
         onBookAppointment={handleBookAppointment}

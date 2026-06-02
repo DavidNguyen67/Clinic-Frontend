@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Star,
   Award,
@@ -12,10 +12,12 @@ import {
   Stethoscope,
   MessageCircle,
   BookmarkCheck,
-} from 'lucide-react';
+} from "lucide-react";
 
-import StatCard from '../StatCard';
-import ActionButton from '../ActionButton';
+import StatCard from "../StatCard";
+import ActionButton from "../ActionButton";
+import { DoctorProfileResponse } from "@/interface/response";
+import { getImageUrl } from "@/lib/utils";
 
 interface DoctorStats {
   rating: number;
@@ -26,16 +28,7 @@ interface DoctorStats {
 }
 
 interface DoctorHeroProps {
-  doctor: {
-    name: string;
-    avatar: string;
-    degree: string;
-    specialty: string;
-    subSpecialty?: string;
-    availableToday: boolean;
-    stats: DoctorStats;
-    experience?: number;
-  };
+  doctor: DoctorProfileResponse;
   isBookmarked: boolean;
   onBookmarkToggle: () => void;
   onBookAppointment: () => void;
@@ -60,8 +53,8 @@ const DoctorHeroSection: React.FC<DoctorHeroProps> = ({
           {/* Avatar */}
           <div className="relative">
             <img
-              src={doctor.avatar}
-              alt={doctor.name}
+              src={getImageUrl(doctor?.user?.pathAvatar)}
+              alt={doctor.user?.fullName}
               className="w-48 h-48 rounded-2xl object-cover border-4 border-white shadow-2xl"
             />
             {doctor.availableToday && (
@@ -85,18 +78,18 @@ const DoctorHeroSection: React.FC<DoctorHeroProps> = ({
                     Đã xác thực
                   </span>
                 </div>
-                <h1 className="text-4xl font-bold mb-2">{doctor.name}</h1>
+                <h1 className="text-4xl font-bold mb-2">{doctor.user?.fullName}</h1>
                 <div className="flex items-center gap-4 text-blue-100 mb-4">
                   <div className="flex items-center gap-2">
                     <Stethoscope className="w-5 h-5" />
-                    <span className="text-lg font-semibold">{doctor.specialty}</span>
+                    <span className="text-lg font-semibold">{doctor.specialty?.name}</span>
                   </div>
-                  {doctor.subSpecialty && (
-                    <>
-                      <div className="w-1 h-1 bg-blue-100 rounded-full" />
-                      <span>{doctor.subSpecialty}</span>
-                    </>
-                  )}
+                  {/*{doctor.subSpecialty && (*/}
+                  {/*  <>*/}
+                  {/*    <div className="w-1 h-1 bg-blue-100 rounded-full" />*/}
+                  {/*    <span>{doctor.subSpecialty}</span>*/}
+                  {/*  </>*/}
+                  {/*)}*/}
                 </div>
               </div>
 
@@ -104,7 +97,11 @@ const DoctorHeroSection: React.FC<DoctorHeroProps> = ({
                 onClick={onBookmarkToggle}
                 className="p-3 bg-white/20 backdrop-blur rounded-full hover:bg-white/30 transition"
               >
-                {isBookmarked ? <BookmarkCheck className="w-6 h-6" /> : <Bookmark className="w-6 h-6" />}
+                {isBookmarked ? (
+                  <BookmarkCheck className="w-6 h-6" />
+                ) : (
+                  <Bookmark className="w-6 h-6" />
+                )}
               </button>
             </div>
 
@@ -112,29 +109,29 @@ const DoctorHeroSection: React.FC<DoctorHeroProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
               <StatCard
                 icon={<Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />}
-                value={doctor.stats.rating.toString()}
-                label={`${doctor.stats.totalReviews} đánh giá`}
+                value={doctor.averageRating}
+                label={`${doctor.totalReviews} đánh giá`}
               />
               <StatCard
                 icon={<Users className="w-5 h-5" />}
-                value={`${doctor.stats.totalPatients.toLocaleString()}+`}
+                value={doctor.totalPatients}
                 label="Bệnh nhân"
               />
               <StatCard
                 icon={<Award className="w-5 h-5" />}
-                value={doctor.experience?.toString() || '0'}
+                value={doctor.experienceYears}
                 label="Năm kinh nghiệm"
               />
-              <StatCard
-                icon={<TrendingUp className="w-5 h-5" />}
-                value={`${doctor.stats.successRate}%`}
-                label="Thành công"
-              />
-              <StatCard
-                icon={<MessageCircle className="w-5 h-5" />}
-                value={doctor.stats.responseTime}
-                label="Phản hồi"
-              />
+              {/*<StatCard*/}
+              {/*  icon={<TrendingUp className="w-5 h-5" />}*/}
+              {/*  value={`${doctor.stats.successRate}%`}*/}
+              {/*  label="Thành công"*/}
+              {/*/>*/}
+              {/*<StatCard*/}
+              {/*  icon={<MessageCircle className="w-5 h-5" />}*/}
+              {/*  value={doctor.stats.responseTime}*/}
+              {/*  label="Phản hồi"*/}
+              {/*/>*/}
             </div>
 
             {/* Quick actions */}

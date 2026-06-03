@@ -1,4 +1,5 @@
 // lib/axiosInstance.ts
+"use client";
 import { AUTH_SESSION_SWR_KEY } from "@/hooks";
 import { AUTH_INITIAL_STATE } from "@/hooks/useSession";
 import axios from "axios";

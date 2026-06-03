@@ -1,3 +1,4 @@
+"use client";
 import useSWR, { mutate } from "swr";
 import { AUTH_ERROR_SWR_KEY } from "@/hooks/index";
 

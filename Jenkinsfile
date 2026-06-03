@@ -7,6 +7,7 @@ pipeline {
         APP_PORT              = '3000'
         KEEP_IMAGES           = '3'
 
+        // Credential IDs in Jenkins
         DOCKERHUB_CREDS       = 'dockerhub-credentials'
         SSH_CREDS             = 'vps-ssh-credentials'
         TELEGRAM_BOT_TOKEN    = 'telegram-bot-token'
@@ -14,6 +15,7 @@ pipeline {
         JENKINS_API_CREDS     = 'jenkins-api-credentials'
         ENV_FILE              = 'fe-clinic-env'
 
+        // VPS connection details
         VPS_HOST              = '168.144.141.68'
         VPS_USER              = 'root'
 

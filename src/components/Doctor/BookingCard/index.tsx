@@ -1,58 +1,40 @@
-import React from 'react';
-import { Video, Clock, Phone, MapPin, Calendar } from 'lucide-react';
+import React, { useRef, useState } from "react";
+import { Video, Clock, Phone, MapPin, Calendar } from "lucide-react";
+import {
+  AFTERNOON_SLOTS,
+  MORNING_SLOTS,
+} from "@/components/Booking/StepSchedule/TimePicker/config";
+import { usePublicDoctorScheduleExceptions } from "@/hooks/public/usePublicDoctorSchedule";
+import { useParams } from "next/navigation";
+import { cn, formatDate, formatDateToApi, formatDateToWeekday, parseDate } from "@/lib/utils";
+import { DAY_STATUS, EXCEPTION_TYPE } from "@/common";
+import { isBefore, isSameDay, set } from "date-fns";
+import { DAY_STATUS_CONFIG } from "@/components/Doctor/BookingCard/config";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-interface TimeSlot {
-  time: string;
-  available: boolean;
-}
-
-interface Pricing {
-  consultation: number;
-  followUp: number;
-  videoCall: number;
-}
-
-interface BookingCardProps {
-  pricing: Pricing;
-  workingDays: string[];
-  workingHours: string;
-  timeSlots: TimeSlot[];
-  location: string;
-  hotline: string;
-  onBookAppointment: () => void;
-  onVideoCall: () => void;
-}
-const BookingCard: React.FC<BookingCardProps> = ({
-  pricing,
-  workingDays,
-  workingHours,
-  timeSlots,
-  location,
-  hotline,
-  onBookAppointment,
-  onVideoCall,
-}) => {
+interface BookingCardProps {}
+const BookingCard: React.FC<BookingCardProps> = ({}) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-4">
       <h3 className="text-2xl font-bold text-gray-900 mb-6">Đặt lịch khám</h3>
 
       {/* Pricing */}
-      <PricingSection pricing={pricing} />
+      {/*<PricingSection pricing={pricing} />*/}
 
       {/* Working Schedule */}
-      <WorkingSchedule workingDays={workingDays} workingHours={workingHours} />
+      <WorkingSchedule />
 
       {/* Time Slots Preview */}
-      <TimeSlotsPreview timeSlots={timeSlots} />
+      <TimeSlotsPreview />
 
-      {/* CTA Buttons */}
-      <CTAButtons onBookAppointment={onBookAppointment} onVideoCall={onVideoCall} />
+      {/*/!* CTA Buttons *!/*/}
+      {/*<CTAButtons onBookAppointment={onBookAppointment} onVideoCall={onVideoCall} />*/}
 
-      {/* Location */}
-      <LocationInfo location={location} />
+      {/*/!* Location *!/*/}
+      {/*<LocationInfo location={location} />*/}
 
-      {/* Contact */}
-      <ContactInfo hotline={hotline} />
+      {/*/!* Contact *!/*/}
+      {/*<ContactInfo hotline={hotline} />*/}
     </div>
   );
 };
@@ -62,59 +44,121 @@ const PricingSection: React.FC<{ pricing: Pricing }> = ({ pricing }) => (
   <div className="mb-6 space-y-3">
     <div className="flex justify-between items-center">
       <span className="text-gray-600">Khám tại phòng khám</span>
-      <span className="text-xl font-bold text-blue-600">{pricing.consultation.toLocaleString()}đ</span>
-    </div>
-    <div className="flex justify-between items-center">
-      <span className="text-gray-600">Tái khám</span>
-      <span className="text-lg font-semibold text-gray-900">{pricing.followUp.toLocaleString()}đ</span>
-    </div>
-    <div className="flex justify-between items-center">
-      <span className="text-gray-600">Tư vấn video</span>
-      <span className="text-lg font-semibold text-gray-900">{pricing.videoCall.toLocaleString()}đ</span>
+      <span className="text-xl font-bold text-blue-600">
+        {pricing.consultation.toLocaleString()}đ
+      </span>
     </div>
   </div>
 );
 
-const WorkingSchedule: React.FC<{ workingDays: string[]; workingHours: string }> = ({
-  workingDays,
-  workingHours,
-}) => (
-  <div className="mb-6">
-    <div className="text-sm font-semibold text-gray-900 mb-3">Lịch làm việc</div>
-    <div className="flex flex-wrap gap-2 mb-3">
-      {workingDays.map((day, i) => (
-        <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">
-          {day}
-        </span>
-      ))}
-    </div>
-    <div className="flex items-center gap-2 text-gray-700">
-      <Clock className="w-5 h-5" />
-      <span>{workingHours}</span>
-    </div>
-  </div>
-);
+const workingHours = [
+  `${MORNING_SLOTS[0].start} – ${MORNING_SLOTS.at(-1)!.end}`,
+  `${AFTERNOON_SLOTS[0].start} – ${AFTERNOON_SLOTS.at(-1)!.end}`,
+].join(" | ");
 
-const TimeSlotsPreview: React.FC<{ timeSlots: TimeSlot[] }> = ({ timeSlots }) => (
-  <div className="mb-6">
-    <div className="text-sm font-semibold text-gray-900 mb-3">Khung giờ hôm nay</div>
-    <div className="grid grid-cols-2 gap-2">
-      {timeSlots.slice(0, 4).map((slot, i) => (
-        <button
-          key={i}
-          disabled={!slot.available}
-          className={`py-2 px-3 rounded-lg text-sm font-semibold transition ${
-            slot.available
-              ? 'bg-green-100 text-green-700 hover:bg-green-200'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          }`}
-        >
-          {slot.time}
-        </button>
-      ))}
+const WorkingSchedule: React.FC = () => {
+  const { doctorProfileId } = useParams<{ doctorProfileId: string }>();
+  const today = useRef(new Date());
+
+  const startOfWeek = new Date(today.current);
+  startOfWeek.setDate(today.current.getDate() - today.current.getDay() + 1); // Monday
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  const workingDays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(startOfWeek);
+    d.setDate(startOfWeek.getDate() + i);
+    set(d, { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
+    return d;
+  });
+
+  const scheduleExceptions = usePublicDoctorScheduleExceptions({
+    doctorId: doctorProfileId,
+
+    from: formatDateToApi(startOfWeek),
+    to: formatDateToApi(endOfWeek),
+  });
+
+  const getDayStatus = (date: Date): DAY_STATUS => {
+    if (isBefore(date, today.current)) return DAY_STATUS.DISABLED;
+
+    const exception = scheduleExceptions.data?.body?.data?.find((e) =>
+      isSameDay(parseDate(e.exceptionDate, "dd/MM/yyyy")!, date)
+    );
+
+    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+    if (isWeekend) {
+      return exception?.type === EXCEPTION_TYPE.EXTRA ? DAY_STATUS.OVERTIME : DAY_STATUS.DISABLED;
+    }
+
+    return exception?.type === EXCEPTION_TYPE.LEAVE ? DAY_STATUS.LEAVE : DAY_STATUS.AVAILABLE;
+  };
+
+  return (
+    <div className="mb-6">
+      <div className="text-sm font-semibold text-gray-900 mb-3">Lịch làm việc</div>
+      <div className="flex flex-wrap gap-2 mb-3">
+        {workingDays.map((day, i) => {
+          const status = getDayStatus(day);
+          const config = DAY_STATUS_CONFIG[status];
+          const isToday = isSameDay(day, today.current);
+
+          return (
+            <Tooltip key={i}>
+              <TooltipTrigger asChild>
+                <span
+                  className={cn(
+                    "px-3 py-1 rounded-full text-sm font-semibold transition-colors select-none",
+                    config.className,
+                    isToday && "ring-2 ring-offset-1 ring-blue-400"
+                  )}
+                >
+                  {formatDateToWeekday(day)}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                <p className="text-muted-foreground">{config.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-2 text-gray-700">
+        <Clock className="w-5 h-5" />
+        <span>{workingHours}</span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+const TimeSlotsPreview: React.FC = () => {
+  return (
+    <div className="mb-6">
+      <div className="text-sm font-semibold text-gray-900 mb-3">Khung giờ hôm nay</div>
+      <div className="grid grid-cols-2 gap-2">
+        {MORNING_SLOTS.map((slot, i) => (
+          <button
+            key={i}
+            className={`py-2 px-3 rounded-lg text-sm font-semibold transition bg-green-100 text-green-700 hover:bg-green-200`}
+          >
+            {slot.label}
+          </button>
+        ))}
+        {AFTERNOON_SLOTS.map((slot, i) => (
+          <button
+            key={i}
+            className={`py-2 px-3 rounded-lg text-sm font-semibold transition bg-green-100 text-green-700 hover:bg-green-200`}
+          >
+            {slot.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const CTAButtons: React.FC<{
   onBookAppointment: () => void;
@@ -123,7 +167,7 @@ const CTAButtons: React.FC<{
   <div className="space-y-3 mb-6">
     <button
       onClick={onBookAppointment}
-      className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-bold hover:shadow-lg transition"
+      className="w-full py-4 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-full font-bold hover:shadow-lg transition"
     >
       <Calendar className="inline w-5 h-5 mr-2" />
       Đặt lịch ngay
@@ -176,10 +220,10 @@ export const TimeSlotPicker: React.FC<{
           onClick={() => slot.available && onSelectSlot(slot.time)}
           className={`py-3 px-4 rounded-lg text-sm font-semibold transition ${
             selectedSlot === slot.time
-              ? 'bg-blue-600 text-white'
+              ? "bg-blue-600 text-white"
               : slot.available
-                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
           }`}
         >
           {slot.time}

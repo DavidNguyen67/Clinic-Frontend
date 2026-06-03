@@ -12,7 +12,6 @@ import DoctorBreadcrumb from "@/components/Doctor/Breadcrumb";
 import DoctorHeroSection from "@/components/Doctor/DoctorHeroSection";
 
 import RelatedDoctors from "./RelatedDoctors";
-import { reviewsData, relatedDoctorsData } from "./config";
 import { useParams } from "next/navigation";
 import { usePublicDoctorById } from "@/hooks/public/usePublicDoctor";
 
@@ -69,16 +68,7 @@ const DetailDoctor = () => {
 
           {/* Right: Sidebar */}
           <div className="space-y-6">
-            {/*<BookingCard*/}
-            {/*  pricing={doctorData.pricing}*/}
-            {/*  workingDays={doctorData.workingDays}*/}
-            {/*  workingHours={doctorData.workingHours}*/}
-            {/*  timeSlots={doctorData.timeSlots}*/}
-            {/*  location={doctorData.location}*/}
-            {/*  hotline="1900-xxxx"*/}
-            {/*  onBookAppointment={handleBookAppointment}*/}
-            {/*  onVideoCall={handleVideoCall}*/}
-            {/*/>*/}
+            <BookingCard />
           </div>
         </div>
         <div className="mt-4">

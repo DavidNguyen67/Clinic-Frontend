@@ -22,7 +22,7 @@ interface NavItem {
   description: string;
 }
 
-// ── Nav config ────────────────────────────────────────────────────────────────
+// ── Nav config.ts ────────────────────────────────────────────────────────────────
 
 const NAV_ITEMS: NavItem[] = [
   {

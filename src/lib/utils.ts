@@ -28,6 +28,12 @@ export function formatDate(date: Date | string | null | undefined): string {
   if (!isValid(d)) return "Invalid date";
   return format(d, "MMM dd, yyyy", { locale: enUS });
 }
+export function formatDateToWeekday(date: Date | string | null | undefined): string {
+  if (!date) return "—";
+  const d = typeof date === "string" ? parseISO(date) : date;
+  if (!isValid(d)) return "Invalid date";
+  return format(d, "EEEE", { locale: enUS });
+}
 
 /**
  * Format date → "Jan 15, 2025 · 08:30 AM"

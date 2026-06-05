@@ -1,7 +1,7 @@
 "use client";
 
 import type { DoctorProfileResponse } from "@/interface/response";
-import { SPECIALTY_TYPE } from "@/common";
+import { GENDER, ROLE_NAME, SPECIALTY_TYPE, USER_STATUS } from "@/common";
 
 export const mockDoctors: DoctorProfileResponse[] = [
   {
@@ -11,10 +11,10 @@ export const mockDoctors: DoctorProfileResponse[] = [
       email: "nguyen.van.minh@example.com",
       fullName: "TS. BS Nguyễn Văn Minh",
       phone: "0901234567",
-      role: "DOCTOR",
-      gender: "MALE",
+      role: ROLE_NAME.DOCTOR,
+      gender:GENDER.FEMALE,
       dateOfBirth: "1975-03-15",
-      status: "ACTIVE",
+      status: USER_STATUS.ACTIVE,
       pathAvatar: "",
       emailVerified: true,
       phoneVerified: true,
@@ -55,10 +55,10 @@ export const mockDoctors: DoctorProfileResponse[] = [
       email: "tran.thi.huong@example.com",
       fullName: "ThS. BS Trần Thị Hương",
       phone: "0907654321",
-      role: "DOCTOR",
-      gender: "FEMALE",
+      role: ROLE_NAME.DOCTOR,
+      gender: GENDER.FEMALE,
       dateOfBirth: "1982-07-22",
-      status: "ACTIVE",
+      status: USER_STATUS.ACTIVE,
       pathAvatar: "",
       emailVerified: true,
       phoneVerified: true,
@@ -99,10 +99,10 @@ export const mockDoctors: DoctorProfileResponse[] = [
       email: "le.van.cuong@example.com",
       fullName: "BS Lê Văn Cường",
       phone: "0912345678",
-      role: "DOCTOR",
-      gender: "MALE",
+      role: ROLE_NAME.DOCTOR,
+      gender: GENDER.MALE ,
       dateOfBirth: "1985-11-08",
-      status: "ACTIVE",
+      status: USER_STATUS.ACTIVE,
       pathAvatar: "",
       emailVerified: true,
       phoneVerified: false,
@@ -143,10 +143,10 @@ export const mockDoctors: DoctorProfileResponse[] = [
       email: "pham.thi.lan@example.com",
       fullName: "BS Phạm Thị Lan",
       phone: "0987654321",
-      role: "DOCTOR",
-      gender: "FEMALE",
+      role: ROLE_NAME.DOCTOR,
+      gender: GENDER.FEMALE,
       dateOfBirth: "1990-05-20",
-      status: "INACTIVE",
+      status: USER_STATUS.INACTIVE,
       pathAvatar: "",
       emailVerified: false,
       phoneVerified: true,

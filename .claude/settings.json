@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(Select-Object -First 50)"
+      "Bash(Select-Object -First 50)",
+      "Bash(dir \"src\\\\app\\\\[locale]\\\\\\(authenticated\\)\\\\staff\\\\\")",
+      "Bash(New-Item -ItemType Directory -Force -Path \"d:\\\\Home\\\\fe\\\\src\\\\components\\\\StaffDashboard\\\\StaffTopBar\", \"d:\\\\Home\\\\fe\\\\src\\\\components\\\\StaffDashboard\\\\StaffStatsGrid\", \"d:\\\\Home\\\\fe\\\\src\\\\components\\\\StaffDashboard\\\\StaffRecentActivity\")"
     ]
   }
 }

@@ -12,6 +12,7 @@ import {
 } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { FILTER_ALL_VALUE } from "@/hooks/global";
+import type { LandingServicePromotionResponse, ServicePromotionInput } from "@/interface/response";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -232,3 +233,51 @@ export function parseDate(
 
   return isValid(parsed) ? parsed : null;
 }
+
+export const normalizeServices = (value: unknown): ServicePromotionInput[] => {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+
+      const service = item as Partial<ServicePromotionInput>;
+
+      if (typeof service.id !== "string" || typeof service.name !== "string") return null;
+
+      return {
+        id: service.id,
+        name: service.name,
+        description: typeof service.description === "string" ? service.description : "",
+      };
+    })
+    .filter((service): service is ServicePromotionInput => service !== null)
+    .slice(0, 3);
+};
+
+export const fallbackPromotions = (
+  services: ServicePromotionInput[]
+): LandingServicePromotionResponse =>
+  services.reduce<LandingServicePromotionResponse>((result, service) => {
+    result[service.id] = service.description ? [service.description] : [];
+    return result;
+  }, {});
+
+export const normalizePromotions = (
+  value: unknown,
+  services: ServicePromotionInput[]
+): LandingServicePromotionResponse => {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    return fallbackPromotions(services);
+
+  const rawPromotions = value as Record<string, unknown>;
+
+  return services.reduce<LandingServicePromotionResponse>((result, service) => {
+    const features = rawPromotions[service.id];
+    result[service.id] = Array.isArray(features)
+      ? features.filter((feature): feature is string => typeof feature === "string").slice(0, 3)
+      : fallbackPromotions([service])[service.id];
+
+    return result;
+  }, {});
+};

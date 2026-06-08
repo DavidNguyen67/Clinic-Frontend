@@ -179,6 +179,12 @@ export interface ViLaoChoice {
   finish_reason: string;
 }
 
+export interface ServicePromotionInput {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export interface ViLaoResponse {
   id: string;
   model: string;
@@ -194,6 +200,15 @@ export interface SpecialtyOverviewContent {
   }>;
   riskFactors: string[];
 }
+
+export interface LandingServicePreviewResponse {
+  id: number;
+  name: string;
+  price: string;
+  features: string[];
+}
+
+export type LandingServicePromotionResponse = Record<string, string[]>;
 
 export type DoctorScheduleExceptionResponse = BaseEntityResponse & {
   doctorProfile: DoctorProfileResponse;

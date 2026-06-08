@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useKeenSlider } from "keen-slider/react";
+import { useTranslations } from "next-intl";
 
 import "keen-slider/keen-slider.min.css";
 import { Star, MessageCircle } from "lucide-react";
@@ -9,6 +10,7 @@ import { usePublicReview } from "@/hooks/public/usePublicReview";
 import { getImageUrl, getInitials } from "@/lib/utils";
 
 const Testimonials = () => {
+  const t = useTranslations("landingPage.testimonials");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const { data } = usePublicReview();
@@ -29,8 +31,8 @@ const Testimonials = () => {
     <section className="py-20 bg-gray-50">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Đánh giá của bệnh nhân</h2>
-          <p className="text-xl text-gray-600">Trải nghiệm thực tế từ khách hàng</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t("title")}</h2>
+          <p className="text-xl text-gray-600">{t("description")}</p>
         </div>
 
         {testimonials.length > 0 && (
@@ -62,7 +64,7 @@ const Testimonials = () => {
                     )}
                     <div>
                       <div className="font-bold text-gray-900">{testimonial.patientName}</div>
-                      <div className="text-sm text-gray-500">Bệnh nhân</div>
+                      <div className="text-sm text-gray-500">{t("patientLabel")}</div>
                     </div>
                   </div>
                 </div>

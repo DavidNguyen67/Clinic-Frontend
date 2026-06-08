@@ -1,5 +1,6 @@
 "use client";
 import { Calendar, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn, formatDate } from "@/lib/utils";
 import { useCarousel } from "@/hooks/useCarousel";
 import {
@@ -17,14 +18,15 @@ interface NewsProps {
 }
 
 const News = ({ articles }: NewsProps) => {
+  const t = useTranslations("landingPage.news");
   const { setApi, current, count, api } = useCarousel();
 
   return (
     <section id="news" className="py-20">
       <div className="max-w-[100rem] mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Tin tức y tế</h2>
-          <p className="text-xl text-gray-600">Cập nhật kiến thức sức khỏe mới nhất</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t("title")}</h2>
+          <p className="text-xl text-gray-600">{t("description")}</p>
         </div>
 
         <Carousel
@@ -56,7 +58,7 @@ const News = ({ articles }: NewsProps) => {
                       className="text-blue-600 mt-auto font-semibold flex items-center gap-1 hover:gap-2 transition-all"
                       onClick={() => window.open(article.url, "_blank")}
                     >
-                      Đọc thêm <ChevronRight className="w-4 h-4" />
+                      {t("readMore")} <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

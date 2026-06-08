@@ -9,6 +9,153 @@
       "emptyDescription": "New appointment, message, and clinic updates will appear here."
     }
   },
+  "error": {
+    "badge": "System error",
+    "title": "Something went wrong",
+    "description": "The application encountered an unexpected issue. We have recorded this problem and are working on it.",
+    "details": "Error details",
+    "errorId": "Error ID",
+    "stackTrace": "Stack trace (dev only)",
+    "retry": "Try again",
+    "home": "Back to home",
+    "supportPrefix": "Still having trouble?",
+    "supportLink": "Contact support"
+  },
+  "landingPage": {
+    "banner": {
+      "bookNow": "Book now",
+      "slides": {
+        "comprehensiveCare": {
+          "title": "Comprehensive healthcare",
+          "subtitle": "Experienced doctors and modern medical equipment"
+        },
+        "onlineBooking": {
+          "title": "Easy online appointment booking",
+          "subtitle": "Save time without waiting in line"
+        },
+        "support": {
+          "title": "24/7 health consultation",
+          "subtitle": "Always by your side for better health"
+        }
+      }
+    },
+    "about": {
+      "title": "An Khang Clinic",
+      "description": "With more than 15 years of experience, we are committed to delivering high-quality healthcare with experienced doctors and modern medical equipment.",
+      "stats": {
+        "trustedPatients": "Trusted patients",
+        "experience": "Years of experience",
+        "specialistDoctors": "Specialist doctors",
+        "satisfaction": "Satisfaction"
+      }
+    },
+    "specialties": {
+      "badge": "Specialties",
+      "title": "Our Medical Specialties",
+      "description": "Highly qualified doctors and modern medical equipment to support a wide range of healthcare services.",
+      "viewAll": "View All Specialties →"
+    },
+    "featuredDoctors": {
+      "badge": "Our Doctors",
+      "title": "Featured Doctors",
+      "description": "Top-rated doctors at MedCare",
+      "experienceYears": "{count} yrs",
+      "consultationFee": "Consultation Fee",
+      "viewAll": "View All Doctors →"
+    },
+    "servicesPreview": {
+      "title": "Featured services",
+      "description": "Comprehensive health checkup packages with preferential pricing",
+      "registerNow": "Register now"
+    },
+    "doctorsPreview": {
+      "title": "Our doctors",
+      "description": "Experienced doctors who are dedicated to their work",
+      "experience": "Experience",
+      "viewMore": "View more"
+    },
+    "specialtiesPreview": {
+      "title": "Featured specialties",
+      "description": "Diverse specialties with a team of experienced doctors",
+      "viewDetail": "View details"
+    },
+    "process": {
+      "title": "Booking process",
+      "description": "4 simple steps to book an appointment",
+      "steps": {
+        "chooseDoctor": {
+          "title": "Choose a doctor",
+          "description": "Choose the right specialty and doctor"
+        },
+        "chooseTime": {
+          "title": "Choose a time",
+          "description": "Select a convenient appointment date and time"
+        },
+        "enterInfo": {
+          "title": "Enter information",
+          "description": "Provide your personal information"
+        },
+        "confirm": {
+          "title": "Confirm",
+          "description": "Receive a confirmation code by SMS or email"
+        }
+      }
+    },
+    "howItWorks": {
+      "badge": "How it works",
+      "title": "Book an appointment in 4 simple steps",
+      "description": "With just a few simple actions, you can schedule an appointment with a doctor.",
+      "note": "No need to wait in line.",
+      "doneMark": "✓",
+      "cta": "Book Now",
+      "steps": {
+        "findDoctor": {
+          "title": "Find a Doctor",
+          "description": "Search by specialty, view profiles and patient reviews, then choose the doctor who best fits your needs."
+        },
+        "bookAppointment": {
+          "title": "Book an Appointment",
+          "description": "Choose a date and time that matches the doctor's availability, confirmed in just a few seconds."
+        },
+        "getConfirmation": {
+          "title": "Get Confirmation",
+          "description": "Receive instant confirmation by email or SMS, along with automatic reminders before your visit."
+        },
+        "visitAndReview": {
+          "title": "Visit & Review",
+          "description": "Arrive on time and be seen in order. After the visit, leave a review to help the community."
+        }
+      }
+    },
+    "testimonials": {
+      "title": "Patient reviews",
+      "description": "Real experiences from customers",
+      "patientLabel": "Patient"
+    },
+    "news": {
+      "title": "Medical news",
+      "description": "Stay updated with the latest health knowledge",
+      "readMore": "Read more"
+    },
+    "footer": {
+      "contact": "Contact",
+      "fallbackAddress": "123 ABC Street, XYZ District, Hanoi",
+      "hotline": "Hotline",
+      "mondayToSaturday": "Mon-Sat",
+      "sunday": "Sun",
+      "quickLinks": "Quick links",
+      "links": {
+        "about": "About",
+        "doctors": "Doctors",
+        "services": "Services",
+        "news": "Medical news",
+        "privacy": "Privacy policy",
+        "terms": "Terms of use"
+      },
+      "map": "Map",
+      "copyright": "© {year} {clinicName}. Made with ❤️ for better healthcare."
+    }
+  },
   "greeting": "Hello, I'm a Next.js app with multilingual support!",
   "admin": {
     "dashboard": {

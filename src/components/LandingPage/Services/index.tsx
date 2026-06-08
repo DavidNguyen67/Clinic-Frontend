@@ -3,10 +3,12 @@
 import React from "react";
 
 import { CheckCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
 
 const Services = () => {
+  const t = useTranslations("landingPage.servicesPreview");
   // Services
   const router = useRouter();
 
@@ -37,8 +39,8 @@ const Services = () => {
     >
       <div className="max-w-[100rem] mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Dịch vụ nổi bật</h2>
-          <p className="text-xl text-blue-100">Gói khám sức khỏe toàn diện với giá ưu đãi</p>
+          <h2 className="text-4xl font-bold mb-4">{t("title")}</h2>
+          <p className="text-xl text-blue-100">{t("description")}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -61,7 +63,7 @@ const Services = () => {
                 ))}
               </ul>
               <button className="w-full py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition">
-                Đăng ký ngay
+                {t("registerNow")}
               </button>
             </div>
           ))}

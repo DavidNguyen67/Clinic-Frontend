@@ -1,10 +1,12 @@
 "use client";
 
 import { Activity, Baby, Bone, Brain, Eye, HeartPulse } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
 
 const Specialties = () => {
+  const t = useTranslations("landingPage.specialtiesPreview");
   const specialties = [
     {
       id: 1,
@@ -59,10 +61,8 @@ const Specialties = () => {
     <section className="py-20 bg-gray-50">
       <div className="max-w-[100rem] mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Chuyên khoa nổi bật</h2>
-          <p className="text-xl text-gray-600">
-            Đa dạng chuyên khoa với đội ngũ bác sĩ giàu kinh nghiệm
-          </p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t("title")}</h2>
+          <p className="text-xl text-gray-600">{t("description")}</p>
         </div>
 
         <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-6">
@@ -75,7 +75,7 @@ const Specialties = () => {
               }}
             >
               <span className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-3 py-1 text-xs font-medium text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                Xem chi tiết
+                {t("viewDetail")}
               </span>
               <div
                 className={`w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r ${specialty.color} flex items-center justify-center text-white group-hover:scale-110 transition`}

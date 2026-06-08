@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +23,7 @@ interface ErrorProps {
 }
 
 export default function GlobalError({ error, reset }: ErrorProps) {
+  const t = useTranslations("error");
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
         <div className="flex items-center justify-center">
           <Badge variant="destructive" className="gap-1.5 px-3 py-1 text-sm">
             <AlertTriangle className="h-3.5 w-3.5" />
-            Lỗi hệ thống
+            {t("badge")}
           </Badge>
         </div>
 
@@ -48,9 +50,9 @@ export default function GlobalError({ error, reset }: ErrorProps) {
               <AlertTriangle className="h-8 w-8 text-destructive" />
             </div>
 
-            <CardTitle className="text-2xl font-bold tracking-tight">Có lỗi xảy ra</CardTitle>
+            <CardTitle className="text-2xl font-bold tracking-tight">{t("title")}</CardTitle>
             <CardDescription className="text-base text-muted-foreground">
-              Ứng dụng gặp sự cố không mong muốn. Chúng tôi đã ghi nhận vấn đề này và đang xử lý.
+              {t("description")}
             </CardDescription>
           </CardHeader>
 
@@ -60,7 +62,9 @@ export default function GlobalError({ error, reset }: ErrorProps) {
             {/* Error message */}
             {error.message && (
               <div className="rounded-lg bg-muted px-4 py-3">
-                <p className="text-sm font-medium text-muted-foreground mb-1">Chi tiết lỗi</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {t("details")}
+                </p>
                 <p className="text-sm font-mono text-foreground break-all">{error.message}</p>
               </div>
             )}
@@ -68,7 +72,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
             {/* Digest / Error ID */}
             {error.digest && (
               <div className="flex items-center justify-between rounded-lg border bg-muted/50 px-4 py-2.5">
-                <span className="text-xs text-muted-foreground">Mã lỗi (Error ID)</span>
+                <span className="text-xs text-muted-foreground">{t("errorId")}</span>
                 <code className="text-xs font-mono font-semibold text-foreground">
                   {error.digest}
                 </code>
@@ -86,7 +90,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
                   >
                     <span className="flex items-center gap-2">
                       <Bug className="h-3.5 w-3.5" />
-                      Stack trace (dev only)
+                      {t("stackTrace")}
                     </span>
                     <ChevronDown
                       className={`h-4 w-4 transition-transform duration-200 ${
@@ -111,7 +115,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
           <CardFooter className="pt-5 flex flex-col sm:flex-row gap-3">
             <Button onClick={reset} className="w-full sm:flex-1 gap-2" size="lg">
               <RefreshCw className="h-4 w-4" />
-              Thử lại
+              {t("retry")}
             </Button>
             <Button
               variant="outline"
@@ -120,19 +124,19 @@ export default function GlobalError({ error, reset }: ErrorProps) {
               onClick={() => (window.location.href = "/")}
             >
               <Home className="h-4 w-4" />
-              Về trang chủ
+              {t("home")}
             </Button>
           </CardFooter>
         </Card>
 
         {/* Support note */}
         <p className="text-center text-xs text-muted-foreground">
-          Vẫn gặp vấn đề?{" "}
+          {t("supportPrefix")}{" "}
           <a
             href="mailto:support@example.com"
             className="underline underline-offset-4 hover:text-foreground transition-colors"
           >
-            Liên hệ hỗ trợ
+            {t("supportLink")}
           </a>
         </p>
       </div>

@@ -1,15 +1,15 @@
 import { Award, Heart, Users, Stethoscope } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const About = () => {
+  const t = useTranslations("landingPage.about");
+
   return (
     <div className="py-[4rem] ">
       <div className="max-w-[100rem] mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-[2.4rem] font-700 text-gray-900 mb-[2rem]">Phòng Khám An Khang</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Với hơn 15 năm kinh nghiệm, chúng tôi cam kết mang đến dịch vụ chăm sóc sức khỏe chất
-            lượng cao với đội ngũ bác sĩ giàu kinh nghiệm và trang thiết bị hiện đại.
-          </p>
+          <h2 className="text-[2.4rem] font-700 text-gray-900 mb-[2rem]">{t("title")}</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">{t("description")}</p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-8">
@@ -17,22 +17,22 @@ const About = () => {
             {
               icon: <Users className="w-12 h-12" />,
               number: "50,000+",
-              label: "Bệnh nhân tin tưởng",
+              label: t("stats.trustedPatients"),
             },
             {
               icon: <Award className="w-12 h-12" />,
               number: "15+",
-              label: "Năm kinh nghiệm",
+              label: t("stats.experience"),
             },
             {
               icon: <Stethoscope className="w-12 h-12" />,
               number: "30+",
-              label: "Bác sĩ chuyên khoa",
+              label: t("stats.specialistDoctors"),
             },
             {
               icon: <Heart className="w-12 h-12" />,
               number: "98%",
-              label: "Hài lòng",
+              label: t("stats.satisfaction"),
             },
           ].map((stat, index) => (
             <div

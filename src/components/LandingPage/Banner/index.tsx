@@ -2,6 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 import { useKeenSlider } from "keen-slider/react";
+import { useTranslations } from "next-intl";
 
 import { useModal } from "@/hooks/common";
 
@@ -10,20 +11,22 @@ import "keen-slider/keen-slider.min.css";
 import ModalProvider from "@/components/ModalProvider";
 
 const Banner = () => {
+  const t = useTranslations("landingPage.banner");
+
   const bannerSlides = [
     {
-      title: "Chăm sóc sức khỏe toàn diện",
-      subtitle: "Đội ngũ bác sĩ giàu kinh nghiệm, trang thiết bị hiện đại",
+      title: t("slides.comprehensiveCare.title"),
+      subtitle: t("slides.comprehensiveCare.subtitle"),
       image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200&h=600&fit=crop",
     },
     {
-      title: "Đặt lịch khám online dễ dàng",
-      subtitle: "Tiết kiệm thời gian, không cần chờ đợi",
+      title: t("slides.onlineBooking.title"),
+      subtitle: t("slides.onlineBooking.subtitle"),
       image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop",
     },
     {
-      title: "Tư vấn sức khỏe 24/7",
-      subtitle: "Luôn đồng hành cùng sức khỏe của bạn",
+      title: t("slides.support.title"),
+      subtitle: t("slides.support.subtitle"),
       image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1200&h=600&fit=crop",
     },
   ];
@@ -91,7 +94,7 @@ const Banner = () => {
                   className="px-8 py-4 bg-white text-blue-600 rounded-full font-bold text-lg hover:bg-blue-50 transition transform hover:scale-105 shadow-xl"
                   onClick={handleBookNow}
                 >
-                  Đặt lịch ngay <ChevronRight className="inline w-5 h-5" />
+                  {t("bookNow")} <ChevronRight className="inline w-5 h-5" />
                 </button>
               </div>
             </div>

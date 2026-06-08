@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { CalendarCheck, UserSearch, Bell, ClipboardList, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,13 +24,13 @@ const STEP_DURATION = 2000;
 const DONE_HOLD_DURATION = 1800; // how long the "all done" state shows before reset
 
 const HowItWorksSection = () => {
-  const steps = useRef<Step[]>([
+  const t = useTranslations("landingPage.howItWorks");
+  const steps = useMemo<Step[]>(() => [
     {
       step: "01",
       icon: UserSearch,
-      title: "Tìm kiếm Bác sĩ",
-      description:
-        "Tìm kiếm theo chuyên khoa, xem hồ sơ và đánh giá của bệnh nhân, sau đó chọn bác sĩ phù hợp nhất với nhu cầu của bạn.",
+      title: t("steps.findDoctor.title"),
+      description: t("steps.findDoctor.description"),
       color: "bg-blue-50 text-blue-400",
       activeColor: "bg-blue-100 text-blue-600",
       border: "border-blue-100",
@@ -38,9 +39,8 @@ const HowItWorksSection = () => {
     {
       step: "02",
       icon: CalendarCheck,
-      title: "Đặt Lịch Khám",
-      description:
-        "Chọn ngày và giờ phù hợp với thời gian rảnh của bác sĩ — được xác nhận chỉ trong vài giây.",
+      title: t("steps.bookAppointment.title"),
+      description: t("steps.bookAppointment.description"),
       color: "bg-teal-50 text-teal-400",
       activeColor: "bg-teal-100 text-teal-600",
       border: "border-teal-100",
@@ -49,9 +49,8 @@ const HowItWorksSection = () => {
     {
       step: "03",
       icon: Bell,
-      title: "Nhận Xác Nhận",
-      description:
-        "Nhận xác nhận ngay lập tức qua Email hoặc SMS, cùng với lời nhắc tự động trước buổi khám của bạn.",
+      title: t("steps.getConfirmation.title"),
+      description: t("steps.getConfirmation.description"),
       color: "bg-violet-50 text-violet-400",
       activeColor: "bg-violet-100 text-violet-600",
       border: "border-violet-100",
@@ -60,15 +59,14 @@ const HowItWorksSection = () => {
     {
       step: "04",
       icon: ClipboardList,
-      title: "Khám & Đánh giá",
-      description:
-        "Đến đúng giờ và được khám theo thứ tự. Sau buổi khám, hãy để lại đánh giá để giúp đỡ cộng đồng.",
+      title: t("steps.visitAndReview.title"),
+      description: t("steps.visitAndReview.description"),
       color: "bg-orange-50 text-orange-400",
       activeColor: "bg-orange-100 text-orange-600",
       border: "border-orange-100",
       activeBorder: "border-orange-400",
     },
-  ]);
+  ], [t]);
 
   const [activeStep, setActiveStep] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -76,7 +74,7 @@ const HowItWorksSection = () => {
   const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
-    const totalSteps = steps.current.length;
+    const totalSteps = steps.length;
     const tickMs = 16;
     let elapsed = 0;
 
@@ -113,9 +111,9 @@ const HowItWorksSection = () => {
     }, tickMs);
 
     return () => clearInterval(interval);
-  }, [isDone, isResetting]);
+  }, [isDone, isResetting, steps.length]);
 
-  const totalSteps = steps.current.length;
+  const totalSteps = steps.length;
   const overallPct = isDone ? 100 : ((activeStep + progress / 100) / totalSteps) * 100;
 
   return (
@@ -124,16 +122,16 @@ const HowItWorksSection = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <Badge variant="outline" className="text-violet-600 border-violet-200 bg-violet-50 mb-3">
-            Cách thức hoạt động
+            {t("badge")}
           </Badge>
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Đặt lịch khám trong 4 bước đơn giản
+            {t("title")}
           </h2>
           <p className="text-gray-500 max-w-xl mx-auto text-sm">
-            Chỉ với vài thao tác đơn giản là bạn đã có lịch hẹn với bác sĩ
+            {t("description")}
           </p>
           <p className="text-gray-500 max-w-xl mx-auto text-sm mt-[1rem]">
-            Không cần phải xếp hàng chờ đợi.
+            {t("note")}
           </p>
         </div>
 
@@ -156,7 +154,7 @@ const HowItWorksSection = () => {
             />
           </div>
 
-          {steps.current.map(
+          {steps.map(
             (
               { step, icon: Icon, title, description, color, activeColor, border, activeBorder },
               i
@@ -211,7 +209,7 @@ const HowItWorksSection = () => {
                             : "bg-white border-gray-200 text-gray-400"
                       )}
                     >
-                      {isDone ? "✓" : step}
+                      {isDone ? t("doneMark") : step}
                     </span>
                   </div>
 
@@ -275,7 +273,7 @@ const HowItWorksSection = () => {
             size="lg"
             className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white rounded-xl shadow-md"
           >
-            <Link href="/patient/booking">Đặt Khám Ngay</Link>
+            <Link href="/patient/booking">{t("cta")}</Link>
           </Button>
         </div>
       </div>

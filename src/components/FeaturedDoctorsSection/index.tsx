@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Briefcase, Star, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,7 @@ import DoctorDialog from "@/components/DoctorDialog";
 import { useCarousel } from "@/hooks/useCarousel";
 
 const FeaturedDoctorsSection = () => {
+  const t = useTranslations("landingPage.featuredDoctors");
   const popup = usePopup<{ doctorId: string }>();
   const router = useRouter();
 
@@ -35,10 +37,10 @@ const FeaturedDoctorsSection = () => {
         <div className="flex items-end justify-between mb-10">
           <div>
             <Badge variant="outline" className="text-teal-600 border-teal-200 bg-teal-50 mb-3">
-              Our Doctors
+              {t("badge")}
             </Badge>
-            <h2 className="text-3xl font-bold text-gray-900 mb-1">Featured Doctors</h2>
-            <p className="text-gray-500 text-sm">Top-rated doctors at MedCare</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-1">{t("title")}</h2>
+            <p className="text-gray-500 text-sm">{t("description")}</p>
           </div>
         </div>
 
@@ -108,7 +110,7 @@ const FeaturedDoctorsSection = () => {
                           <div className="flex items-center gap-3 text-xs text-gray-400 mt-1">
                             <span className="flex items-center gap-1">
                               <Briefcase className="w-3 h-3" />
-                              {formatNumber(doctor.experienceYears)} yrs
+                              {t("experienceYears", { count: formatNumber(doctor.experienceYears) })}
                             </span>
                             <span className="flex items-center gap-1">
                               <Users className="w-3 h-3" />
@@ -117,7 +119,7 @@ const FeaturedDoctorsSection = () => {
                           </div>
 
                           <div className="mt-1 pt-2 border-t border-gray-100 flex items-center justify-between">
-                            <span className="text-xs text-gray-400">Consultation Fee</span>
+                            <span className="text-xs text-gray-400">{t("consultationFee")}</span>
                             <span className="text-sm font-bold text-teal-600">
                               {formatCurrency(doctor.consultationFee)}
                             </span>
@@ -153,7 +155,7 @@ const FeaturedDoctorsSection = () => {
             variant="outline"
             className="rounded-xl border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
           >
-            <Link href="/doctors">View All Doctors →</Link>
+            <Link href="/doctors">{t("viewAll")}</Link>
           </Button>
         </div>
       </div>

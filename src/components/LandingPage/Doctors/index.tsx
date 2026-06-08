@@ -2,10 +2,12 @@
 
 import React from "react";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { useRouter } from "@/i18n/navigation";
 
 const Doctors = () => {
+  const t = useTranslations("landingPage.doctorsPreview");
   const router = useRouter();
 
   const doctors = [
@@ -49,8 +51,8 @@ const Doctors = () => {
     <section id="doctors" className="py-20">
       <div className="max-w-[100rem] mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Đội ngũ bác sĩ</h2>
-          <p className="text-xl text-gray-600">Bác sĩ giàu kinh nghiệm, tận tâm với nghề</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t("title")}</h2>
+          <p className="text-xl text-gray-600">{t("description")}</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -76,12 +78,14 @@ const Doctors = () => {
               <div className="p-6">
                 <h3 className="font-bold text-xl text-gray-900 mb-2">{doctor.name}</h3>
                 <p className="text-blue-600 font-semibold mb-1">{doctor.specialty}</p>
-                <p className="text-gray-600 text-sm mb-4">Kinh nghiệm: {doctor.experience}</p>
+                <p className="text-gray-600 text-sm mb-4">
+                  {t("experience")}: {doctor.experience}
+                </p>
                 <button
                   className="w-full py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition"
                   onClick={() => handleDetailDoctor(doctor.id)}
                 >
-                  Xem thêm
+                  {t("viewMore")}
                 </button>
               </div>
             </div>

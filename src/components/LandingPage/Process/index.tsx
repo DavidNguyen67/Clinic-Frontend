@@ -1,35 +1,38 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const Process = () => {
+  const t = useTranslations("landingPage.process");
+
   return (
     <section className="py-20">
-      <div className="max-w-[100rem] mx-auto px-4">
+      <div className="max-w-400 mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Quy trình đặt lịch</h2>
-          <p className="text-xl text-gray-600">4 bước đơn giản để đặt lịch khám</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">{t("title")}</h2>
+          <p className="text-xl text-gray-600">{t("description")}</p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-8">
           {[
             {
               step: 1,
-              title: 'Chọn bác sĩ',
-              desc: 'Chọn chuyên khoa và bác sĩ phù hợp',
+              title: t("steps.chooseDoctor.title"),
+              desc: t("steps.chooseDoctor.description"),
             },
             {
               step: 2,
-              title: 'Chọn giờ khám',
-              desc: 'Lựa chọn ngày giờ khám thuận tiện',
+              title: t("steps.chooseTime.title"),
+              desc: t("steps.chooseTime.description"),
             },
             {
               step: 3,
-              title: 'Điền thông tin',
-              desc: 'Cung cấp thông tin cá nhân',
+              title: t("steps.enterInfo.title"),
+              desc: t("steps.enterInfo.description"),
             },
             {
               step: 4,
-              title: 'Xác nhận',
-              desc: 'Nhận mã xác nhận qua SMS/Email',
+              title: t("steps.confirm.title"),
+              desc: t("steps.confirm.description"),
             },
           ].map((item, index) => (
             <div key={index} className="relative">

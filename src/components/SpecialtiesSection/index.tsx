@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { useCarousel } from "@/hooks/useCarousel";
 
 const SpecialtiesSection = () => {
+  const t = useTranslations("landingPage.specialties");
   const publicSpecialtyList = usePublicSpecialtyList({ isActive: true, size: 10 });
   const popup = usePopup<{ specialtyId: string }>();
   const router = useRouter();
@@ -28,12 +30,11 @@ const SpecialtiesSection = () => {
       <div className="max-w-[100rem] mx-auto px-4 sm:px-6">
         <div className="text-center mb-10">
           <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 mb-3">
-            Specialties
+            {t("badge")}
           </Badge>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Our Medical Specialties</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">{t("title")}</h2>
           <p className="text-gray-500 max-w-xl mx-auto text-sm">
-            Highly qualified doctors and modern medical equipment to support a wide range of
-            healthcare services.
+            {t("description")}
           </p>
         </div>
 
@@ -112,7 +113,7 @@ const SpecialtiesSection = () => {
             href="/specialties"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline underline-offset-4 transition-colors"
           >
-            View All Specialties →
+            {t("viewAll")}
           </Link>
         </div>
       </div>

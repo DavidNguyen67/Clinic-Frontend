@@ -9,6 +9,153 @@
       "emptyDescription": "Cap nhat lich hen, tin nhan va phong kham se hien thi tai day."
     }
   },
+  "error": {
+    "badge": "Lỗi hệ thống",
+    "title": "Có lỗi xảy ra",
+    "description": "Ứng dụng gặp sự cố không mong muốn. Chúng tôi đã ghi nhận vấn đề này và đang xử lý.",
+    "details": "Chi tiết lỗi",
+    "errorId": "Mã lỗi (Error ID)",
+    "stackTrace": "Stack trace (chỉ dev)",
+    "retry": "Thử lại",
+    "home": "Về trang chủ",
+    "supportPrefix": "Vẫn gặp vấn đề?",
+    "supportLink": "Liên hệ hỗ trợ"
+  },
+  "landingPage": {
+    "banner": {
+      "bookNow": "Đặt lịch ngay",
+      "slides": {
+        "comprehensiveCare": {
+          "title": "Chăm sóc sức khỏe toàn diện",
+          "subtitle": "Đội ngũ bác sĩ giàu kinh nghiệm, trang thiết bị hiện đại"
+        },
+        "onlineBooking": {
+          "title": "Đặt lịch khám online dễ dàng",
+          "subtitle": "Tiết kiệm thời gian, không cần chờ đợi"
+        },
+        "support": {
+          "title": "Tư vấn sức khỏe 24/7",
+          "subtitle": "Luôn đồng hành cùng sức khỏe của bạn"
+        }
+      }
+    },
+    "about": {
+      "title": "Phòng Khám An Khang",
+      "description": "Với hơn 15 năm kinh nghiệm, chúng tôi cam kết mang đến dịch vụ chăm sóc sức khỏe chất lượng cao với đội ngũ bác sĩ giàu kinh nghiệm và trang thiết bị hiện đại.",
+      "stats": {
+        "trustedPatients": "Bệnh nhân tin tưởng",
+        "experience": "Năm kinh nghiệm",
+        "specialistDoctors": "Bác sĩ chuyên khoa",
+        "satisfaction": "Hài lòng"
+      }
+    },
+    "specialties": {
+      "badge": "Chuyên khoa",
+      "title": "Chuyên khoa y tế",
+      "description": "Đội ngũ bác sĩ chuyên môn cao và trang thiết bị hiện đại hỗ trợ đa dạng dịch vụ chăm sóc sức khỏe.",
+      "viewAll": "Xem tất cả chuyên khoa →"
+    },
+    "featuredDoctors": {
+      "badge": "Đội ngũ bác sĩ",
+      "title": "Bác sĩ nổi bật",
+      "description": "Các bác sĩ được đánh giá cao tại MedCare",
+      "experienceYears": "{count} năm",
+      "consultationFee": "Phí tư vấn",
+      "viewAll": "Xem tất cả bác sĩ →"
+    },
+    "servicesPreview": {
+      "title": "Dịch vụ nổi bật",
+      "description": "Gói khám sức khỏe toàn diện với giá ưu đãi",
+      "registerNow": "Đăng ký ngay"
+    },
+    "doctorsPreview": {
+      "title": "Đội ngũ bác sĩ",
+      "description": "Bác sĩ giàu kinh nghiệm, tận tâm với nghề",
+      "experience": "Kinh nghiệm",
+      "viewMore": "Xem thêm"
+    },
+    "specialtiesPreview": {
+      "title": "Chuyên khoa nổi bật",
+      "description": "Đa dạng chuyên khoa với đội ngũ bác sĩ giàu kinh nghiệm",
+      "viewDetail": "Xem chi tiết"
+    },
+    "process": {
+      "title": "Quy trình đặt lịch",
+      "description": "4 bước đơn giản để đặt lịch khám",
+      "steps": {
+        "chooseDoctor": {
+          "title": "Chọn bác sĩ",
+          "description": "Chọn chuyên khoa và bác sĩ phù hợp"
+        },
+        "chooseTime": {
+          "title": "Chọn giờ khám",
+          "description": "Lựa chọn ngày giờ khám thuận tiện"
+        },
+        "enterInfo": {
+          "title": "Điền thông tin",
+          "description": "Cung cấp thông tin cá nhân"
+        },
+        "confirm": {
+          "title": "Xác nhận",
+          "description": "Nhận mã xác nhận qua SMS/Email"
+        }
+      }
+    },
+    "howItWorks": {
+      "badge": "Cách thức hoạt động",
+      "title": "Đặt lịch khám trong 4 bước đơn giản",
+      "description": "Chỉ với vài thao tác đơn giản là bạn đã có lịch hẹn với bác sĩ.",
+      "note": "Không cần phải xếp hàng chờ đợi.",
+      "doneMark": "✓",
+      "cta": "Đặt Khám Ngay",
+      "steps": {
+        "findDoctor": {
+          "title": "Tìm kiếm Bác sĩ",
+          "description": "Tìm kiếm theo chuyên khoa, xem hồ sơ và đánh giá của bệnh nhân, sau đó chọn bác sĩ phù hợp nhất với nhu cầu của bạn."
+        },
+        "bookAppointment": {
+          "title": "Đặt Lịch Khám",
+          "description": "Chọn ngày và giờ phù hợp với thời gian rảnh của bác sĩ, được xác nhận chỉ trong vài giây."
+        },
+        "getConfirmation": {
+          "title": "Nhận Xác Nhận",
+          "description": "Nhận xác nhận ngay lập tức qua Email hoặc SMS, cùng với lời nhắc tự động trước buổi khám của bạn."
+        },
+        "visitAndReview": {
+          "title": "Khám & Đánh giá",
+          "description": "Đến đúng giờ và được khám theo thứ tự. Sau buổi khám, hãy để lại đánh giá để giúp đỡ cộng đồng."
+        }
+      }
+    },
+    "testimonials": {
+      "title": "Đánh giá của bệnh nhân",
+      "description": "Trải nghiệm thực tế từ khách hàng",
+      "patientLabel": "Bệnh nhân"
+    },
+    "news": {
+      "title": "Tin tức y tế",
+      "description": "Cập nhật kiến thức sức khỏe mới nhất",
+      "readMore": "Đọc thêm"
+    },
+    "footer": {
+      "contact": "Liên hệ",
+      "fallbackAddress": "123 Đường ABC, Quận XYZ, TP. Hà Nội",
+      "hotline": "Hotline",
+      "mondayToSaturday": "T2-T7",
+      "sunday": "CN",
+      "quickLinks": "Liên kết nhanh",
+      "links": {
+        "about": "Giới thiệu",
+        "doctors": "Đội ngũ bác sĩ",
+        "services": "Dịch vụ khám",
+        "news": "Tin tức y tế",
+        "privacy": "Chính sách bảo mật",
+        "terms": "Điều khoản sử dụng"
+      },
+      "map": "Bản đồ",
+      "copyright": "© {year} {clinicName}. Đồng hành vì sức khỏe tốt hơn."
+    }
+  },
   "greeting": "Xin chào, tôi là một ứng dụng Next.js với hỗ trợ đa ngôn ngữ!",
   "admin": {
     "dashboard": {

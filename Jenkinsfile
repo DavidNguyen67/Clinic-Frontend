@@ -5,6 +5,7 @@ pipeline {
         DOCKERHUB_REPO        = 'davidnguyendev/frontend'
         APP_CONTAINER_NAME    = 'frontend'
         APP_PORT              = '3000'
+        BACKEND_PORT          = '8000'
         KEEP_IMAGES           = '3'
 
         // Credential IDs in Jenkins
@@ -57,7 +58,11 @@ pipeline {
                             withCredentials([file(credentialsId: "${env.ENV_FILE}", variable: 'DOTENV_FILE')]) {
                                 echo "🔨 Building image: ${env.IMAGE_TAG}"
                                 sh 'cp $DOTENV_FILE .env'
-                                sh "docker build -t ${env.IMAGE_TAG} ."
+                                sh """
+                                    docker build \
+                                    --build-arg NEXT_PUBLIC_API_URL=http://${VPS_HOST}:${BACKEND_PORT} \
+                                    -t ${env.IMAGE_TAG} .
+                                """
                                 sh "docker tag ${env.IMAGE_TAG} ${DOCKERHUB_REPO}:latest"
                                 sh 'rm -f .env'
                             }

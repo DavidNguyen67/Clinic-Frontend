@@ -1,4 +1,3 @@
-import About from "./About";
 import Banner from "./Banner";
 import Footer from "./Footer";
 import Services from "./Services";
@@ -8,6 +7,7 @@ import HowItWorksSection from "@/components/HowItWorksSection";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
 import NewsSection from "@/components/NewsSection";
 import { LanguageCode } from "@/i18n/config";
+import About from "@/components/LandingPage/About";
 
 interface LandingPageProps {
   locale: LanguageCode;

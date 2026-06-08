@@ -379,3 +379,10 @@ export type ClinicInformationResponse = {
     };
   };
 };
+
+export type StaticsTicsLandingResponse = {
+  trustedPatients: number;
+  experience: number;
+  specialistDoctors: number;
+  satisfaction: number;
+};

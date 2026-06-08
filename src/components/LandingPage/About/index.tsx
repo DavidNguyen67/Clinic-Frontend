@@ -1,8 +1,78 @@
-import { Award, Heart, Users, Stethoscope } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import type { StaticsTicsLandingResponse } from "@/interface/response";
+import { AboutStats } from "./AboutStats";
+import { ApiResponse } from "@/hooks/global";
 
-const About = () => {
-  const t = useTranslations("landingPage.about");
+interface LandingStaticsApiBody {
+  trustedPatients: number;
+  experience?: number;
+  experienceYears?: number;
+  specialistDoctors: number;
+  satisfaction?: number;
+  satisfactionRate?: number;
+}
+
+function isApiResponse(value: unknown): value is ApiResponse<LandingStaticsApiBody> {
+  return typeof value === "object" && value !== null && "body" in value;
+}
+
+async function fetchLandingStatics(): Promise<StaticsTicsLandingResponse | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/landing/statics`, {
+      next: {
+        revalidate: 1800,
+        tags: ["landing-statics"],
+      },
+    });
+
+    if (!res.ok) return null;
+
+    const data = (await res.json()) as ApiResponse<LandingStaticsApiBody> | LandingStaticsApiBody;
+    const body = isApiResponse(data) ? data.body : data;
+
+    return {
+      trustedPatients: body.trustedPatients,
+      experience: body.experience ?? body.experienceYears ?? 0,
+      specialistDoctors: body.specialistDoctors,
+      satisfaction: body.satisfaction ?? body.satisfactionRate ?? 0,
+    };
+  } catch (error) {
+    console.error("Error fetching landing statics:", error);
+    return null;
+  }
+}
+export const dynamic = "force-static";
+
+const About = async () => {
+  const t = await getTranslations("landingPage.about");
+  const statics = await fetchLandingStatics();
+
+  const stats = [
+    {
+      icon: "users" as const,
+      value: statics?.trustedPatients ?? 50000,
+      suffix: "+",
+      label: t("stats.trustedPatients"),
+    },
+    {
+      icon: "award" as const,
+      value: statics?.experience ?? 15,
+      suffix: "+",
+      label: t("stats.experience"),
+    },
+    {
+      icon: "stethoscope" as const,
+      value: statics?.specialistDoctors ?? 30,
+      suffix: "+",
+      label: t("stats.specialistDoctors"),
+    },
+    {
+      icon: "heart" as const,
+      value: statics?.satisfaction ?? 98,
+      suffix: "%",
+      label: t("stats.satisfaction"),
+    },
+  ];
 
   return (
     <div className="py-16 ">
@@ -12,41 +82,10 @@ const About = () => {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">{t("description")}</p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-8">
-          {[
-            {
-              icon: <Users className="w-12 h-12" />,
-              number: "50,000+",
-              label: t("stats.trustedPatients"),
-            },
-            {
-              icon: <Award className="w-12 h-12" />,
-              number: "15+",
-              label: t("stats.experience"),
-            },
-            {
-              icon: <Stethoscope className="w-12 h-12" />,
-              number: "30+",
-              label: t("stats.specialistDoctors"),
-            },
-            {
-              icon: <Heart className="w-12 h-12" />,
-              number: "98%",
-              label: t("stats.satisfaction"),
-            },
-          ].map((stat, index) => (
-            <div
-              key={index}
-              className="text-center p-[2.4rem] bg-linear-to-br from-blue-50 to-indigo-50 rounded-[1.6rem] transition shadow-base-1"
-            >
-              <div className="text-blue-600 flex justify-center mb-4">{stat.icon}</div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">{stat.number}</div>
-              <div className="text-gray-600">{stat.label}</div>
-            </div>
-          ))}
-        </div>
+        <AboutStats stats={stats} />
       </div>
     </div>
   );
 };
+
 export default About;

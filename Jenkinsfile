@@ -4,26 +4,18 @@ pipeline {
     environment {
         DOCKERHUB_REPO        = 'davidnguyendev/frontend'
         APP_CONTAINER_NAME    = 'frontend'
-        APP_PORT              = '3000'
-        BACKEND_PORT          = '8080'
-        KEEP_IMAGES           = '3'
+        APP_PORT              = '8080'
+        K8S_NAMESPACE         = 'app'
+        K8S_DEPLOYMENT        = 'frontend'
+        K8S_CONTAINER         = 'frontend'
 
         // Credential IDs in Jenkins
         DOCKERHUB_CREDS       = 'dockerhub-credentials'
-        SSH_CREDS             = 'deploy-frontend-ssh'
         TELEGRAM_BOT_TOKEN    = 'telegram-bot-token'
         TELEGRAM_CHAT_ID      = 'telegram-chat-id'
         JENKINS_API_CREDS     = 'jenkins-api-credentials'
         ENV_FILE              = 'frontend-env'
-
-        // VPS connection details
-        VPS_HOST              = '178.128.118.157'
-
-        APP_DIR               = '/opt/app/frontend'
-        LOCAL_DEPLOY_SCRIPT   = "/tmp/deploy_${APP_CONTAINER_NAME}_${BUILD_TAG}.sh"
-        LOCAL_HEALTH_SCRIPT   = "/tmp/healthcheck_${APP_CONTAINER_NAME}_${BUILD_TAG}.sh"
-        VPS_DEPLOY_SCRIPT     = "/tmp/deploy_${APP_CONTAINER_NAME}_${BUILD_TAG}.sh"
-        VPS_HEALTH_SCRIPT     = "/tmp/healthcheck_${APP_CONTAINER_NAME}_${BUILD_TAG}.sh"
+        KUBECONFIG_CREDS      = 'kubeconfig-credentials'
     }
 
     triggers { githubPush() }
@@ -58,11 +50,7 @@ pipeline {
                             withCredentials([file(credentialsId: "${env.ENV_FILE}", variable: 'DOTENV_FILE')]) {
                                 echo "🔨 Building image: ${env.IMAGE_TAG}"
                                 sh 'cp $DOTENV_FILE .env'
-                                sh """
-                                    docker build \
-                                    --build-arg NEXT_PUBLIC_API_URL=http://${VPS_HOST}:${BACKEND_PORT} \
-                                    -t ${env.IMAGE_TAG} .
-                                """
+                                sh "docker build -t ${env.IMAGE_TAG} ."
                                 sh "docker tag ${env.IMAGE_TAG} ${DOCKERHUB_REPO}:latest"
                                 sh 'rm -f .env'
                             }
@@ -87,80 +75,47 @@ pipeline {
                     }
                 }
 
-                stage('🌐 Deploy to VPS') {
-                    steps {
-                        withCredentials([
-                            sshUserPrivateKey(
-                                credentialsId: "${SSH_CREDS}",
-                                keyFileVariable: 'SSH_KEY',
-                                usernameVariable: 'SSH_USER'
-                            ),
-                            file(credentialsId: "${ENV_FILE}", variable: 'DOTENV_FILE'),
-                            usernamePassword(credentialsId: "${DOCKERHUB_CREDS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')
-                        ]) {
-                            script {
-                                def sshOpts = "-i \$SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=10"
-                                def target  = "\$SSH_USER@${VPS_HOST}"
+               stage('🌐 Deploy to k3s') {
+                   steps {
+                       withCredentials([
+                           file(credentialsId: "${KUBECONFIG_CREDS}", variable: 'KUBECONFIG_FILE'),
+                           file(credentialsId: "${ENV_FILE}", variable: 'DOTENV_FILE')
+                       ]) {
+                           script {
+                               sh """
+                                   kubectl --kubeconfig "\$KUBECONFIG_FILE" apply -f k8s/namespace.yaml
 
-                                sh """
-                                    ssh ${sshOpts} ${target} "mkdir -p ${APP_DIR} && chmod 644 ${APP_DIR}/.env 2>/dev/null || true"
-                                    scp ${sshOpts} "\$DOTENV_FILE" ${target}:${APP_DIR}/.env
-                                """
+                                   kubectl --kubeconfig "\$KUBECONFIG_FILE" -n ${K8S_NAMESPACE} create secret generic
+                                    frontend-env \
+                                       --from-env-file="\$DOTENV_FILE" \
+                                       --dry-run=client -o yaml | \
+                                   kubectl --kubeconfig "\$KUBECONFIG_FILE" apply -f -
 
-                                sh """
-                                    sed \\
-                                        -e 's|__IMAGE_TAG__|${env.IMAGE_TAG}|g' \\
-                                        -e 's|__DOCKERHUB_REPO__|${DOCKERHUB_REPO}|g' \\
-                                        -e 's|__APP_NAME__|${APP_CONTAINER_NAME}|g' \\
-                                        -e 's|__APP_PORT__|${APP_PORT}|g' \\
-                                        -e 's|__KEEP_IMAGES__|${KEEP_IMAGES}|g' \\
-                                        -e 's|__APP_DIR__|${APP_DIR}|g' \\
-                                        scripts/deploy.sh > ${LOCAL_DEPLOY_SCRIPT}
+                                   kubectl --kubeconfig "\$KUBECONFIG_FILE" -n ${K8S_NAMESPACE} apply -f k8s/
 
-                                    sed \\
-                                        -e 's|__IMAGE_TAG__|${env.IMAGE_TAG}|g' \\
-                                        -e 's|__DOCKERHUB_REPO__|${DOCKERHUB_REPO}|g' \\
-                                        -e 's|__APP_NAME__|${APP_CONTAINER_NAME}|g' \\
-                                        -e 's|__APP_PORT__|${APP_PORT}|g' \\
-                                        -e 's|__APP_DIR__|${APP_DIR}|g' \\
-                                        -e 's|__BUILD_TAG__|${BUILD_TAG}|g' \\
-                                        scripts/healthcheck.sh > ${LOCAL_HEALTH_SCRIPT}
+                                   kubectl --kubeconfig "\$KUBECONFIG_FILE" -n ${K8S_NAMESPACE} set image deployment/${K8S_DEPLOYMENT} \
+                                       ${K8S_CONTAINER}=${env.IMAGE_TAG}
 
-                                    test -s ${LOCAL_DEPLOY_SCRIPT} || (echo "❌ deploy script empty!"      && exit 1)
-                                    test -s ${LOCAL_HEALTH_SCRIPT} || (echo "❌ healthcheck script empty!" && exit 1)
-                                """
+                                   kubectl --kubeconfig "\$KUBECONFIG_FILE" -n ${K8S_NAMESPACE} rollout status deployment/${K8S_DEPLOYMENT} --timeout=180s
+                               """
+                           }
+                       }
+                   }
+               }
 
-                                sh "scp ${sshOpts} ${LOCAL_DEPLOY_SCRIPT} ${target}:${VPS_DEPLOY_SCRIPT}"
-                                sh "scp ${sshOpts} ${LOCAL_HEALTH_SCRIPT} ${target}:${VPS_HEALTH_SCRIPT}"
-                                sh "rm -f ${LOCAL_DEPLOY_SCRIPT} ${LOCAL_HEALTH_SCRIPT}"
-
-                                sh """
-                                    ssh ${sshOpts} ${target} \\
-                                        "DOCKER_USER_ARG=\$DOCKER_USER DOCKER_PASS_ARG=\$DOCKER_PASS bash ${VPS_DEPLOY_SCRIPT}"
-                                """
-                            }
-                        }
-                    }
-                }
-
-                stage('🩺 Health Check') {
-                    steps {
-                        withCredentials([
-                            sshUserPrivateKey(
-                                credentialsId: "${SSH_CREDS}",
-                                keyFileVariable: 'SSH_KEY',
-                                usernameVariable: 'SSH_USER'
-                            )
-                        ]) {
-                            script {
-                                def sshOpts = "-i \$SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=10"
-                                def target  = "\$SSH_USER@${VPS_HOST}"
-
-                                sh "ssh ${sshOpts} ${target} \"bash ${VPS_HEALTH_SCRIPT}\""
-                            }
-                        }
-                    }
-                }
+               stage('🩺 Health Check') {
+                   steps {
+                       withCredentials([
+                           file(credentialsId: "${KUBECONFIG_CREDS}", variable: 'KUBECONFIG_FILE')
+                       ]) {
+                           sh """
+                               kubectl --kubeconfig "\$KUBECONFIG_FILE" -n ${K8S_NAMESPACE} get deployment ${K8S_DEPLOYMENT}
+                               kubectl --kubeconfig "\$KUBECONFIG_FILE" -n ${K8S_NAMESPACE} get pods -l app=${K8S_DEPLOYMENT}
+                               kubectl --kubeconfig "\$KUBECONFIG_FILE" -n ${K8S_NAMESPACE} rollout status deployment/${K8S_DEPLOYMENT} --timeout=180s
+                           """
+                       }
+                   }
+               }
             }
         }
     }

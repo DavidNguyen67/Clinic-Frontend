@@ -1,0 +1,15 @@
+.radio-group {
+  .radio-option {
+    .radio-input {
+      border-color: #222020;
+      &.checked {
+        background-color: #315eff;
+        border-color: #315eff;
+      }
+    }
+  }
+
+  .radio-label {
+    color: #a0aec0;
+  }
+}

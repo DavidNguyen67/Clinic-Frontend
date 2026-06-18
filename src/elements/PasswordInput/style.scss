@@ -1,0 +1,33 @@
+.password-input.input-container {
+  position: relative;
+
+  &[data-has-value='true'] {
+    .input-place-holder {
+      color: var(--text-2) !important;
+    }
+  }
+  input {
+    &:-webkit-autofill {
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .input-place-holder {
+    @apply text-[2rem] font-[500] leading-[2.4rem] text-[--text-2] transition-all;
+    color: var(--text-2);
+  }
+
+  .label-inside-animation {
+    position: absolute;
+    transition: all 0.2s ease;
+    color: var(--text-58);
+    @apply text-[2rem];
+  }
+}
+.password-input.input-container .onChangePassword {
+  &.has-error {
+    --border-color: #ed3636;
+    --icon-color: #ed3636;
+    --shadow-color: transparent;
+  }
+}

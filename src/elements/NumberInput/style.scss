@@ -1,0 +1,33 @@
+.numeric-container {
+  --border-color: var(--border-10);
+
+  .dark-variables & {
+    border: 1px solid var(--border-color);
+  }
+  &:focus-within {
+    --border-color: var(--primary-2);
+  }
+
+  &.has-error {
+    --border-color: #ed3636;
+    --icon-color: #ed3636;
+    --shadow-color: transparent;
+    &:focus-within {
+      --shadow-color: #fee4e2;
+    }
+  }
+  input::placeholder {
+    color: var(--text-2) !important;
+  }
+  .numeric-input {
+    outline: none;
+    height: 100%;
+    flex: 1;
+    font-size: 1.6rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 125%;
+    min-width: 0;
+    background-color: transparent !important;
+  }
+}

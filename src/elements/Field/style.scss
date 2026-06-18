@@ -1,0 +1,17 @@
+.field-container {
+  min-width: 0;
+  width: 100%;
+  .label {
+    margin: 5px 0px;
+    margin-right: 5px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .error-message {
+    color: #ED3636;
+    margin-top: 1.2rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    padding-left: 0.8rem;
+  }
+}

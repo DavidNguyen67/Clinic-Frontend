@@ -1,0 +1,156 @@
+.input-container {
+  &[data-label-placement="inside"] {
+    .label-inside-animation {
+      position: absolute;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      color: var(--text-2);
+      font-size: 1.2rem !important;
+      transform: translate(0, -100%);
+      color: var(--text-58);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-2) !important;
+      @apply text-[2rem] font-[500] leading-[2.4rem] transition-all;
+    }
+    .input-section-label-inside {
+      position: relative;
+      display: flex;
+      padding: 1.6rem;
+      align-items: center;
+      gap: 0.8rem;
+      align-self: stretch;
+      transition: all 0.2s;
+      background: var(--bg-new-item);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      height: 7rem;
+
+      input,
+      textarea {
+        outline: none;
+        height: 100%;
+        flex: 1;
+        font-size: 2rem;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 2.4rem;
+        min-width: 0;
+        background-color: transparent !important;
+        caret-color: var(--caret-color);
+      }
+      textarea {
+        margin-top: 2.2rem;
+      }
+    }
+
+    .input-label-inside {
+      position: relative;
+      top: 1rem;
+    }
+  }
+
+  display: flex;
+  flex-direction: column;
+  --border-color: var(--border-10);
+  --shadow-color: transparent;
+  --icon-color: white;
+  color: var(--text-color-1);
+
+  .input-label {
+    font-size: 1.3rem;
+    line-height: 1.3rem;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .input-section {
+    display: flex;
+    padding: 1.6rem;
+    align-items: center;
+    gap: 0.8rem;
+    align-self: stretch;
+    transition: all 0.2s;
+    background: var(--bg-item);
+    border: 1px solid var(--border-color);
+    @apply rounded-[0.8rem];
+    height: 5.2rem;
+    input,
+    textarea {
+      outline: none;
+      height: 100%;
+      flex: 1;
+      font-size: 1.6rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 125%;
+      min-width: 0;
+      background-color: transparent !important;
+    }
+    svg {
+      color: var(--text-2);
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  .input-section input::placeholder,
+  .input-section textarea::placeholder {
+    color: #808080; /* Thay đổi màu sắc của placeholder */
+    opacity: 1; /* Đảm bảo rằng màu sắc được áp dụng đầy đủ */
+    font-size: 1.6rem;
+    font-weight: 500;
+  }
+
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-4) inset !important;
+  }
+
+  &:focus-within {
+    --border-color: var(--primary-2);
+  }
+
+  &.has-error {
+    --border-color: var(--border-46);
+    --icon-color: #ed3636;
+    --shadow-color: transparent;
+    // &:focus-within {
+    //   --shadow-color: #fee4e2;
+    // }
+  }
+  .leading-icon {
+    margin-left: 0rem;
+  }
+
+  .help-icon {
+    margin-right: 0;
+  }
+
+  .error-message {
+    color: #ed3636;
+    margin-top: 1.2rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    padding-left: 0.8rem;
+  }
+}
+
+.login-input {
+  @apply border  border-[var(--border-login-input)] rounded-[0.8rem];
+}
+
+.textarea-hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  resize: none;
+}
+.textarea-hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.input-error::placeholder {
+  color: var(--red-night) !important;
+  opacity: 1;
+}

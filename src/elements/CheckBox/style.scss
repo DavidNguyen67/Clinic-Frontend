@@ -1,0 +1,40 @@
+.checkbox {
+  display: flex;
+  user-select: none;
+  align-items: center;
+  cursor: pointer;
+
+  --square-size: 2rem;
+
+  .square {
+    border-radius: 4px;
+    margin-right: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--square-size);
+    width: var(--square-size);
+    background-color: var(--bg-3);
+
+    svg {
+      height: var(--square-size - 1rem);
+      width: var(--square-size - 1rem);
+      color: var(--text-3);
+    }
+
+    &.checked {
+      .dark-variable & {
+        background-color: var(--primary-1);
+      }
+      .light-variable & {
+        background-color: var(--primary-2);
+      }
+    }
+  }
+
+  .label {
+    color: var(white);
+    font-size: 1.3rem;
+    font-weight: 400;
+  }
+}

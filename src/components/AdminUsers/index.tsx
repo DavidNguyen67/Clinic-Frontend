@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useFormik } from "formik";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { userFormSchema, UserFormValues } from "./config";
+import UserForm from "./UserForm";
 import {
   Select,
   SelectContent,
@@ -38,7 +42,9 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { ROLE_NAME, USER_STATUS } from "@/common";
 import { cn } from "@/lib/utils";
-
+import { useUsers } from "./hooks";
+import { useModal } from "@/hooks/common";
+import ModalProvider from "../ModalProvider";
 interface UserItem {
   id: string;
   fullName: string;
@@ -140,6 +146,11 @@ const statusBadge: Record<string, string> = {
 };
 
 export default function AdminUsers() {
+  const useCreateModal = useModal();
+  const handleShow = () => {
+    useCreateModal.handleShow();
+  };
+
   const t = useTranslations("admin");
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -148,12 +159,20 @@ export default function AdminUsers() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserItem | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    role: ROLE_NAME.PATIENT,
-    status: USER_STATUS.ACTIVE,
+  const formik = useFormik<UserFormValues>({
+    initialValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      role: ROLE_NAME.PATIENT,
+      status: USER_STATUS.ACTIVE,
+    },
+    validationSchema: userFormSchema,
+    onSubmit: async (values, helpers) => {
+      console.log("[Users] submit:", editingUser ? "edit" : "add", values);
+      setDialogOpen(false);
+      helpers.setSubmitting(false);
+    },
   });
 
   const filtered = useMemo(() => {
@@ -173,31 +192,34 @@ export default function AdminUsers() {
 
   const openAdd = () => {
     setEditingUser(null);
-    setForm({
-      fullName: "",
-      email: "",
-      phone: "",
-      role: ROLE_NAME.PATIENT,
-      status: USER_STATUS.ACTIVE,
+    formik.resetForm({
+      values: {
+        fullName: "",
+        email: "",
+        phone: "",
+        role: ROLE_NAME.PATIENT,
+        status: USER_STATUS.ACTIVE,
+      },
     });
     setDialogOpen(true);
   };
 
   const openEdit = (user: UserItem) => {
     setEditingUser(user);
-    setForm({
-      fullName: user.fullName,
-      email: user.email,
-      phone: user.phone,
-      role: user.role as typeof ROLE_NAME.ADMIN,
-      status: user.status as typeof USER_STATUS.ACTIVE,
+    formik.resetForm({
+      values: {
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        role: user.role as ROLE_NAME,
+        status: user.status as USER_STATUS,
+      },
     });
     setDialogOpen(true);
   };
 
   const handleSubmit = () => {
-    console.log("[Users] submit:", editingUser ? "edit" : "add", form);
-    setDialogOpen(false);
+    formik.handleSubmit();
   };
 
   const handleDelete = (id: string) => {
@@ -212,7 +234,7 @@ export default function AdminUsers() {
           <h1 className="text-2xl font-heading font-semibold text-gray-900">{t("users.title")}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{t("users.subtitle")}</p>
         </div>
-        <Button onClick={openAdd} size="sm">
+        <Button onClick={handleShow} size="sm">
           <Plus className="w-4 h-4" />
           {t("users.addUser")}
         </Button>
@@ -368,73 +390,99 @@ export default function AdminUsers() {
             <DialogTitle>{editingUser ? t("users.editUser") : t("users.addUser")}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
-            <div>
-              <label className="text-sm font-medium">{t("users.name")}</label>
-              <Input
-                value={form.fullName}
-                onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                placeholder="Full name"
-                className="mt-1 h-8"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">{t("users.email")}</label>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="email@example.com"
-                className="mt-1 h-8"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">{t("users.phone")}</label>
-              <Input
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                placeholder="0901234567"
-                className="mt-1 h-8"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">{t("users.role")}</label>
-              <Select
-                value={form.role}
-                onValueChange={(v: ROLE_NAME) => setForm({ ...form, role: v })}
-              >
-                <SelectTrigger className="mt-1 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ROLE_NAME.ADMIN}>Admin</SelectItem>
-                  <SelectItem value={ROLE_NAME.DOCTOR}>Doctor</SelectItem>
-                  <SelectItem value={ROLE_NAME.PATIENT}>Patient</SelectItem>
-                  <SelectItem value={ROLE_NAME.STAFF}>Staff</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-medium">{t("users.status")}</label>
-              <Select
-                value={form.status}
-                onValueChange={(v: USER_STATUS) => setForm({ ...form, status: v })}
-              >
-                <SelectTrigger className="mt-1 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={USER_STATUS.ACTIVE}>Active</SelectItem>
-                  <SelectItem value={USER_STATUS.INACTIVE}>Inactive</SelectItem>
-                  <SelectItem value={USER_STATUS.BANNED}>Banned</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <FieldGroup>
+              <Field>
+                <FieldLabel>{t("users.name")}</FieldLabel>
+                <Input
+                  {...formik.getFieldProps("fullName")}
+                  placeholder="Full name"
+                  className="h-8"
+                />
+                {formik.touched.fullName && formik.errors.fullName && (
+                  <FieldDescription className="text-red-500">
+                    {formik.errors.fullName}
+                  </FieldDescription>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel>{t("users.email")}</FieldLabel>
+                <Input
+                  type="email"
+                  {...formik.getFieldProps("email")}
+                  placeholder="email@example.com"
+                  className="h-8"
+                />
+                {formik.touched.email && formik.errors.email && (
+                  <FieldDescription className="text-red-500">
+                    {formik.errors.email}
+                  </FieldDescription>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel>{t("users.phone")}</FieldLabel>
+                <Input
+                  {...formik.getFieldProps("phone")}
+                  placeholder="0901234567"
+                  className="h-8"
+                />
+                {formik.touched.phone && formik.errors.phone && (
+                  <FieldDescription className="text-red-500">
+                    {formik.errors.phone}
+                  </FieldDescription>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel>{t("users.role")}</FieldLabel>
+                <Select
+                  value={formik.values.role}
+                  onValueChange={(v: ROLE_NAME) => formik.setFieldValue("role", v)}
+                >
+                  <SelectTrigger className="h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ROLE_NAME.ADMIN}>Admin</SelectItem>
+                    <SelectItem value={ROLE_NAME.DOCTOR}>Doctor</SelectItem>
+                    <SelectItem value={ROLE_NAME.PATIENT}>Patient</SelectItem>
+                    <SelectItem value={ROLE_NAME.STAFF}>Staff</SelectItem>
+                  </SelectContent>
+                </Select>
+                {formik.touched.role && formik.errors.role && (
+                  <FieldDescription className="text-red-500">{formik.errors.role}</FieldDescription>
+                )}
+              </Field>
+              <Field>
+                <FieldLabel>{t("users.status")}</FieldLabel>
+                <Select
+                  value={formik.values.status}
+                  onValueChange={(v: USER_STATUS) => formik.setFieldValue("status", v)}
+                >
+                  <SelectTrigger className="h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={USER_STATUS.ACTIVE}>Active</SelectItem>
+                    <SelectItem value={USER_STATUS.INACTIVE}>Inactive</SelectItem>
+                    <SelectItem value={USER_STATUS.BANNED}>Banned</SelectItem>
+                  </SelectContent>
+                </Select>
+                {formik.touched.status && formik.errors.status && (
+                  <FieldDescription className="text-red-500">
+                    {formik.errors.status}
+                  </FieldDescription>
+                )}
+              </Field>
+            </FieldGroup>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDialogOpen(false)}
+              disabled={formik.isSubmitting}
+            >
               {t("users.cancel")}
             </Button>
-            <Button onClick={handleSubmit}>
+            <Button onClick={handleSubmit} disabled={formik.isSubmitting}>
               {editingUser ? t("users.save") : t("users.create")}
             </Button>
           </DialogFooter>
@@ -460,6 +508,9 @@ export default function AdminUsers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ModalProvider show={useCreateModal.show} onClose={useCreateModal.handleHide}>
+        <UserForm />
+      </ModalProvider>
     </div>
   );
 }

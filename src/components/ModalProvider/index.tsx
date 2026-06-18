@@ -1,8 +1,8 @@
-import React, { Fragment, useEffect } from 'react';
-import { Dialog, Transition, DialogPanel, TransitionChild } from '@headlessui/react';
+import React, { Fragment, useEffect } from "react";
+import { Dialog, Transition, DialogPanel, TransitionChild } from "@headlessui/react";
 
-import clsx from 'clsx';
-import Close from '@/assets/svg/x-circle.svg';
+import clsx from "clsx";
+import { X } from "lucide-react";
 
 interface ModalProviderProps {
   show?: boolean;
@@ -20,15 +20,15 @@ const ModalProvider = (props: ModalProviderProps) => {
 
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && props.show) {
+      if (event.key === "Escape" && props.show) {
         handleClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscKey);
+    document.addEventListener("keydown", handleEscKey);
 
     return () => {
-      document.removeEventListener('keydown', handleEscKey);
+      document.removeEventListener("keydown", handleEscKey);
     };
   }, [props.show]);
 
@@ -44,7 +44,7 @@ const ModalProvider = (props: ModalProviderProps) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-white bg-opacity-[40%] backdrop-blur-[2px]" />
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-[2px]" />
         </TransitionChild>
 
         <div className="modal fixed inset-0 overflow-y-auto">
@@ -61,7 +61,7 @@ const ModalProvider = (props: ModalProviderProps) => {
               <DialogPanel
                 className={clsx(
                   `w-fit transform text-left rounded-[0.8rem] align-middle transition-all modal-dialog overflow-hidden shadow-base-1`,
-                  props.dialogClass,
+                  props.dialogClass
                 )}
               >
                 {props?.closeBtn && (
@@ -69,7 +69,7 @@ const ModalProvider = (props: ModalProviderProps) => {
                     className="absolute top-2 right-2 text-[--text-color-1] cursor-pointer z-10 w-[1.8rem] h-[1.8rem] sm:w-[4rem] sm:h-[4rem]"
                     onClick={() => props.onClose?.(false)}
                   >
-                    <Close className="h-full w-full" />
+                    <X className="h-full w-full" />
                   </div>
                 )}
                 {props.children}

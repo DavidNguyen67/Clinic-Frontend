@@ -2,28 +2,28 @@ pipeline {
     agent any
 
     environment {
-        // Docker Hub
-        DOCKERHUB_REPO  = 'davidnguyendev/frontend'
-        DOCKERHUB_CREDS = 'dockerhub-credentials'
+            // Docker Hub
+            DOCKERHUB_REPO  = 'davidnguyendev/frontend'
+            DOCKERHUB_CREDS = 'dockerhub-credentials'
 
-        // Jenkins Secret File chứa .env frontend
-        ENV_FILE = 'frontend-env'
+            // File .env frontend
+            ENV_FILE = 'frontend-env'
 
-        // Jenkins Secret File chứa kubeconfig
-        KUBECONFIG_CREDS = 'k8s-kubeconfig'
+            // Kubernetes
+            K8S_HOST       = '178.128.118.157'
+            K8S_NAMESPACE  = 'staging'
+            K8S_DEPLOYMENT = 'clinic-frontend-deployment'
+            K8S_CONTAINER  = 'frontend'
 
-        // Kubernetes
-        K8S_NAMESPACE  = 'staging'
-        K8S_DEPLOYMENT = 'clinic-frontend-deployment'
-        K8S_CONTAINER  = 'frontend'
+            // SSH vào VPS K3s
+            SSH_CREDS = 'deploy-frontend-ssh'
 
-        // Telegram
-        TELEGRAM_BOT_TOKEN = 'telegram-bot-token'
-        TELEGRAM_CHAT_ID   = 'telegram-chat-id'
+            // Telegram
+            TELEGRAM_BOT_TOKEN = 'telegram-bot-token'
+            TELEGRAM_CHAT_ID   = 'telegram-chat-id'
 
-        // Dùng để lấy Jenkins console log khi build lỗi
-        JENKINS_API_CREDS = 'jenkins-api-credentials'
-    }
+            JENKINS_API_CREDS = 'jenkins-api-credentials'
+        }
 
     triggers {
         githubPush()
@@ -98,23 +98,29 @@ pipeline {
         stage('Deploy Kubernetes') {
             steps {
                 withCredentials([
-                    file(
-                        credentialsId: "${KUBECONFIG_CREDS}",
-                        variable: 'KUBECONFIG_FILE'
+                    sshUserPrivateKey(
+                        credentialsId: "${SSH_CREDS}",
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
                     )
                 ]) {
                     sh '''
-                        export KUBECONFIG="$KUBECONFIG_FILE"
-
-                        kubectl set image \
-                            deployment/"$K8S_DEPLOYMENT" \
-                            "$K8S_CONTAINER"="$IMAGE_TAG" \
-                            -n "$K8S_NAMESPACE"
-
-                        kubectl rollout status \
-                            deployment/"$K8S_DEPLOYMENT" \
-                            -n "$K8S_NAMESPACE" \
-                            --timeout=180s
+                        ssh \
+                            -i "$SSH_KEY" \
+                            -o StrictHostKeyChecking=no \
+                            -o ConnectTimeout=10 \
+                            "$SSH_USER@$K8S_HOST" \
+                            "
+                                sudo k3s kubectl set image \
+                                    deployment/$K8S_DEPLOYMENT \
+                                    $K8S_CONTAINER=$IMAGE_TAG \
+                                    -n $K8S_NAMESPACE \
+                                && \
+                                sudo k3s kubectl rollout status \
+                                    deployment/$K8S_DEPLOYMENT \
+                                    -n $K8S_NAMESPACE \
+                                    --timeout=180s
+                            "
                     '''
                 }
             }

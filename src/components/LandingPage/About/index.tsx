@@ -11,25 +11,25 @@ const About = async () => {
   const stats = [
     {
       icon: "users" as const,
-      value: statics?.trustedPatients ?? 50000,
+      value: statics?.trustedPatients ?? 0,
       suffix: "+",
       label: t("stats.trustedPatients"),
     },
     {
       icon: "award" as const,
-      value: statics?.experience ?? 15,
+      value: statics?.experience ?? 0,
       suffix: "+",
       label: t("stats.experience"),
     },
     {
       icon: "stethoscope" as const,
-      value: statics?.specialistDoctors ?? 30,
+      value: statics?.specialistDoctors ?? 0,
       suffix: "+",
       label: t("stats.specialistDoctors"),
     },
     {
       icon: "heart" as const,
-      value: statics?.satisfaction ?? 98,
+      value: statics?.satisfaction ?? 0,
       suffix: "%",
       label: t("stats.satisfaction"),
     },

@@ -65,7 +65,7 @@ Example:
       Authorization: `Bearer ${process.env.VILAO_API_KEY}`,
     },
     body: JSON.stringify({
-      model: "cd/gpt-5.4",
+      model: process.env.VILAO_AI_MODEL,
       messages: [
         {
           role: "system",

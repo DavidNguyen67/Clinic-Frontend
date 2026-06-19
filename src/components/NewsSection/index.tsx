@@ -9,22 +9,34 @@ interface NewsSectionProps {
 const NEWS_REVALIDATE_SECONDS = 60 * 30;
 
 export async function fetchNews(locale: LanguageCode): Promise<NewsResponse> {
-  const res = await fetch(
-    `https://gnews.io/api/v4/top-headlines?category=health&lang=${locale}&max=10&apikey=${process.env.GNEWS_API_KEY}`,
-    {
-      next: {
-        revalidate: NEWS_REVALIDATE_SECONDS,
-        tags: [`news-${locale}`],
-      },
+  try {
+    const res = await fetch(
+      `https://gnews.io/api/v4/top-headlines?category=health&lang=${locale}&max=10&apikey=${process.env.GNEWS_API_KEY}`,
+      {
+        signal: AbortSignal.timeout(30_000),
+
+        next: {
+          revalidate: NEWS_REVALIDATE_SECONDS,
+          tags: [`news-${locale}`],
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("[fetchNews] failed:", res.status, res.statusText);
+      throw new Error(`Failed to fetch news: ${res.status}`);
     }
-  );
 
-  if (!res.ok) {
-    console.error("[fetchNews] failed:", res.status, res.statusText);
-    throw new Error(`Failed to fetch news: ${res.status}`);
+    return await res.json();
+  } catch (error) {
+    if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
+      console.error("[fetchNews] timeout after 30 seconds");
+      throw new Error("GNews API request timed out after 30 seconds");
+    }
+
+    console.error("[fetchNews] request failed:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 async function NewsSection({ locale }: NewsSectionProps) {

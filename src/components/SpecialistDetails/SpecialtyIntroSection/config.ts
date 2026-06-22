@@ -23,76 +23,166 @@ export async function _fetchSpecialtyIntro(
   specialtyType: SPECIALTY_TYPE,
   locale: LanguageCode = "vi"
 ): Promise<SpecialtyOverviewContent> {
-  const label = SPECIALTY_LABELS[specialtyType][locale];
-
-  const prompt =
-    locale === "vi"
-      ? `Bạn là chuyên gia y tế. Hãy tạo nội dung giới thiệu chuyên khoa ${label} theo định dạng JSON sau, KHÔNG có markdown hay backtick:
-    {
-      "intro": "đoạn giới thiệu 100-120 từ, thân thiện, dễ hiểu",
-      "treatments": ["tên bệnh 1", "tên bệnh 2", ...], (8 bệnh phổ biến nhất)
-      "symptoms": [
-        { "text": "triệu chứng", "severity": "high" | "medium" | "low" }
-      ], (6 triệu chứng, severity: high=cần khám ngay, medium=nên khám, low=theo dõi)
-      "riskFactors": ["yếu tố 1", "yếu tố 2", ...] (8 yếu tố nguy cơ)
-    }`
-      : `You are a medical expert. Generate introduction content for the ${label} specialty in JSON format below, NO markdown or backticks:
-    {
-      "intro": "100-120 word introduction, friendly tone",
-      "treatments": ["condition 1", "condition 2", ...], (8 most common conditions)
-      "symptoms": [
-        { "text": "symptom", "severity": "high" | "medium" | "low" }
-      ], (6 symptoms, severity: high=urgent, medium=should visit, low=monitor)
-      "riskFactors": ["factor 1", "factor 2", ...] (8 risk factors)
-    }`;
-
-  const res = await fetch("https://api.vilao.ai/v1/chat/completions", {
-    method: METHOD.POST,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.VILAO_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: process.env.VILAO_AI_MODEL,
-      messages: [
-        {
-          role: "system",
-          content:
-            "Chỉ trả về JSON thuần, không có markdown, không có backtick, không có giải thích.",
-        },
-        { role: "user", content: prompt },
-      ],
-      max_tokens: 800,
-      temperature: 0.7,
-    }),
+  console.log("[fetchSpecialtyIntro] START", {
+    specialtyType,
+    locale,
+    time: new Date().toISOString(),
+    hasApiKey: Boolean(process.env.VILAO_API_KEY),
+    model: process.env.VILAO_AI_MODEL,
   });
 
-  if (!res.ok) throw new Error(`ViLao API error: ${res.status}`);
-
-  const data: ViLaoResponse = await res.json();
-  console.log("Response vilao", data);
-  const raw = data.choices[0]?.message?.content ?? "{}";
-
   try {
+    console.log("[fetchSpecialtyIntro] Calling ViLao...");
+
+    const res = await fetch("https://api.vilao.ai/v1/chat/completions", {
+      method: METHOD.POST,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.VILAO_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: process.env.VILAO_AI_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "Chỉ trả về JSON thuần, không có markdown, không có backtick, không có giải thích.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: 800,
+        temperature: 0.7,
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(30_000),
+    });
+
+    console.log("[fetchSpecialtyIntro] ViLao status:", res.status);
+
+    if (!res.ok) {
+      const errorBody = await res.text();
+
+      console.error("[fetchSpecialtyIntro] ViLao error:", {
+        status: res.status,
+        body: errorBody,
+      });
+
+      throw new Error(`ViLao API error: ${res.status}`);
+    }
+
+    const data: ViLaoResponse = await res.json();
+
+    console.log("[fetchSpecialtyIntro] ViLao success:", {
+      choices: data.choices?.length,
+      hasContent: Boolean(data.choices?.[0]?.message?.content),
+    });
+
+    const raw = data.choices?.[0]?.message?.content ?? "{}";
     const cleaned = raw.replace(/```json|```/g, "").trim();
+
     return JSON.parse(cleaned) as SpecialtyOverviewContent;
-  } catch {
-    console.error("[fetchSpecialtyIntro] JSON parse failed:", raw);
-    return { intro: raw, treatments: [], symptoms: [], riskFactors: [] };
+  } catch (error) {
+    console.error("[fetchSpecialtyIntro] FAILED:", error);
+
+    return {
+      intro: "",
+      treatments: [],
+      symptoms: [],
+      riskFactors: [],
+    };
   }
 }
 
-export async function fetchSpecialtyById(id: string): Promise<SpecialtyResponse | null> {
+export async function fetchSpecialtyById(
+  id: string
+): Promise<SpecialtyResponse | null> {
   if (!id) {
     console.error("[fetchSpecialtyById] Invalid ID:", id);
     return null;
   }
 
-  const res = await fetch(`${getInternalApiBaseUrl()}/api/v1/public/specialty/${id}`, {
-    cache: "no-store",
+  const apiBaseUrl = getInternalApiBaseUrl();
+  const url = `${apiBaseUrl}/api/v1/public/specialty/${id}`;
+
+  console.log("[fetchSpecialtyById] START", {
+    id,
+    apiBaseUrl,
+    url,
+    time: new Date().toISOString(),
   });
-  const data: ApiResponse<SpecialtyResponse> = await res.json();
-  return data?.body ?? null;
+
+  try {
+    const startedAt = Date.now();
+
+    const res = await fetch(url, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(30_000),
+    });
+
+    console.log("[fetchSpecialtyById] RESPONSE", {
+      id,
+      url,
+      status: res.status,
+      statusText: res.statusText,
+      ok: res.ok,
+      durationMs: Date.now() - startedAt,
+      contentType: res.headers.get("content-type"),
+    });
+
+    const rawBody = await res.text();
+
+    if (!res.ok) {
+      console.error("[fetchSpecialtyById] API ERROR", {
+        id,
+        url,
+        status: res.status,
+        statusText: res.statusText,
+        body: rawBody,
+      });
+
+      return null;
+    }
+
+    let data: ApiResponse<SpecialtyResponse>;
+
+    try {
+      data = JSON.parse(rawBody) as ApiResponse<SpecialtyResponse>;
+    } catch (error) {
+      console.error("[fetchSpecialtyById] JSON PARSE ERROR", {
+        id,
+        url,
+        error,
+        rawBody,
+      });
+
+      return null;
+    }
+
+    console.log("[fetchSpecialtyById] SUCCESS", {
+      id,
+      hasBody: Boolean(data?.body),
+    });
+
+    return data?.body ?? null;
+  } catch (error) {
+    console.error("[fetchSpecialtyById] FETCH FAILED", {
+      id,
+      url,
+      error:
+        error instanceof Error
+          ? {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            }
+          : error,
+    });
+
+    return null;
+  }
 }
 
 export const fetchSpecialtyIntro = unstable_cache(_fetchSpecialtyIntro, ["specialty-intro"], {

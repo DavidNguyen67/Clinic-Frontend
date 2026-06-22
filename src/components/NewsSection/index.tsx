@@ -1,7 +1,6 @@
 import News from "@/components/News";
 import { ArticlesResponse, NewsResponse } from "@/interface/response";
 import { LanguageCode } from "@/i18n/config";
-import { connection } from "next/server";
 import { fetchNews } from "../LandingPage/About/config";
 
 interface NewsSectionProps {
@@ -9,8 +8,6 @@ interface NewsSectionProps {
 }
 
 async function NewsSection({ locale }: NewsSectionProps) {
-  await connection();
-
   let articles: ArticlesResponse[] = [];
   try {
     const data = await fetchNews(locale);

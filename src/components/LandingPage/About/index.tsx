@@ -1,13 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { AboutStats } from "./AboutStats";
 import { fetchLandingStatics } from "@/components/LandingPage/About/config";
-import { connection } from "next/server";
 
 export const dynamic = "force-static";
 
 const About = async () => {
-  await connection();
-
   const t = await getTranslations("landingPage.about");
   const statics = await fetchLandingStatics();
 

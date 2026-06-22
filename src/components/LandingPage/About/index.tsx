@@ -35,6 +35,8 @@ const About = async () => {
     },
   ];
 
+  console.log("stats", { stats });
+
   return (
     <div className="py-16 ">
       <div className="max-w-400 mx-auto px-4">

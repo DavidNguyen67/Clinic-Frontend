@@ -83,7 +83,9 @@ export async function _fetchSpecialtyIntro(
 export async function fetchSpecialtyById(id: string): Promise<SpecialtyResponse | null> {
   if (!id) return null;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/public/specialty/${id}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/public/specialty/${id}`, {
+    cache: "no-store",
+  });
   const data: ApiResponse<SpecialtyResponse> = await res.json();
   return data?.body ?? null;
 }

@@ -1,26 +1,23 @@
 pipeline {
-    agent any
+    agent none
 
     environment {
-            // Docker Hub
-            DOCKERHUB_REPO  = 'davidnguyendev/frontend'
-            DOCKERHUB_CREDS = 'dockerhub-credentials'
+        // Docker Hub
+        DOCKERHUB_REPO  = 'davidnguyendev/frontend'
+        DOCKERHUB_CREDS = 'dockerhub-credentials'
 
-            // Kubernetes
-            K8S_HOST       = '178.128.118.157'
-            K8S_NAMESPACE  = 'staging'
-            K8S_DEPLOYMENT = 'clinic-frontend-deployment'
-            K8S_CONTAINER  = 'clinic-frontend'
+        // Kubernetes
+        K8S_NAMESPACE  = 'staging'
+        K8S_DEPLOYMENT = 'clinic-frontend-deployment'
+        K8S_CONTAINER  = 'clinic-frontend'
+        KUBECONFIG_CREDS = 'k3s-staging-kubeconfig'
 
-            // SSH vào VPS K3s
-            SSH_CREDS = 'deploy-frontend-ssh'
+        // Telegram
+        TELEGRAM_BOT_TOKEN = 'telegram-bot-token'
+        TELEGRAM_CHAT_ID   = 'telegram-chat-id'
 
-            // Telegram
-            TELEGRAM_BOT_TOKEN = 'telegram-bot-token'
-            TELEGRAM_CHAT_ID   = 'telegram-chat-id'
-
-            JENKINS_API_CREDS = 'jenkins-api-credentials'
-        }
+        JENKINS_API_CREDS = 'jenkins-api-credentials'
+    }
 
     triggers {
         githubPush()
@@ -30,10 +27,15 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10'))
         timeout(time: 30, unit: 'MINUTES')
         disableConcurrentBuilds()
+        timestamps()
     }
 
     stages {
         stage('Checkout') {
+            agent {
+                label 'docker-build'
+            }
+
             steps {
                 checkout scm
 
@@ -43,17 +45,30 @@ pipeline {
                         returnStdout: true
                     ).trim()
 
-                    env.IMAGE_TAG = "${DOCKERHUB_REPO}:${env.GIT_COMMIT_SHORT}"
+                    env.GIT_BRANCH_NAME = sh(
+                        script: 'git rev-parse --abbrev-ref HEAD',
+                        returnStdout: true
+                    ).trim()
 
+                    env.IMAGE_TAG = "${env.DOCKERHUB_REPO}:${env.GIT_COMMIT_SHORT}"
+
+                    echo "Branch: ${env.GIT_BRANCH_NAME}"
                     echo "Image: ${env.IMAGE_TAG}"
                 }
             }
         }
 
         stage('Build Docker Image') {
+            agent {
+                label 'docker-build'
+            }
+
             steps {
                 sh '''
+                    set -e
+
                     docker build \
+                        --pull \
                         -t "$IMAGE_TAG" \
                         .
                 '''
@@ -61,54 +76,74 @@ pipeline {
         }
 
         stage('Push Docker Image') {
+            agent {
+                label 'docker-build'
+            }
+
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: "${DOCKERHUB_CREDS}",
+                        credentialsId: env.DOCKERHUB_CREDS,
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )
                 ]) {
                     sh '''
+                        set -e
+
                         echo "$DOCKER_PASS" |
                             docker login \
-                            -u "$DOCKER_USER" \
-                            --password-stdin
+                                --username "$DOCKER_USER" \
+                                --password-stdin
 
                         docker push "$IMAGE_TAG"
-
-                        docker logout
                     '''
+                }
+            }
+
+            post {
+                always {
+                    sh 'docker logout 2>/dev/null || true'
                 }
             }
         }
 
         stage('Deploy Kubernetes') {
+            agent {
+                label 'k3s-deploy'
+            }
+
             steps {
                 withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: "${SSH_CREDS}",
-                        keyFileVariable: 'SSH_KEY',
-                        usernameVariable: 'SSH_USER'
+                    file(
+                        credentialsId: env.KUBECONFIG_CREDS,
+                        variable: 'KUBECONFIG_FILE'
                     )
                 ]) {
                     sh '''
-                        ssh \
-                            -i "$SSH_KEY" \
-                            -o StrictHostKeyChecking=no \
-                            -o ConnectTimeout=10 \
-                            "$SSH_USER@$K8S_HOST" \
-                            "
-                                sudo k3s kubectl set image \
-                                    deployment/$K8S_DEPLOYMENT \
-                                    $K8S_CONTAINER=$IMAGE_TAG \
-                                    -n $K8S_NAMESPACE \
-                                && \
-                                sudo k3s kubectl rollout status \
-                                    deployment/$K8S_DEPLOYMENT \
-                                    -n $K8S_NAMESPACE \
-                                    --timeout=600s
-                            "
+                        set -e
+
+                        export KUBECONFIG="$KUBECONFIG_FILE"
+
+                        echo "Checking Kubernetes connection..."
+                        kubectl cluster-info
+
+                        echo "Updating deployment image..."
+                        kubectl set image \
+                            deployment/"$K8S_DEPLOYMENT" \
+                            "$K8S_CONTAINER"="$IMAGE_TAG" \
+                            --namespace "$K8S_NAMESPACE"
+
+                        echo "Waiting for rollout..."
+                        kubectl rollout status \
+                            deployment/"$K8S_DEPLOYMENT" \
+                            --namespace "$K8S_NAMESPACE" \
+                            --timeout=600s
+
+                        echo "Deployment completed."
+                        kubectl get deployment "$K8S_DEPLOYMENT" \
+                            --namespace "$K8S_NAMESPACE" \
+                            -o wide
                     '''
                 }
             }
@@ -117,58 +152,69 @@ pipeline {
 
     post {
         success {
-            script {
-                sendTelegram(
-                    "✅ *BUILD SUCCEEDED*\n" +
-                    "📦 *Project:* `${env.JOB_NAME}`\n" +
-                    "📝 *Commit:* `${env.GIT_COMMIT_SHORT ?: 'N/A'}`\n" +
-                    "🔖 *Image:* `${env.IMAGE_TAG ?: 'N/A'}`\n" +
-                    "☸️ *Namespace:* `${env.K8S_NAMESPACE}`\n" +
-                    "🚀 *Deployment:* `${env.K8S_DEPLOYMENT}`\n" +
-                    "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
-                    "🌿 *Branch:* `${env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
-                    "⏱️ *Time:* ${currentBuild.durationString}"
-                )
+            node('docker-build') {
+                script {
+                    sendTelegram(
+                        "✅ *BUILD SUCCEEDED*\n" +
+                        "📦 *Project:* `${env.JOB_NAME}`\n" +
+                        "📝 *Commit:* `${env.GIT_COMMIT_SHORT ?: 'N/A'}`\n" +
+                        "🔖 *Image:* `${env.IMAGE_TAG ?: 'N/A'}`\n" +
+                        "☸️ *Namespace:* `${env.K8S_NAMESPACE}`\n" +
+                        "🚀 *Deployment:* `${env.K8S_DEPLOYMENT}`\n" +
+                        "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
+                        "🌿 *Branch:* `${env.GIT_BRANCH_NAME ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
+                        "⏱️ *Time:* ${currentBuild.durationString}"
+                    )
+                }
             }
         }
 
         failure {
-            script {
-                sendTelegramWithFile(
-                    "❌ *BUILD FAILED*\n" +
-                    "📦 *Project:* `${env.JOB_NAME}`\n" +
-                    "📝 *Commit:* `${env.GIT_COMMIT_SHORT ?: 'N/A'}`\n" +
-                    "🔖 *Image:* `${env.IMAGE_TAG ?: 'N/A'}`\n" +
-                    "☸️ *Namespace:* `${env.K8S_NAMESPACE}`\n" +
-                    "🚀 *Deployment:* `${env.K8S_DEPLOYMENT}`\n" +
-                    "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
-                    "🌿 *Branch:* `${env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
-                    "⏱️ *Time:* ${currentBuild.durationString}"
-                )
+            node('docker-build') {
+                script {
+                    sendTelegramWithFile(
+                        "❌ *BUILD FAILED*\n" +
+                        "📦 *Project:* `${env.JOB_NAME}`\n" +
+                        "📝 *Commit:* `${env.GIT_COMMIT_SHORT ?: 'N/A'}`\n" +
+                        "🔖 *Image:* `${env.IMAGE_TAG ?: 'N/A'}`\n" +
+                        "☸️ *Namespace:* `${env.K8S_NAMESPACE}`\n" +
+                        "🚀 *Deployment:* `${env.K8S_DEPLOYMENT}`\n" +
+                        "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
+                        "🌿 *Branch:* `${env.GIT_BRANCH_NAME ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
+                        "⏱️ *Time:* ${currentBuild.durationString}"
+                    )
+                }
             }
         }
 
         aborted {
-            script {
-                sendTelegramWithFile(
-                    "⚠️ *BUILD HAS BEEN ABORTED*\n" +
-                    "📦 *Project:* `${env.JOB_NAME}`\n" +
-                    "📝 *Commit:* `${env.GIT_COMMIT_SHORT ?: 'N/A'}`\n" +
-                    "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
-                    "🌿 *Branch:* `${env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
-                    "⏱️ *Time:* ${currentBuild.durationString}"
-                )
+            node('docker-build') {
+                script {
+                    sendTelegramWithFile(
+                        "⚠️ *BUILD ABORTED*\n" +
+                        "📦 *Project:* `${env.JOB_NAME}`\n" +
+                        "📝 *Commit:* `${env.GIT_COMMIT_SHORT ?: 'N/A'}`\n" +
+                        "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
+                        "🌿 *Branch:* `${env.GIT_BRANCH_NAME ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
+                        "⏱️ *Time:* ${currentBuild.durationString}"
+                    )
+                }
             }
         }
 
-        always {
-            script {
-                sh 'docker logout 2>/dev/null || true'
+        cleanup {
+            node('docker-build') {
+                script {
+                    sh 'docker logout 2>/dev/null || true'
 
-                if (env.IMAGE_TAG) {
-                    sh """
-                        docker rmi ${env.IMAGE_TAG} 2>/dev/null || true
-                    """
+                    if (env.IMAGE_TAG?.trim()) {
+                        sh '''
+                            docker image rm "$IMAGE_TAG" \
+                                2>/dev/null || true
+                        '''
+                    }
+
+                    deleteDir()
                 }
             }
         }
@@ -187,21 +233,22 @@ def sendTelegram(String message) {
             variable: 'CHAT_ID'
         )
     ]) {
-        def tmpFile = "/tmp/tg_msg_${env.BUILD_NUMBER}.txt"
+        def tmpFile = "${env.WORKSPACE}/telegram_message_${env.BUILD_NUMBER}.txt"
 
         writeFile file: tmpFile, text: message
 
         sh """
-            TEXT=\$(cat '${tmpFile}')
+            set +x
 
-            curl -s -X POST \
+            curl --fail --silent --show-error \
+                --request POST \
                 "https://api.telegram.org/bot\${BOT_TOKEN}/sendMessage" \
-                -F chat_id="\${CHAT_ID}" \
-                -F parse_mode="Markdown" \
-                -F disable_web_page_preview="true" \
-                -F text="\${TEXT}"
+                --form chat_id="\${CHAT_ID}" \
+                --form parse_mode="Markdown" \
+                --form disable_web_page_preview="true" \
+                --form text=<"${tmpFile}"
 
-            rm -f '${tmpFile}'
+            rm -f "${tmpFile}"
         """
     }
 }
@@ -217,9 +264,11 @@ def getLogContent() {
     ]) {
         return sh(
             script: """
-                curl -s \
-                    -u "\${JENKINS_USER}:\${JENKINS_TOKEN}" \
-                    "${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/consoleText"
+                set +x
+
+                curl --fail --silent --show-error \
+                    --user "\${JENKINS_USER}:\${JENKINS_TOKEN}" \
+                    "${env.BUILD_URL}consoleText"
             """,
             returnStdout: true
         ).trim()
@@ -228,11 +277,19 @@ def getLogContent() {
 
 
 def sendTelegramWithFile(String caption = '') {
-    def logFile = "/tmp/build_log_${env.BUILD_NUMBER}.txt"
-    def tmpCaption = "/tmp/tg_caption_${env.BUILD_NUMBER}.txt"
+    def logFile = "${env.WORKSPACE}/build_log_${env.BUILD_NUMBER}.txt"
+    def captionFile = "${env.WORKSPACE}/telegram_caption_${env.BUILD_NUMBER}.txt"
 
-    writeFile file: logFile, text: getLogContent()
-    writeFile file: tmpCaption, text: caption
+    try {
+        writeFile file: logFile, text: getLogContent()
+    } catch (Exception exception) {
+        writeFile(
+            file: logFile,
+            text: "Không thể tải console log.\n${exception.message}"
+        )
+    }
+
+    writeFile file: captionFile, text: caption
 
     withCredentials([
         string(
@@ -245,19 +302,20 @@ def sendTelegramWithFile(String caption = '') {
         )
     ]) {
         sh """
-            CAPTION=\$(cat '${tmpCaption}')
+            set +x
 
-            curl -s -X POST \
+            curl --fail --silent --show-error \
+                --request POST \
                 "https://api.telegram.org/bot\${BOT_TOKEN}/sendDocument" \
-                -F chat_id="\${CHAT_ID}" \
-                -F parse_mode="Markdown" \
-                -F caption="\${CAPTION}" \
-                -F document=@"${logFile}"
+                --form chat_id="\${CHAT_ID}" \
+                --form parse_mode="Markdown" \
+                --form caption=<"${captionFile}" \
+                --form document=@"${logFile}"
         """
     }
 
     sh """
-        rm -f '${tmpCaption}'
-        rm -f '${logFile}'
+        rm -f "${captionFile}"
+        rm -f "${logFile}"
     """
 }

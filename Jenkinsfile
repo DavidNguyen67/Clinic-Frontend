@@ -233,22 +233,21 @@ def sendTelegram(String message) {
             variable: 'CHAT_ID'
         )
     ]) {
-        def tmpFile = "${env.WORKSPACE}/telegram_message_${env.BUILD_NUMBER}.txt"
+        def tmpFile = "/tmp/tg_msg_${env.BUILD_NUMBER}.txt"
 
         writeFile file: tmpFile, text: message
 
         sh """
-            set +x
+            TEXT=\$(cat '${tmpFile}')
 
-            curl --fail --silent --show-error \
-                --request POST \
+            curl -s -X POST \
                 "https://api.telegram.org/bot\${BOT_TOKEN}/sendMessage" \
-                --form chat_id="\${CHAT_ID}" \
-                --form parse_mode="Markdown" \
-                --form disable_web_page_preview="true" \
-                --form text=<"${tmpFile}"
+                -F chat_id="\${CHAT_ID}" \
+                -F parse_mode="Markdown" \
+                -F disable_web_page_preview="true" \
+                -F text="\${TEXT}"
 
-            rm -f "${tmpFile}"
+            rm -f '${tmpFile}'
         """
     }
 }
@@ -264,11 +263,9 @@ def getLogContent() {
     ]) {
         return sh(
             script: """
-                set +x
-
-                curl --fail --silent --show-error \
-                    --user "\${JENKINS_USER}:\${JENKINS_TOKEN}" \
-                    "${env.BUILD_URL}consoleText"
+                curl -s \
+                    -u "\${JENKINS_USER}:\${JENKINS_TOKEN}" \
+                    "${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/consoleText"
             """,
             returnStdout: true
         ).trim()
@@ -277,19 +274,11 @@ def getLogContent() {
 
 
 def sendTelegramWithFile(String caption = '') {
-    def logFile = "${env.WORKSPACE}/build_log_${env.BUILD_NUMBER}.txt"
-    def captionFile = "${env.WORKSPACE}/telegram_caption_${env.BUILD_NUMBER}.txt"
+    def logFile = "/tmp/build_log_${env.BUILD_NUMBER}.txt"
+    def tmpCaption = "/tmp/tg_caption_${env.BUILD_NUMBER}.txt"
 
-    try {
-        writeFile file: logFile, text: getLogContent()
-    } catch (Exception exception) {
-        writeFile(
-            file: logFile,
-            text: "Không thể tải console log.\n${exception.message}"
-        )
-    }
-
-    writeFile file: captionFile, text: caption
+    writeFile file: logFile, text: getLogContent()
+    writeFile file: tmpCaption, text: caption
 
     withCredentials([
         string(
@@ -302,20 +291,19 @@ def sendTelegramWithFile(String caption = '') {
         )
     ]) {
         sh """
-            set +x
+            CAPTION=\$(cat '${tmpCaption}')
 
-            curl --fail --silent --show-error \
-                --request POST \
+            curl -s -X POST \
                 "https://api.telegram.org/bot\${BOT_TOKEN}/sendDocument" \
-                --form chat_id="\${CHAT_ID}" \
-                --form parse_mode="Markdown" \
-                --form caption=<"${captionFile}" \
-                --form document=@"${logFile}"
+                -F chat_id="\${CHAT_ID}" \
+                -F parse_mode="Markdown" \
+                -F caption="\${CAPTION}" \
+                -F document=@"${logFile}"
         """
     }
 
     sh """
-        rm -f "${captionFile}"
-        rm -f "${logFile}"
+        rm -f '${tmpCaption}'
+        rm -f '${logFile}'
     """
 }

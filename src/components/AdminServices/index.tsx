@@ -1,189 +1,267 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Search } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getCoreRowModel, type ColumnDef, useReactTable } from "@tanstack/react-table";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { FILTER_ALL_VALUE } from "@/hooks/global";
-import { useAdminServices, type ServiceStatusFilter } from "@/hooks/admin/useAdminServices";
-import type { ServiceResponse } from "@/interface/response";
+import { InfiniteDataTable } from "@/components/InfiniteDataTable";
+import type { ClinicServiceResponse } from "@/interface";
+import { useClinicServices } from "@/components/AdminServices/hooks";
+import { formatCurrency, formatNumber } from "@/lib/utils";
 
-import { ServiceDeleteDialog } from "./ServiceDeleteDialog";
-import { ServiceFormModal } from "./ServiceFormModal";
-import { ServiceTable } from "./ServiceTable";
+// Import hook thực tế của bạn
+// import { useClinicServices } from "./hooks";
 
-const PAGE_SIZE = 5;
+function formatPrice(value: number | null) {
+  if (value === null) return "—";
+
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(value);
+}
+
+function formatDate(value: string | null) {
+  if (!value) return "—";
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
 
 export default function AdminServices() {
-  const t = useTranslations("admin.services");
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ServiceStatusFilter>(FILTER_ALL_VALUE);
-  const [page, setPage] = useState(1);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingService, setEditingService] = useState<ServiceResponse | null>(null);
-  const [deletingService, setDeletingService] = useState<ServiceResponse | null>(null);
+  const { fetchList } = useClinicServices();
 
-  const {
-    data,
-    total,
-    totalPages,
-    createService,
-    updateService,
-    deleteService,
-    toggleActive,
-    toggleFeatured,
-  } = useAdminServices({
-    search,
-    status: statusFilter,
-    page,
-    size: PAGE_SIZE,
+  const [items, setItems] = useState<ClinicServiceResponse[]>([]);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const queryingRef = useRef(false);
+  const pageRef = useRef(0);
+
+  const columns = useMemo<ColumnDef<ClinicServiceResponse>[]>(
+    () => [
+      {
+        accessorKey: "image",
+        header: "Hình ảnh",
+        size: 90,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const { image, name } = row.original;
+
+          return (
+            <div className="flex h-12 w-16 items-center justify-center overflow-hidden rounded-md border bg-muted">
+              {image ? (
+                <img src={image} alt={name} loading="lazy" className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-center text-xs text-muted-foreground">Không có ảnh</span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "name",
+        header: "Tên dịch vụ",
+        size: 240,
+        cell: ({ row }) => {
+          const { name, description } = row.original;
+
+          return (
+            <div className="min-w-0 space-y-1">
+              <p className="truncate font-medium">{name}</p>
+
+              <p
+                className="max-w-[260px] truncate text-xs text-muted-foreground"
+                title={description}
+              >
+                {description || "Không có mô tả"}
+              </p>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "slug",
+        header: "Slug",
+        size: 190,
+        cell: ({ getValue }) => <code className="text-xs">{getValue<string>()}</code>,
+      },
+      {
+        id: "price",
+        accessorKey: "price",
+        header: "Giá dịch vụ",
+        size: 160,
+        cell: ({ row }) => {
+          const { price, promotionalPrice } = row.original;
+          const hasPromotion = promotionalPrice !== null && promotionalPrice < price;
+
+          return (
+            <div className="space-y-1 whitespace-nowrap">
+              <p
+                className={
+                  hasPromotion ? "text-xs text-muted-foreground line-through" : "font-medium"
+                }
+              >
+                {formatCurrency(price)}
+              </p>
+
+              {hasPromotion && (
+                <p className="font-medium text-destructive">{formatCurrency(promotionalPrice)}</p>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "duration",
+        header: "Thời lượng",
+        size: 120,
+        cell: ({ getValue }) => (
+          <span className="whitespace-nowrap">{formatNumber(getValue<number>())} phút</span>
+        ),
+      },
+      {
+        accessorKey: "isFeatured",
+        header: "Nổi bật",
+        size: 100,
+        cell: ({ getValue }) => {
+          const isFeatured = getValue<boolean>();
+
+          return (
+            <span
+              className={
+                isFeatured
+                  ? "inline-flex rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700"
+                  : "text-sm text-muted-foreground"
+              }
+            >
+              {isFeatured ? "Có" : "Không"}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "isActive",
+        header: "Trạng thái",
+        size: 140,
+        cell: ({ getValue }) => {
+          const isActive = getValue<boolean>();
+
+          return (
+            <span
+              className={
+                isActive
+                  ? "inline-flex whitespace-nowrap rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700"
+                  : "inline-flex whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600"
+              }
+            >
+              {isActive ? "Hoạt động" : "Ngừng hoạt động"}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Ngày tạo",
+        size: 170,
+        cell: ({ getValue }) => {
+          const createdAt = getValue<string>();
+
+          return <span className="whitespace-nowrap">{formatDate(createdAt)}</span>;
+        },
+      },
+    ],
+    []
+  );
+
+  const table = useReactTable({
+    data: items,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row.id,
   });
 
-  const openCreate = () => {
-    setEditingService(null);
-    setFormOpen(true);
-  };
+  const requestData = useCallback(async () => {
+    if (queryingRef.current || !hasMore) return;
 
-  const openEdit = (service: ServiceResponse) => {
-    setEditingService(service);
-    setFormOpen(true);
-  };
+    queryingRef.current = true;
 
-  const handleSubmit = (values: Omit<ServiceResponse, "id">) => {
-    if (editingService) {
-      updateService(editingService.id, values);
-      return;
+    if (pageRef.current === 0) {
+      setIsInitialLoading(true);
+    } else {
+      setIsLoadingMore(true);
     }
 
-    createService(values);
-    setPage(1);
-  };
+    try {
+      const payload = {
+        page: pageRef.current,
+      };
 
-  const handleDelete = () => {
-    if (!deletingService) return;
-    deleteService(deletingService.id);
-    setDeletingService(null);
-    setPage(1);
-  };
+      const pageNewItems = await fetchList.trigger(payload);
+
+      const newItems: ClinicServiceResponse[] = pageNewItems?.body?.data ?? [];
+
+      if (newItems.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      setItems((previousItems) => {
+        const itemsMap = new Map<string, ClinicServiceResponse>();
+
+        [...previousItems, ...newItems].forEach((item) => {
+          itemsMap.set(item.id, item);
+        });
+
+        return Array.from(itemsMap.values());
+      });
+
+      pageRef.current += 1;
+    } catch (error) {
+      console.error("Không thể tải danh sách dịch vụ:", error);
+    } finally {
+      queryingRef.current = false;
+      setIsInitialLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, [hasMore]);
+
+  useEffect(() => {
+    void requestData();
+  }, [requestData]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div className="flex h-full flex-1 flex-col space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-heading font-semibold text-gray-900">{t("title")}</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">{t("subtitle")}</p>
+          <h1 className="text-2xl font-semibold">Dịch vụ phòng khám</h1>
+
+          <p className="text-sm text-muted-foreground">Đã tải {items.length} dịch vụ</p>
         </div>
-        <Button onClick={openCreate} size="sm">
-          <Plus className="size-4" />
-          {t("createButton")}
-        </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[220px] flex-1 sm:max-w-sm">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            placeholder={t("searchPlaceholder")}
-            className="h-8 pl-9"
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
+      <div className="flex min-h-0 flex-1 flex-col h-full overflow-hidden">
+        <InfiniteDataTable
+          table={table}
+          isLoading={isInitialLoading}
+          isLoadingMore={isLoadingMore}
+          hasMore={hasMore}
+          emptyText="Không có dịch vụ nào"
+          loadingText="Đang tải danh sách dịch vụ..."
+          onScroll={(event) => {
+            const element = event.currentTarget;
 
-        <Select
-          value={statusFilter}
-          onValueChange={(value: ServiceStatusFilter) => {
-            setStatusFilter(value);
-            setPage(1);
+            const distanceToBottom =
+              element.scrollHeight - element.scrollTop - element.clientHeight;
+
+            if (distanceToBottom < 150) {
+              void requestData();
+            }
           }}
-        >
-          <SelectTrigger className="h-8 w-[170px]">
-            <SelectValue placeholder={t("filterPlaceholder")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={FILTER_ALL_VALUE}>{t("allServices")}</SelectItem>
-            <SelectItem value="active">{t("active")}</SelectItem>
-            <SelectItem value="inactive">{t("inactive")}</SelectItem>
-            <SelectItem value="featured">{t("featured")}</SelectItem>
-          </SelectContent>
-        </Select>
+        />
       </div>
-
-      <ServiceTable
-        services={data}
-        onEdit={openEdit}
-        onDelete={setDeletingService}
-        onToggleActive={toggleActive}
-        onToggleFeatured={toggleFeatured}
-      />
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground">{t("total", { count: total })}</p>
-        {totalPages > 1 && (
-          <Pagination className="sm:w-auto sm:justify-end">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  text={t("previous")}
-                  onClick={() => setPage((current) => Math.max(1, current - 1))}
-                  className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
-                />
-              </PaginationItem>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-                <PaginationItem key={pageNumber}>
-                  <PaginationLink
-                    isActive={pageNumber === page}
-                    onClick={() => setPage(pageNumber)}
-                  >
-                    {pageNumber}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  text={t("next")}
-                  onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-                  className={page >= totalPages ? "pointer-events-none opacity-50" : undefined}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
-      </div>
-
-      <ServiceFormModal
-        open={formOpen}
-        service={editingService}
-        onOpenChange={setFormOpen}
-        onSubmit={handleSubmit}
-      />
-
-      <ServiceDeleteDialog
-        open={!!deletingService}
-        serviceName={deletingService?.name}
-        onOpenChange={(open) => !open && setDeletingService(null)}
-        onConfirm={handleDelete}
-      />
     </div>
   );
 }

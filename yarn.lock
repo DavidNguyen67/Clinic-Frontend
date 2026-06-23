@@ -2559,6 +2559,26 @@ acorn@^8.16.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.16.0.tgz#4ce79c89be40afe7afe8f3adb902a1f1ce9ac08a"
   integrity sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==
 
+ag-charts-types@13.3.1:
+  version "13.3.1"
+  resolved "https://registry.yarnpkg.com/ag-charts-types/-/ag-charts-types-13.3.1.tgz#c34aaed19847ed633fa468f39caa94bbffc363b3"
+  integrity sha512-m37eUe4g//swvGh8PWMlYQH3gknjSsPeW4sQwBhM3/auGAHmN0wvxEWlrdAn98pBPg4HoKbtOy+yf7gPCYsnvQ==
+
+ag-grid-community@35.3.1, ag-grid-community@^35.3.1:
+  version "35.3.1"
+  resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-35.3.1.tgz#b7920da3209e2c121e1e34df59dec812e65349f0"
+  integrity sha512-Wmkd/xYTCbAApcZZO74nBggZCnd/oX753NY3MJ4zYARVpfBHRWWhIBJ2sFTFKbDWwHZOWsx3YT9+kkyeuyLKlw==
+  dependencies:
+    ag-charts-types "13.3.1"
+
+ag-grid-react@^35.3.1:
+  version "35.3.1"
+  resolved "https://registry.yarnpkg.com/ag-grid-react/-/ag-grid-react-35.3.1.tgz#0360eeb880f1ada988ee1420817609b59a9a06b1"
+  integrity sha512-M3ljCQyGL+qzoyPN0BYrn4eAlgZr6Ailcjd8+a7OcneSiVsMNSJb/gTkIMUwmYivkPLIA8EEJ4hTxxKSaya6mQ==
+  dependencies:
+    ag-grid-community "35.3.1"
+    prop-types "^15.8.1"
+
 agent-base@^7.1.2:
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.4.tgz#e3cd76d4c548ee895d3c3fd8dc1f6c5b9032e7a8"

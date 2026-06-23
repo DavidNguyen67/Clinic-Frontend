@@ -279,6 +279,7 @@
       "name": "Tên",
       "email": "Email",
       "phone": "Số điện thoại",
+      "gender": "Giới tính",
       "role": "Vai trò",
       "status": "Trạng thái",
       "createdAt": "Ngày tạo",

@@ -14,6 +14,8 @@
     "@react-pdf/renderer": "^4.5.1",
     "@stomp/stompjs": "^7.3.0",
     "@tanstack/react-virtual": "^3.13.24",
+    "ag-grid-community": "^35.3.1",
+    "ag-grid-react": "^35.3.1",
     "axios": "^1.16.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -82,7 +82,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
         </label>
       )}
       <div
-        className={clsx("relative light:shadow-base-1", inputClassName, {
+        className={clsx("relative", inputClassName, {
           "input-section-label-inside": labelPlacement === "inside",
           "input-section": labelPlacement === "outside",
         })}
@@ -144,9 +144,9 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
             onClick={() => setShow(!show)}
           >
             {show ? (
-              <EyeOff className="size-[2.4rem] text-[--text-2]" />
+              <EyeOff className="size-[2.4rem] text-[#404040]" />
             ) : (
-              <Eye className="size-[2.4rem] text-[--text-2]" />
+              <Eye className="size-[2.4rem] text-[#404040]" />
             )}
           </button>
         )}
@@ -163,7 +163,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
             })}
             tabIndex={-1}
           >
-            <X className="size-[2.4rem] text-[--text-2]" />
+            <X className="size-[2.4rem] text-[#404040]" />
           </button>
         )}
         {loading && <Preload />}

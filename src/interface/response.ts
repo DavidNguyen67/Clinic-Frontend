@@ -15,6 +15,25 @@ import {
   USER_STATUS,
 } from "@/common";
 
+export interface UserAdminResponse {
+  data: UserItem[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+}
+export interface UserItem {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: string;
+  status: string;
+  createdAt: string;
+  gender?: GENDER;
+  password?: string;
+  dateOfBirth: string;
+}
 export type BaseFilter = {
   sortDir?: "asc" | "desc";
   sortBy?: string;

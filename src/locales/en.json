@@ -279,6 +279,7 @@
       "name": "Name",
       "email": "Email",
       "phone": "Phone",
+      "gender": "Gender",
       "role": "Role",
       "status": "Status",
       "createdAt": "Created",

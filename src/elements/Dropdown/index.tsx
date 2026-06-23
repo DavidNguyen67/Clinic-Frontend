@@ -13,9 +13,8 @@ import {
 
 import clsx from "clsx";
 import TextInput from "../TextInput";
-import InfoIcon from "assets/svg/info-icon.svg";
-import ChevronDown from "assets/svg/caret_down.svg";
 import SearchIcon from "assets/svg/search-icon.svg";
+import { CircleChevronDown, Info, Search } from "lucide-react";
 
 export type DropdownProps = {
   options?: DropdownOption[];
@@ -144,20 +143,20 @@ const Dropdown = (props: DropdownProps) => {
       <Listbox disabled={props.disabled} value={selected || ""} onChange={handleChange}>
         <div className={clsx("relative w-full h-full")}>
           <ListboxButton
-            className={`dropdown-button shadow-base-1 relative bg-[--bg-105] ${btnClassName}`}
+            className={`dropdown-button shadow-base-1 relative bg-[#F5F5FF] ${btnClassName}`}
             data-label-placement={labelPlacement}
           >
             {labelPlacement === "outside" && (
               <>
                 {selectedOption?.tooltip && (
                   <div>
-                    <InfoIcon className="size-[2rem]" />
+                    <Info className="size-[2rem]" />;
                   </div>
                 )}
 
                 <span
                   className={clsx(
-                    "block font-normal light:font-medium dark:text-[--white-night] light:text-[--text-26]",
+                    "block font-normal light:font-medium text-[#404040]",
                     props.inputTextClassName
                   )}
                 >
@@ -181,7 +180,7 @@ const Dropdown = (props: DropdownProps) => {
                 </label>
                 <span
                   className={clsx(
-                    "block font-normal light:font-medium dark:text-[--white-night] light:text-[--text-26]",
+                    "block font-normal light:font-medium text-[#404040]",
                     props.inputTextClassName
                   )}
                 >
@@ -194,8 +193,8 @@ const Dropdown = (props: DropdownProps) => {
                 </span>
               </>
             )}
-            <ChevronDown
-              className="!h-[2.4rem] !w-[2.4rem] !text-[var(--text-5)]"
+            <CircleChevronDown
+              className="!h-[2.4rem] !w-[2.4rem] !text-[#404040]"
               aria-hidden="true"
             />
           </ListboxButton>
@@ -209,9 +208,9 @@ const Dropdown = (props: DropdownProps) => {
               anchor="bottom end"
               style={{ width: dropdownWidth }}
               className={clsx(
-                "mt-[0.8rem] border !rounded-[0.8rem] border-[--border-16] shadow-base-1 flex flex-col",
+                "mt-[0.8rem] border !rounded-[0.8rem] border-[#D9D9D9] shadow-base-1 flex flex-col",
                 hasSearch ? "max-h-[31.2rem]" : "max-h-[32rem]",
-                "rounded-md bg-[var(--bg-0)] py-1 shadow-lg ring-1 ring-black/5 focus:outline-none z-50",
+                "rounded-md bg-[#F5F5FF] py-1 shadow-lg ring-1 ring-black/5 focus:outline-none z-50",
                 {
                   "!p-[0.8rem]": !props.stickySearch,
                   "!p-[0rem]": props.stickySearch,
@@ -242,7 +241,7 @@ const Dropdown = (props: DropdownProps) => {
                   }}
                   inputElementClassName="!text-[1.4rem] !leading-[1.6rem] !px-[1.2rem] !py-[0.8rem] !pl-[3.2rem]"
                   leadingIcon={
-                    <SearchIcon className="w-[1.6rem] h-[1.6rem] absolute top-0 left-[1.2rem] translate-y-[25%]" />
+                    <Search className="w-[1.6rem] h-[1.6rem] absolute top-0 left-[1.2rem] translate-y-[25%]" />
                   }
                 />
               )}

@@ -162,7 +162,7 @@ pipeline {
                         "☸️ *Namespace:* `${env.K8S_NAMESPACE}`\n" +
                         "🚀 *Deployment:* `${env.K8S_DEPLOYMENT}`\n" +
                         "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
-                        "🌿 *Branch:* `${env.GIT_BRANCH_NAME ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
+                        "🌿 *Branch:* `${env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
                         "⏱️ *Time:* ${currentBuild.durationString}"
                     )
                 }
@@ -180,7 +180,7 @@ pipeline {
                         "☸️ *Namespace:* `${env.K8S_NAMESPACE}`\n" +
                         "🚀 *Deployment:* `${env.K8S_DEPLOYMENT}`\n" +
                         "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
-                        "🌿 *Branch:* `${env.GIT_BRANCH_NAME ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
+                        "🌿 *Branch:* `${env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
                         "⏱️ *Time:* ${currentBuild.durationString}"
                     )
                 }
@@ -195,7 +195,7 @@ pipeline {
                         "📦 *Project:* `${env.JOB_NAME}`\n" +
                         "📝 *Commit:* `${env.GIT_COMMIT_SHORT ?: 'N/A'}`\n" +
                         "🔢 *Build:* [#${env.BUILD_NUMBER}](${env.BUILD_URL})\n" +
-                        "🌿 *Branch:* `${env.GIT_BRANCH_NAME ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
+                        "🌿 *Branch:* `${env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'N/A'}`\n" +
                         "⏱️ *Time:* ${currentBuild.durationString}"
                     )
                 }

@@ -3,41 +3,44 @@ import * as yup from "yup";
 import type { ServiceResponse } from "@/interface/response";
 
 export const serviceFormSchema = yup.object({
-  name: yup.string().required("required"),
-  slug: yup.string().required("required"),
-  description: yup.string().required("required"),
-  duration: yup.number().min(1, "minDuration").required("required"),
-  price: yup.number().min(0, "minPrice").required("required"),
-  promotionalPrice: yup.number().min(0, "minPrice").required("required"),
-  image: yup.string().url("url").required("required"),
-  isFeatured: yup.boolean().required(),
-  isActive: yup.boolean().required(),
+  name: yup.string()
+    .max(100)
+    .required("Name is required"),
+
+  slug: yup.string()
+    .matches(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      "Slug must contain lowercase letters, numbers and hyphens only"
+    )
+    .max(120)
+    .required("Slug is required"),
+
+  description: yup.string().max(1000),
+
+  image: yup.string().url("Invalid URL").max(500),
+
+  price: yup.number()
+    .positive("Price must be greater than 0")
+    .required("Price is required"),
+
+  promotionalPrice: yup.number()
+    .nullable()
+    .test(
+      "promo-less-than-price",
+      "Promotional price must be less than price",
+      function (value) {
+        if (!value) return true;
+        return value < Number(this.parent.price);
+      }
+    ),
+
+  duration: yup.number()
+    .min(5)
+    .max(480)
+    .required("Duration is required"),
+
+  specialtyId: yup.string().required("Specialty is required"),
 });
 
 export type ServiceFormValues = yup.InferType<typeof serviceFormSchema>;
 
-export const toServiceFormValues = (service?: ServiceResponse | null): ServiceFormValues => ({
-  name: service?.name ?? "",
-  slug: service?.slug ?? "",
-  description: service?.description ?? "",
-  duration: service?.duration ?? 30,
-  price: service?.price ?? 0,
-  promotionalPrice: service?.promotionalPrice ?? 0,
-  image: service?.image ?? "",
-  isFeatured: service?.isFeatured ?? false,
-  isActive: service?.isActive ?? true,
-});
-
-export const toServicePayload = (
-  values: ServiceFormValues,
-  service?: ServiceResponse | null
-): Omit<ServiceResponse, "id"> => ({
-  ...values,
-  duration: Number(values.duration),
-  price: Number(values.price),
-  promotionalPrice: Number(values.promotionalPrice),
-  createdAt: service?.createdAt ?? new Date().toISOString(),
-  updatedAt: service ? new Date().toISOString() : null,
-  deletedAt: service?.deletedAt ?? null,
-  deleted: service?.deleted ?? false,
-});

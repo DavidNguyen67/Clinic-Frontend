@@ -29,6 +29,20 @@ export interface ServiceAdminResponse {
   total: number;
   totalPages: number;
 }
+export interface SpecialtyAdminResponse {
+  data: SpecialtyResponse[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+}
+export interface InvoiceAdminResponse {
+  data: InvoiceResponse[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+}
 export interface ServiceItem {
   id: string;
   name: string;
@@ -40,7 +54,14 @@ export interface ServiceItem {
   image: string;
   isFeatured: boolean;
   isActive: boolean;
+  specialtyId: string;
+  specialtyName: string;
+  createdAt: string;
+  updatedAt: string | null;
+  deletedAt: string | null;
+  deleted: boolean;
 }
+
 export interface UserItem {
   id: string;
   fullName: string;
@@ -52,6 +73,7 @@ export interface UserItem {
   gender?: GENDER;
   password?: string;
   dateOfBirth: string;
+  
 }
 export type BaseFilter = {
   sortDir?: "asc" | "desc";

@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/cache/
+.yarn/unplugged/
+
+# Next.js build output
+.next/
+out/
+
+# Test / coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IntelliJ IDEA / JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# AI tools
+.agents/
+.codex/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache / temporary files
+.cache/
+tmp/
+temp/
+
+# Docker Compose
+docker-compose*.yml
+docker-compose*.yaml
+
+# Documentation
+README.md

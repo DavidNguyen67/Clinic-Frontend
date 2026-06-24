@@ -34,9 +34,9 @@ export function ServiceTable({
   onToggleFeatured,
 }: ServiceTableProps) {
   const t = useTranslations("admin.services");
-
+  console.log("check services", services.length);
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className="max-h-[800px] overflow-y-auto rounded-xl border bg-white">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30">
@@ -91,9 +91,7 @@ export function ServiceTable({
                     variant="secondary"
                     className={cn(
                       "rounded-full px-2 py-0.5 text-xs font-medium",
-                      service.isActive
-                        ? "bg-green-50 text-green-700"
-                        : "bg-gray-100 text-gray-500"
+                      service.isActive ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
                     )}
                   >
                     {service.isActive ? t("active") : t("inactive")}

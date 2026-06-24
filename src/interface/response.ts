@@ -22,6 +22,25 @@ export interface UserAdminResponse {
   total: number;
   totalPages: number;
 }
+export interface ServiceAdminResponse {
+  data: ServiceItem[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+}
+export interface ServiceItem {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  promotionalPrice: number;
+  duration: number;
+  image: string;
+  isFeatured: boolean;
+  isActive: boolean;
+}
 export interface UserItem {
   id: string;
   fullName: string;

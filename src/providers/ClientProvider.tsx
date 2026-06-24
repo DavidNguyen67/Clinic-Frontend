@@ -42,7 +42,20 @@ const ClientProvider = ({ children }: { children: React.ReactNode }) => {
           <FullscreenLoader />
         ) : (
           <main className="h-screen flex flex-col overflow-x-hidden pr-4">
-            <Toaster position="bottom-right" />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                classNames: {
+                  success: "!bg-green-500 !text-white !border-green-600",
+                  error: "!bg-red-500 !text-white !border-red-600",
+                  warning: "!bg-yellow-500 !text-white !border-yellow-600",
+                  info: "!bg-blue-500 !text-white !border-blue-600",
+                  title: "!font-bold !text-lg",
+                  description: "!text-sm",
+                  icon: "!text-white",
+                },
+              }}
+            />{" "}
             <Header />
             <AuthErrorDialog />
             <LogoutConfirmDialog />

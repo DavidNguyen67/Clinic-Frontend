@@ -60,29 +60,30 @@
   color: #000000;
 
   .input-label {
-    font-size: 1.3rem;
-    line-height: 1.3rem;
+    font-size: 14px;
+    line-height: 14px;
     font-style: normal;
     font-weight: 400;
+    margin-bottom: 8px;
   }
 
   .input-section {
     display: flex;
-    padding: 1.6rem;
+    padding: 16px;
     align-items: center;
-    gap: 0.8rem;
+    gap: 8px;
     align-self: stretch;
     transition: all 0.2s;
     background: var(--bg-item);
     border: 1px solid #d9d9d9;
     @apply rounded-[0.8rem];
-    height: 5.2rem;
+    height: 60px;
     input,
     textarea {
       outline: none;
       height: 100%;
       flex: 1;
-      font-size: 1.6rem;
+      font-size: 16px;
       font-style: normal;
       font-weight: 500;
       line-height: 125%;
@@ -91,8 +92,8 @@
     }
     svg {
       color: #404040;
-      width: 2rem;
-      height: 2rem;
+      width: 20px;
+      height: 20px;
     }
   }
 
@@ -100,7 +101,7 @@
   .input-section textarea::placeholder {
     color: #808080; /* Thay đổi màu sắc của placeholder */
     opacity: 1; /* Đảm bảo rằng màu sắc được áp dụng đầy đủ */
-    font-size: 1.6rem;
+    font-size: 16px;
     font-weight: 500;
   }
 
@@ -117,7 +118,7 @@
     // }
   }
   .leading-icon {
-    margin-left: 0rem;
+    margin-left: 0px;
   }
 
   .help-icon {
@@ -126,10 +127,10 @@
 
   .error-message {
     color: #ed3636;
-    margin-top: 1.2rem;
-    font-size: 1.4rem;
+    margin-top: 12px;
+    font-size: 14px;
     font-weight: 500;
-    padding-left: 0.8rem;
+    padding-left: 8px;
   }
 }
 

@@ -25,6 +25,7 @@ pipeline {
 
     options {
         skipDefaultCheckout(true)
+        disableConcurrentBuilds(abortPrevious: true)
         timeout(time: 30, unit: 'MINUTES')
         timestamps()
     }
@@ -116,6 +117,20 @@ pipeline {
                         test -n "$IMAGE_TAG"
                         test -n "$LATEST_TAG"
 
+                        # Mỗi build dùng một thư mục Docker credential riêng
+                        DOCKER_CONFIG_DIR="$(
+                            mktemp -d "${WORKSPACE}/.docker-config.XXXXXX"
+                        )"
+
+                        export DOCKER_CONFIG="$DOCKER_CONFIG_DIR"
+
+                        cleanup_docker_auth() {
+                            docker logout >/dev/null 2>&1 || true
+                            rm -rf "$DOCKER_CONFIG_DIR"
+                        }
+
+                        trap cleanup_docker_auth EXIT INT TERM
+
                         echo "$DOCKER_PASS" |
                             docker login \
                                 --username "$DOCKER_USER" \
@@ -127,12 +142,6 @@ pipeline {
                         echo "Pushing latest tag: $LATEST_TAG"
                         docker push "$LATEST_TAG"
                     '''
-                }
-            }
-
-            post {
-                always {
-                    sh 'docker logout 2>/dev/null || true'
                 }
             }
         }
@@ -244,8 +253,6 @@ pipeline {
         cleanup {
             node('docker-builder') {
                 script {
-                    sh 'docker logout 2>/dev/null || true'
-
                     if (env.IMAGE_TAG?.trim()) {
                         sh '''
                             docker image rm "$IMAGE_TAG" \

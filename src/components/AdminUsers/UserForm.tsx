@@ -8,16 +8,6 @@ import { userFormSchema } from "./config";
 import { useUsers } from "./hooks";
 import { UserItem } from "@/interface/response";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { formatDateToApi } from "@/lib/utils";
 import Dropdown from "@/elements/Dropdown";
 import TextInput from "@/elements/TextInput";
 import { useRef } from "react";
@@ -125,6 +115,7 @@ const UserForm = ({ data, onSuccess }: UserFormProps) => {
                       User Form
                     </div>
                     <TextInput
+                      required
                       className="w-full !h-[4.4rem]"
                       type="text"
                       label="Full Name"

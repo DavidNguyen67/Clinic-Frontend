@@ -1,6 +1,6 @@
 import { METHOD } from "@/hooks/global";
 import { useMutation, useSWRWrapper } from "@/hooks/swr";
-import { ServiceAdminResponse, UserItem } from "@/interface";
+import { ServiceAdminResponse, SpecialtyAdminResponse, UserItem } from "@/interface";
 
 export const useServices = (size?: number, page?: number, search?: string, status?: string) => {
     const getStatus = (status: string | undefined) => {
@@ -12,7 +12,7 @@ export const useServices = (size?: number, page?: number, search?: string, statu
         if (status === "featured") return true;
         return undefined;
     }
-   const createUser = useMutation('api/v1/admin/service', {
+   const createService = useMutation('api/v1/admin/service', {
     url: 'api/v1/admin/service',
     method: METHOD.POST,
     loading: true,
@@ -21,7 +21,7 @@ export const useServices = (size?: number, page?: number, search?: string, statu
       message: 'Service created successfully',
     },
   });
-  const updateUser = useMutation('api/v1/admin/service', {
+  const updateService = useMutation('api/v1/admin/service', {
     url: `/api/v1/admin/service/{id}`,
     method: METHOD.PATCH,
     loading: true,
@@ -36,7 +36,7 @@ export const useServices = (size?: number, page?: number, search?: string, statu
     auth: true,
     
   });
-    const deleteUser = useMutation<UserItem>('/api/v1/admin/service', {
+    const deleteService = useMutation<UserItem>('/api/v1/admin/service', {
     url: `/api/v1/admin/service/{id}`,
     method: METHOD.DELETE,
     loading: true,
@@ -45,8 +45,13 @@ export const useServices = (size?: number, page?: number, search?: string, statu
       message: 'Service deleted successfully',
     },
   });
+  const getSpecialties = useSWRWrapper<SpecialtyAdminResponse>('api/v1/admin/specialty', {
+    url: 'api/v1/admin/specialty?size=100&page=0',
+    method: METHOD.GET,
+    auth: true,
+  });
   
   return {
-   createUser, getListServices, deleteUser, updateUser
+   createService, getListServices, deleteService, updateService, getSpecialties
   };
 };

@@ -60,6 +60,7 @@ const statusBadge: Record<string, string> = {
 };
 export default function AdminUsers() {
   const t = useTranslations("admin");
+  const [deletedUser, setDeletedUser] = useState<UserItem | null>(null);
 
   const modal = useModal<UserItem>();
   const [page, setPage] = useState(1);
@@ -159,7 +160,7 @@ export default function AdminUsers() {
                       variant="ghost"
                       size="icon-sm"
                       className="cursor-pointer"
-                      onClick={() => handleDelete(user)}
+                      onClick={() => setDeletedUser(user)}
                     >
                       <Trash2 className="w-3.5 h-3.5 text-destructive" />
                     </Button>
@@ -206,6 +207,38 @@ export default function AdminUsers() {
       <ModalProvider show={modal.show} onClose={modal.handleHide}>
         <UserForm data={modal.data} onSuccess={modal.handleHide} />
       </ModalProvider>
+      <AlertDialog
+        open={!!deletedUser}
+        onOpenChange={(open) => {
+          if (!open) setDeletedUser(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa người dùng</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa <span className="font-medium">{deletedUser?.fullName}</span>
+              ? Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+
+            <AlertDialogAction
+              onClick={() => {
+                if (deletedUser) {
+                  handleDelete(deletedUser);
+                }
+                setDeletedUser(null);
+              }}
+            >
+              Xác nhận
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -30,10 +30,12 @@ export interface TextInputProps extends React.InputHTMLAttributes<
   inEKyc?: boolean;
   maxLength?: number;
   loading?: boolean;
+  required?: boolean;
 }
 
 const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((props, ref) => {
   const {
+    required = false,
     inEKyc,
     label,
     hasError,
@@ -78,7 +80,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
     >
       {label != null && labelPlacement === "outside" && (
         <label className="input-label" htmlFor="">
-          {label}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <div
@@ -89,7 +91,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
       >
         {label != null && labelPlacement === "inside" && (
           <label className={clsx("input-label label-inside-animation", labelClassName)} htmlFor="">
-            {label}
+            {label} {required && <span className="text-red-500">*</span>}
           </label>
         )}
 

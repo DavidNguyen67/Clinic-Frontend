@@ -30,10 +30,12 @@ export interface TextInputProps extends React.InputHTMLAttributes<
   inEKyc?: boolean;
   maxLength?: number;
   loading?: boolean;
+  required?: boolean;
 }
 
 const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((props, ref) => {
   const {
+    required = false,
     inEKyc,
     label,
     hasError,
@@ -78,7 +80,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
     >
       {label != null && labelPlacement === "outside" && (
         <label className="input-label" htmlFor="">
-          {label}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <div
@@ -89,12 +91,12 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
       >
         {label != null && labelPlacement === "inside" && (
           <label className={clsx("input-label label-inside-animation", labelClassName)} htmlFor="">
-            {label}
+            {label} {required && <span className="text-red-500">*</span>}
           </label>
         )}
 
         {props.leadingIcon && (
-          <div className={clsx("leading-icon", inEKyc && "mt-[2.1rem]")}>{leadingIcon}</div>
+          <div className={clsx("leading-icon", inEKyc && "mt-5")}>{leadingIcon}</div>
         )}
         {props.type === "textarea" ? (
           <textarea
@@ -138,7 +140,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
           <button
             type="button"
             className={clsx("cursor-pointer", {
-              "relative top-[1rem]": labelPlacement === "inside",
+              "relative top-4": labelPlacement === "inside",
               "help-icon": labelPlacement === "outside",
             })}
             onClick={() => setShow(!show)}
@@ -158,7 +160,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
               inputRef.current?.focus();
             }}
             className={clsx("cursor-pointer", {
-              "relative top-[1rem]": labelPlacement === "inside",
+              "relative top-4": labelPlacement === "inside",
               "help-icon": labelPlacement === "outside",
             })}
             tabIndex={-1}

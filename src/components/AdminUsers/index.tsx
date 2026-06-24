@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { UserAdminResponse, UserItem } from "@/interface";
 import {
   AlertDialog,
@@ -60,11 +60,12 @@ const statusBadge: Record<string, string> = {
 };
 export default function AdminUsers() {
   const t = useTranslations("admin");
+  const [deletedUser, setDeletedUser] = useState<UserItem | null>(null);
 
   const modal = useModal<UserItem>();
   const [page, setPage] = useState(1);
 
-  const { getListUsers, deleteUser } = useUsers(20, page);
+  const { getListUsers, deleteUser } = useUsers(20, page - 1);
   const handleEdit = (user: UserItem) => {
     modal.handleShow(user);
   };
@@ -93,7 +94,6 @@ export default function AdminUsers() {
 
           <p className="text-muted-foreground">{t("users.subtitle")}</p>
         </div>
-
         <Button onClick={() => modal.handleShow()} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
 
@@ -147,6 +147,7 @@ export default function AdminUsers() {
                 <TableCell className="text-right pr-4">
                   <div className="flex items-center justify-end gap-0.5">
                     <Button
+                      className="cursor-pointer"
                       variant="ghost"
                       size="icon-sm"
                       onClick={() => {
@@ -155,41 +156,14 @@ export default function AdminUsers() {
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-sm"
-                          aria-label="Delete user"
-                        >
-                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                        </Button>
-                      </AlertDialogTrigger>
-
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Xóa người dùng?</AlertDialogTitle>
-
-                          <AlertDialogDescription>
-                            Bạn có chắc chắn muốn xóa người dùng{" "}
-                            <span className="font-semibold text-foreground">{user.fullName}</span>?
-                            Hành động này không thể hoàn tác.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Hủy</AlertDialogCancel>
-
-                          <AlertDialogAction
-                            onClick={() => handleDelete(user)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Xóa
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="cursor-pointer"
+                      onClick={() => setDeletedUser(user)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -231,8 +205,40 @@ export default function AdminUsers() {
       )}
 
       <ModalProvider show={modal.show} onClose={modal.handleHide}>
-        <UserForm data={modal.data} />
+        <UserForm data={modal.data} onSuccess={modal.handleHide} />
       </ModalProvider>
+      <AlertDialog
+        open={!!deletedUser}
+        onOpenChange={(open) => {
+          if (!open) setDeletedUser(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa người dùng</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa <span className="font-medium">{deletedUser?.fullName}</span>
+              ? Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+
+            <AlertDialogAction
+              onClick={() => {
+                if (deletedUser) {
+                  handleDelete(deletedUser);
+                }
+                setDeletedUser(null);
+              }}
+            >
+              Xác nhận
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

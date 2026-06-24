@@ -8,6 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -16,27 +26,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, formatVND, getImageUrl } from "@/lib/utils";
-import type { ServiceResponse } from "@/interface/response";
+import type { ServiceItem } from "@/interface/response";
+import { useState } from "react";
 
 interface ServiceTableProps {
-  services: ServiceResponse[];
-  onEdit: (service: ServiceResponse) => void;
-  onDelete: (service: ServiceResponse) => void;
-  onToggleActive: (serviceId: string) => void;
-  onToggleFeatured: (serviceId: string) => void;
+  services: ServiceItem[];
+  openEdit: (service: ServiceItem) => void;
+  onDelete: (service: ServiceItem) => void;
 }
 
-export function ServiceTable({
-  services,
-  onEdit,
-  onDelete,
-  onToggleActive,
-  onToggleFeatured,
-}: ServiceTableProps) {
+export function ServiceTable({ services, openEdit, onDelete }: ServiceTableProps) {
   const t = useTranslations("admin.services");
-
+  const [deleteService, setDeleteService] = useState<ServiceItem | null>(null);
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className="max-h-[800px] overflow-y-auto rounded-xl border bg-white">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30">
@@ -74,26 +77,16 @@ export function ServiceTable({
                 {service.promotionalPrice > 0 ? formatVND(service.promotionalPrice) : t("none")}
               </TableCell>
               <TableCell>
-                <Switch
-                  checked={service.isFeatured}
-                  aria-label={t("toggleFeatured")}
-                  onCheckedChange={() => onToggleFeatured(service.id)}
-                />
+                <Switch checked={service.isFeatured} aria-label={t("toggleFeatured")} />
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <Switch
-                    checked={service.isActive}
-                    aria-label={t("toggleActive")}
-                    onCheckedChange={() => onToggleActive(service.id)}
-                  />
+                  <Switch checked={service.isActive} aria-label={t("toggleActive")} />
                   <Badge
                     variant="secondary"
                     className={cn(
                       "rounded-full px-2 py-0.5 text-xs font-medium",
-                      service.isActive
-                        ? "bg-green-50 text-green-700"
-                        : "bg-gray-100 text-gray-500"
+                      service.isActive ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
                     )}
                   >
                     {service.isActive ? t("active") : t("inactive")}
@@ -102,10 +95,10 @@ export function ServiceTable({
               </TableCell>
               <TableCell className="pr-4 text-right">
                 <div className="flex items-center justify-end gap-0.5">
-                  <Button variant="ghost" size="icon-sm" onClick={() => onEdit(service)}>
+                  <Button variant="ghost" size="icon-sm" onClick={() => openEdit(service)}>
                     <Pencil className="size-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon-sm" onClick={() => onDelete(service)}>
+                  <Button variant="ghost" size="icon-sm" onClick={() => setDeleteService(service)}>
                     <Trash2 className="size-3.5 text-destructive" />
                   </Button>
                 </div>
@@ -122,6 +115,38 @@ export function ServiceTable({
           )}
         </TableBody>
       </Table>
+      <AlertDialog
+        open={!!deleteService}
+        onOpenChange={(open) => {
+          if (!open) setDeleteService(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa dịch vụ</AlertDialogTitle>
+
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa <span className="font-medium">{deleteService?.name}</span>?
+              Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteService) {
+                  onDelete(deleteService);
+                }
+                setDeleteService(null);
+              }}
+            >
+              Xác nhận
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

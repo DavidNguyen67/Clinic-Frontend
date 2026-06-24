@@ -194,7 +194,7 @@ const Dropdown = (props: DropdownProps) => {
               </>
             )}
             <CircleChevronDown
-              className="!h-[2.4rem] !w-[2.4rem] !text-[#404040]"
+              className="!h-[24px] !w-[24px] !text-[#404040] cursor-pointer"
               aria-hidden="true"
             />
           </ListboxButton>

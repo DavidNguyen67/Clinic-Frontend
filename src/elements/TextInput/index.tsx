@@ -94,7 +94,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
         )}
 
         {props.leadingIcon && (
-          <div className={clsx("leading-icon", inEKyc && "mt-[2.1rem]")}>{leadingIcon}</div>
+          <div className={clsx("leading-icon", inEKyc && "mt-5")}>{leadingIcon}</div>
         )}
         {props.type === "textarea" ? (
           <textarea
@@ -138,7 +138,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
           <button
             type="button"
             className={clsx("cursor-pointer", {
-              "relative top-[1rem]": labelPlacement === "inside",
+              "relative top-4": labelPlacement === "inside",
               "help-icon": labelPlacement === "outside",
             })}
             onClick={() => setShow(!show)}
@@ -158,7 +158,7 @@ const TextInput = React.forwardRef<HTMLInputElement | null, TextInputProps>((pro
               inputRef.current?.focus();
             }}
             className={clsx("cursor-pointer", {
-              "relative top-[1rem]": labelPlacement === "inside",
+              "relative top-4": labelPlacement === "inside",
               "help-icon": labelPlacement === "outside",
             })}
             tabIndex={-1}

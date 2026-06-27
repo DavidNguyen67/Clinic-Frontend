@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VNPT.2iamQuan",
-  description: "VNPT.2iamQuan - Nền tảng đặt lịch khám và tư vấn y tế trực tuyến hàng đầu Việt Nam",
+  title: "Med Care",
+  description: "Med Care - Nền tảng đặt lịch khám và tư vấn y tế trực tuyến hàng đầu Việt Nam",
 };
 
 export default function RootLayout({
